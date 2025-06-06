@@ -362,7 +362,7 @@ prompt and waiting for the next expression.  For example:
     ? (2+3)*8
     40
     (5 reductions, 9 cells)
-    ? sum [1..10]
+    ? sum [1...10]
     55
     (91 reductions, 130 cells)
     ? 
@@ -375,8 +375,8 @@ memory) that were used during the calculation.  These  figures  can  be
 useful for comparing the performance of different ways of carrying  out
 the same calculation.
 
-In the second example, the user typed  the  expression  \verb"sum  [1..10]".
-The notation \verb"[1..10]" represents the list of integers between 1 and 10
+In the second example, the user typed  the  expression  \verb"sum  [1...10]".
+The notation \verb"[1...10]" represents the list of integers between 1 and 10
 inclusive, and \verb"sum" is a  standard  function  which  can  be  used  to
 determine the sum of a list of integers.  Thus the result  obtained  by
 Gofer is:
@@ -395,7 +395,7 @@ $\frac{1}{9}$th of the number of reductions and
 $\frac{1}{5}$th of the number  of  cells  as  the
 original calculation.  On the other hand, the  original  expression  is
 much shorter and you are much less likely to make a mistake  typing  in
-the expression \verb"sum [1..200]" than you would be if you tried  to  enter
+the expression \verb"sum [1...200]" than you would be if you tried  to  enter
 the sum of the integers from 1 to 200 directly.
 
 You will learn more about the kind of expressions that can  be  entered
@@ -684,14 +684,14 @@ and their use is illustrated by the following examples:
  \verb"1 + 2 - 3" & \verb"(1 + 2) - 3"  &  \verb"(+)" and \verb"(-)"
                                            have the same  precedence
                                            and group to the left. \\
- \verb"x : ys ++ zs" &  \verb"x : (ys ++ zs)" &   \verb"(:)" and 
+ \verb"x :: ys ++ zs" &  \verb"x :: (ys ++ zs)" &   \verb"(::)" and 
                                            \verb"(++)" have the same precedence
                                            and group to the right.\\
  \verb"x == y || z" & \verb"(x == y) || z" &    \verb"(==)" has higher
                                             precedence than \verb"(||)".\\
  \verb"3 * 4 + 5" & \verb"(3 * 4) + 5" &   \verb"(*)" has higher 
                                            precedence than \verb"(+)".\\
- \verb"y `elem` z:zs" & \verb"y `elem` (z:zs)" & \verb"(:)"  has higher 
+ \verb"y `elem` z::zs" & \verb"y `elem` (z::zs)" & \verb"(::)"  has higher 
                                           precedence than \verb"elem". \\
  \verb"12 / 6 / 3" & syntax error &    ambiguous  use  of  \verb"(/)";
                                       could  mean
@@ -714,15 +714,15 @@ primitive expressions such as numeric constants, Gofer assigns  a  type
 to each expression that describes the kind of value represented by  the
 expression.
 
-In  general  we write  \I{object} \verb"::" \I{type}
+In  general  we write  \I{object} \verb":" \I{type}
 to indicate  that  a  particular
 expression has the indicated type.  For example:
 \BQ
 \begin{tabular}{lp{8cm}}
-    \verb"42   :: Int" &   indicating that  42  is an  integer 
+    \verb"42   : Int" &   indicating that  42  is an  integer 
                            (\verb"Int" is the
                             name for the type of integer values).\\
-    \verb"fact :: Int -> Int" &  indicating  that  \verb"fact"  
+    \verb"fact : Int -> Int" &  indicating  that  \verb"fact"  
                          is a  function  which
                         takes  an  integer  argument  and  returns   an
                         integer value (its factorial).
@@ -731,7 +731,7 @@ expression has the indicated type.  For example:
 The most important property of the type system is that it  is  possible
 to determine the type of an expression without having to  evaluate  it.
 For example, the information given above  is  sufficient  to  determine
-that \verb"fact.42 :: Int" without needing to calculate $42!$ first.
+that \verb"fact.42 : Int" without needing to calculate $42!$ first.
 
 Gofer has a wide range of built-in types, described  in  the  following
 sections.  In addition, Gofer also includes facilities for defining new
@@ -750,7 +750,7 @@ and result type \verb"t2".
 In mathematics, the result of applying a function $f$ to an argument $x$ is
 traditionally written as $f(x)$.  In many situations,  these  parentheses
 are unnecessary and may be omitted when using Gofer.
-For example, if \verb"f :: t1 -> t2" and \verb"x :: t1"
+For example, if \verb"f : t1 -> t2" and \verb"x : t1"
 then \verb"f x" is the result of applying
 \verb"f" to \verb"x" and has type \verb"t2".
 
@@ -789,7 +789,7 @@ Represented by the type \verb"Bool", there are two boolean values written as
 The  standard  prelude  includes  several  useful
 functions for manipulating boolean values:
 \BI
-\IT    \verb"(&&), (||) :: Bool -> Bool -> Bool"
+\IT    \verb"(&&), (||) : Bool -> Bool -> Bool"
 
         The value of the expression \verb"b && d" is \verb"True"
         if and only if  both
@@ -801,7 +801,7 @@ functions for manipulating boolean values:
         is \verb"True".  If \verb"b" is \verb"True" then \verb"d"
         is not evaluated.
 
-\IT    \verb"not  :: Bool -> Bool"
+\IT    \verb"not  : Bool -> Bool"
 
         The value of the expression \verb"not b" is the opposite boolean value
         to that of \verb"b"; \verb"not True = False", \verb"not False = True".
@@ -931,8 +931,8 @@ In contrast with  some  common  languages  (such  as  C,  for  example)
 character values are quite distinct from integers; however the standard
 prelude does include functions:
 \begin{verbatim}
-    ord :: Char -> Int
-    chr :: Int -> Char
+    ord : Char -> Int
+    chr : Int -> Char
 \end{verbatim}
 which enable you to map a character to its corresponding  {\sc ascii}  value,
 or from an {\sc ascii} value to the corresponding character:
@@ -1010,7 +1010,7 @@ of `\verb"x"'s.  Similarly, a list of lists might be  called
 \verb"xss".   Once  you
 have understood this convention it  is  much  easier  to  remember  the
 relationship between the variables in the  expression  \verb"(x:xs)"  than  it
-would be if different names had been used such as \verb"(a:b)".
+would be if different names had been used such as \verb"(a::b)".
 
 \section{Strings}
 A string is treated as a list of characters  and  the  type  \verb"String"  is
@@ -1102,9 +1102,9 @@ $(x_1, x_2, \dots, x_n)$ where the expressions $x_1$, $x_2$, \dots, $x_n$
 have types  $t_1$,
 $t_2$, \dots, $t_n$ respectively. For example,
 \begin{verbatim}
-    (1, [2], 3)   :: (Int, [Int], Int)
-    ('a', False)  :: (Char, Bool)
-    ((1,2),(3,4)) :: ((Int, Int), (Int, Int))
+    (1, [2], 3)   : (Int, [Int], Int)
+    ('a', False)  : (Char, Bool)
+    ((1,2),(3,4)) : ((Int, Int), (Int, Int))
 \end{verbatim}
 Note that, unlike lists, the elements in a  tuple  may  have  different
 types, although the number of elements in the tuple is fixed.
@@ -1128,8 +1128,8 @@ examples of the kind of problem that might occur:
      characters, or perhaps pressing the wrong keys  instead.   In  the
      following example, the user has missed out a `\verb"["' character:
 \begin{verbatim}
-    ? sum 1..100]
-    ERROR: Syntax error in input (unexpected `..')
+    ? sum 1...100]
+    ERROR: Syntax error in input (unexpected `...')
 \end{verbatim}
 \IT  Undefined variables.  This happens when you  enter  an  expression
      using a variable or function name that is not defined  in  any  of
@@ -1232,7 +1232,7 @@ expression \verb"6".  The process of matching the arguments  of  a  function
 against the patterns in its definition and obtaining another expression
 to be evaluated is called a `reduction'.  Using Gofer, it  is  easy  to
 verify that the evaluation of \verb"fact.6" takes one  more  reduction  than
-that of \verb"product [1..6]":
+that of \verb"product.[1...6]":
 \begin{verbatim}
     ? fact.6
     720
@@ -1304,7 +1304,7 @@ illustrated by the following examples:
                               elements,  the  second  of  which  is the
                               integer 2.\\
             &      \verb"[]"   &    matches the empty list.\\
-            &      \verb"(x:xs)"&   matches a non-empty  list with 
+            &      \verb"(x::xs)"&   matches a non-empty  list with 
                                     head \verb"x" and
                                     tail \verb"xs".\\
   As patterns:&    \verb"p@(x,y)"&  matches a  pair  whose  first and  second
@@ -1339,7 +1339,7 @@ using the notation of guards introduced in the next section:
 Each of the equations in a function  definition  may  contain  `guards'
 which require certain conditions  on  the  values  of  the  function's
 arguments to be met.  As an example, here is a function which uses  the
-standard prelude function \verb"even :: Int -> Bool" to determine whether  its
+standard prelude function \verb"even : Int -> Bool" to determine whether  its
 argument is an even integer or not, and returns the  string  
 \verb="even"=  or
 \verb="odd"= as appropriate:
@@ -1508,24 +1508,24 @@ developed here \verb"len" to avoid any conflict.  Now suppose that  we  wish
 to find the length of a given list.  There are two cases to consider:
 \BSI
 \IT  If the list is empty then it has length 0
-\IT  Otherwise, it is non-empty and can be written in the  form  \verb"(x:xs)"
+\IT  Otherwise, it is non-empty and can be written in the  form  \verb"(x::xs)"
      for some element \verb"x" and some list \verb"xs".
      Thus the  original  list  is
-     one element longer than \verb"xs", and so has length \verb"1+len xs".
+     one element longer than \verb"xs", and so has length \verb"1+len.xs".
 \ESI
 Writing these two cases out leads directly to the following definition:
 \begin{verbatim}
-    len []      =  0
-    len (x:xs)  =  1 + len xs
+    len.[]      =  0
+    len.(x::xs)  =  1 + len.xs
 \end{verbatim}
 The following diagram illustrates the way that  this  function  can  be
 used to determine the length of the list \verb"[1,2,3,4]" (remember that  this
 is just an abbreviation for \verb"1:2:3:4:[])":
 \begin{verbatim}
-    len [1,2,3,4]  ==>  1 + len [2,3,4]
-                   ==>  1 + (1 + len [3,4])
-                   ==>  1 + (1 + (1 + len [4]))
-                   ==>  1 + (1 + (1 + (1 + len [])))
+    len.[1,2,3,4]  ==>  1 + len.[2,3,4]
+                   ==>  1 + (1 + len.[3,4])
+                   ==>  1 + (1 + (1 + len.[4]))
+                   ==>  1 + (1 + (1 + (1 + len.[])))
                    ==>  1 + (1 + (1 + (1 + 0)))
                    ==>  1 + (1 + (1 + 1))
                    ==>  1 + (1 + 2)
@@ -1536,10 +1536,10 @@ As  further  examples,  you  might  like  to  look  at  the   following
 definitions which use similar ideas to define the functions product and
 map introduced in earlier sections:
 \begin{verbatim}
-    product []     = 1
-    product (x:xs) = x * product xs
+    product.[]     = 1
+    product.(x::xs) = x * product.xs
     map.f.[]      =  []
-    map.f.(x:xs)  =  f.x : map.f.xs
+    map.f.(x::xs)  =  f.x : map.f.xs
 \end{verbatim}
 
 \section{Lazy evaluation}
@@ -1569,7 +1569,7 @@ achieved using the function \verb"strict" defined in the  standard  prelude;
 An expression of the form \verb"strict f x" is evaluated by first evaluating
 the argument \verb"x" and then applying the function \verb"f" to the result:
 \begin{verbatim}
-    ? strict ignoreArgument.(1/0)
+    ? strict.ignoreArgument.(1/0)
     {primDivInt.1.0}
     (4 reductions, 29 cells)
     ?
@@ -1611,12 +1611,12 @@ Consider the task  of  finding  the  smallest  element  of  a  list  of
 integers.  The standard prelude includes a function \verb"minimum" which can
 be used for this very purpose:
 \begin{verbatim}
-    ? minimum [100,99..1]
+    ? minimum [100,99...1]
     1
     (809 reductions, 1322 cells)
     ?
 \end{verbatim}
-(The expression \verb"[100,99..1]" denotes the list of integers from 1 to  100
+(The expression \verb"[100,99...1]" denotes the list of integers from 1 to  100
 arranged in decreasing order, as described in section 10.1).
 
 A rather different approach involves sorting the elements of  the  list
@@ -1626,7 +1626,7 @@ resulting list  (using  the  standard  function  \verb"head").   Of  course,
 sorting the list in its entirety is  likely  to  require  significantly
 more work than the previous approach:
 \begin{verbatim}
-    ? sort [100,99..1]
+    ? sort [100,99...1]
     [1, 2, 3, 4, 5, 6, 7, 8, ... etc ..., 99, 100]
     (10712 reductions, 21519 cells)
     ?
@@ -1635,7 +1635,7 @@ However, thanks to lazy-evaluation, calculating just the first  element
 of the sorted list actually requires less work in this particular  case
 than the first solution using \verb"minimum":
 \begin{verbatim}
-    ? head (sort [100,99..1])
+    ? head (sort [100,99...1])
     1
     (713 reductions, 1227 cells)
     ?
@@ -1645,10 +1645,10 @@ depends rather heavily on the particular algorithm  used  to  \verb"sort"  a
 list of elements.  The results are rather different if we  compare  the
 same two approaches used to calculate the maximum value in the list:
 \begin{verbatim}
-    ? maximum [100,99..1]
+    ? maximum [100,99...1]
     100
     (812 reductions, 1225 cells)
-    ? last (sort [100,99..1])
+    ? last (sort [100,99...1])
     100
     (10612 reductions, 20732 cells)
     ?
@@ -1783,15 +1783,15 @@ to be very useful.  Here are the types of some of the other polymorphic
 functions which have been used in previous  examples  which  illustrate
 this point:
 \begin{verbatim}
-    length :: [a] -> Int
-    (++)   :: [a] -> [a] -> [a]
-    concat :: [[a]] -> [a]
+    length : [a] -> Int
+    (++)   : [a] -> [a] -> [a]
+    concat : [[a]] -> [a]
 \end{verbatim}
 Thus we can use precisely the same \verb"length" function to determine  both
 the length of a list of integers as well as finding  the  length  of  a
 string:
 \begin{verbatim}
-    ? length [1..10]
+    ? length [1...10]
     10
     (98 reductions, 138 cells)
     ? length "Hello"
@@ -1809,7 +1809,7 @@ Functions which manipulate  other  functions  in  this  way  are  often
 described as `higher-order functions'.  Consider the following example,
 taken from the standard prelude:
 \begin{verbatim}
-    (.)       :: (b -> c) -> (a -> b) -> (a -> c)
+    (.)       : (b -> c) -> (a -> b) -> (a -> c)
     (f . g) x  = f (g x)
 \end{verbatim}
 As indicated by the type declaration, we think of the \verb"(.)" operator as a
@@ -1829,7 +1829,7 @@ of characters used in a list of strings.  A simple  recursive  function
 provides one solution:
 \begin{verbatim}
     countChars []     = 0
-    countChars (w:ws) = length w + countChars ws 
+    countChars (w::ws) = length w + countChars ws 
 
     ? countChars ["super","cali","fragi","listic"]
     20
@@ -1868,7 +1868,7 @@ by function declarations of arity $>0$ are guaranteed to be functions, the
 values defined by variable declarations may or may not be functions:
 \begin{verbatim}
     odd = not . even   -- if an integer is not even then it must be odd
-    val = sum [1..100]
+    val = sum [1...100]
 \end{verbatim}
 Note that variables defined like this at the top level  of  a  file  of
 definitions will be evaluated using lazy evaluation.  The first time we
@@ -1892,7 +1892,7 @@ Because of this behaviour, we should probably try to avoid using  variable
 declarations where the resulting value will require a  lot  of  storage
 space.  If we load a file of definitions including the line:
 \begin{verbatim}
-    longList = [1..10000]
+    longList = [1...10000]
 \end{verbatim}
 and  then  evaluate  the  expression  \verb"length longList"   (eventually
 obtaining the expected result of 10000), then Gofer will  evaluate  the
@@ -1914,7 +1914,7 @@ section 9.1.  As a simple example of  pattern  bindings,  here  is  one
 possible definition for the function \verb"head"  which  returns  the  first
 element in a list of values:
 \begin{verbatim}
-    head xs  =  x  where  (x:ys) = xs
+    head xs  =  x  where  (x::ys) = xs
 \end{verbatim}
 The definition \verb"head (x:_) = x"  used  in  the  standard  prelude  is
 slightly more efficient, but otherwise equivalent.
@@ -1933,7 +1933,7 @@ think of as `returning more  than  one  value'  --  although  they  are
 actually packaged up in a single value such as a tuple.  As an example,
 consider the function \verb"span" defined in the standard prelude.
 \begin{verbatim}
-    span :: (a -> Bool) -> [a] -> ([a],[a])
+    span : (a -> Bool) -> [a] -> ([a],[a])
 \end{verbatim}
 If \verb"xs" is a list of values and \verb"p"
 is a predicate, then \verb"span p xs"  returns
@@ -1946,8 +1946,8 @@ the two lists resulting  from  the  recursive  call  to  \verb"span"  is  as
 follows:
 \begin{verbatim}
     span p []               = ([],[])
-    span p xs@(x:xs')
-                | p x       = let (ys,zs) = span p xs' in (x:ys,zs)
+    span p xs@(x::xs')
+                | p x       = let (ys,zs) = span p xs' in (x::ys,zs)
                 | otherwise = ([],xs)
 \end{verbatim}
 For consistency with the lazy evaluation strategy used  in  Gofer,  the
@@ -1955,7 +1955,7 @@ right hand side of a pattern binding is not evaluated until  the  value
 of one of the  variables  bound  by  that  pattern  is  required.   The
 definition:
 \begin{verbatim}
-    (0:xs) = [1,2,3]
+    (0::xs) = [1,2,3]
 \end{verbatim}
 will not cause any errors when it is loaded into Gofer, but will  cause
 an error if we attempt to evaluate the variable \verb"xs":
@@ -1973,7 +1973,7 @@ binding conforms with the pattern on the left.
 Compare this  with  the  behaviour  of  pattern  matching  in  function
 definitions such as:
 \begin{verbatim}
-    ? example [1] where example (0:xs) = "Hello"
+    ? example [1] where example (0::xs) = "Hello"
     {v126 [1]}
     (4 reductions, 22 cells)
     ?
@@ -2015,20 +2015,20 @@ semantic domain, and is the only value having all possible types):
    (\~[x, (a,b)] -> x) [(0,1),undefined] = {undefined}
    (\~[x,~(a,b)] -> x) [(0,1),undefined] = (0,1)
 
-   (\ (x:xs) -> x:x:xs) undefined = {undefined}
-   (\~(x:xs) -> x:x:xs) undefined = {undefined}:{undefined}:{undefined}
+   (\ (x::xs) -> x::x::xs).undefined = {undefined}
+   (\~(x::xs) -> x::x::xs)undefined = {undefined}::{undefined}::{undefined}
 \end{verbatim}
 Irrefutable patterns are not used very frequently,  although  they  are
 particularly convenient in some situations (see  section  12  for  some
 examples).  Be careful not to use irrefutable patterns where  they  are
 not appropriate.  An attempt to define a map function \verb"map'" using:
 \begin{verbatim}
-    map' f ~(x:xs) = f x : map' f xs
+    map' f ~(x::xs) = f x :: map' f xs
     map' f []      = []
 \end{verbatim}
 turns out to be equivalent to the definition:
 \begin{verbatim}
-    map' f ys  =  f x : map f xs where (x:xs) = ys
+    map' f ys  =  f x : map f xs where (x::xs) = ys
 \end{verbatim}
 and will not behave as you might have intended:
 \begin{verbatim}
@@ -2070,11 +2070,11 @@ declarations of this kind in a program:
      \verb"idInt" to a particular instance of the polymorphic 
      type \verb"a -> a":
 \begin{verbatim}
-    idInt :: Int -> Int
+    idInt : Int -> Int
 \end{verbatim}
      Note that a declaration such as:
 \begin{verbatim}
-    idInt :: Int -> a
+    idInt : Int -> a
 \end{verbatim}
      is not a valid type for the function \verb"idInt"  (the  value  of  the
      expression \verb"idInt 42" is an  integer  and  cannot  be  treated  as
@@ -2110,16 +2110,16 @@ together with their translation using the standard functions  \verb"enumFrom",
 \verb"enumFromTo", \verb"enumFromThen" and \verb"enumFromThenTo":
 \BQ
 \begin{tabular}{llp{6cm}}
-    \verb"[ n .. ]"&         \verb"enumFrom n" &
+    \verb"[ n ... ]"&         \verb"enumFrom n" &
                      Produces the (potentially infinite) list of values
                      starting with the value of  \verb"n" and  increasing  in
                      single steps.\\
-    \verb"[ n .. m ]"&       \verb"enumFromTo n m"&
+    \verb"[ n ... m ]"&       \verb"enumFromTo n m"&
                      Produces the list of  elements  from  \verb"n" upto  and
                      including \verb"m" in single steps.
                      If \verb"m" is less than \verb"n"
                      then the list is empty.\\
-    \verb"[ n, m .. ]"&      \verb"enumFromThen n m"&
+    \verb"[ n, m ... ]"&      \verb"enumFromThen n m"&
                      Produces the (potentially infinite) list of values
                      whose first two elements are given by the values \verb"n"
                      and \verb"m".  If \verb"m"
@@ -2127,11 +2127,11 @@ together with their translation using the standard functions  \verb"enumFrom",
                      elements of the list are increasing  in  steps  of
                      the same size.  A similar result is obtained if  \verb"m"
                      is less than \verb"n" in  which  case  the  elements  of
-                     \verb"[n,m..]" will be decreasing.  
+                     \verb"[n,m...]" will be decreasing.  
                      If \verb"n" and \verb"m" are  equal
-                     then \verb"[n,m..]" is an infinite  list  in  which  each
+                     then \verb"[n,m...]" is an infinite  list  in  which  each
                      element is equal to \verb"n".\\
-    \verb"[ n, n' .. m ]"&   \verb"enumFromThenTo n n' m"&
+    \verb"[ n, n' ... m ]"&   \verb"enumFromThenTo n n' m"&
                      Produces the list of elements from  \verb"[n,n'..]" upto
                      the limit value \verb"m".
                      If  \verb"m" is  less  than  \verb"n" and
@@ -2144,16 +2144,16 @@ together with their translation using the standard functions  \verb"enumFrom",
 Examples:
 \BQ
 \begin{tabular}{lcl}
-    {\tt [1..]    }& = & {\tt [1, 2, 3, 4, 5, 6, 7, 8, 9,} etc\dots\\
-    {\tt [-3..3]  }& = & {\tt [-3, -2, -1, 0, 1, 2, 3]}\\
-    {\tt [1..1]   }& = & {\tt [1]}\\
-    {\tt [9..0]   }& = & {\tt []}\\
-    {\tt [1,3..]  }& = & {\tt [1, 3, 5, 7, 9, 11, 13,} etc\dots\\
-    {\tt [0,0..]  }& = & {\tt [0, 0, 0, 0, 0, 0, 0,} etc\dots\\
-    {\tt [5,4..]  }& = & {\tt [5, 4, 3, 2, 1, 0, -1,} etc\dots\\
-    {\tt [1,3..12]}& = & {\tt [1, 3, 5, 7, 9, 11]}\\
-    {\tt [0,0..10]}& = & {\tt [0, 0, 0, 0, 0, 0, 0,} etc\dots\\
-    {\tt [5,4..1] }& = & {\tt [5, 4, 3, 2, 1]}
+    {\tt [1...]    }& = & {\tt [1, 2, 3, 4, 5, 6, 7, 8, 9,} etc\dots\\
+    {\tt [-3...3]  }& = & {\tt [-3, -2, -1, 0, 1, 2, 3]}\\
+    {\tt [1...1]   }& = & {\tt [1]}\\
+    {\tt [9...0]   }& = & {\tt []}\\
+    {\tt [1,3...]  }& = & {\tt [1, 3, 5, 7, 9, 11, 13,} etc\dots\\
+    {\tt [0,0...]  }& = & {\tt [0, 0, 0, 0, 0, 0, 0,} etc\dots\\
+    {\tt [5,4...]  }& = & {\tt [5, 4, 3, 2, 1, 0, -1,} etc\dots\\
+    {\tt [1,3...12]}& = & {\tt [1, 3, 5, 7, 9, 11]}\\
+    {\tt [0,0...10]}& = & {\tt [0, 0, 0, 0, 0, 0, 0,} etc\dots\\
+    {\tt [5,4...1] }& = & {\tt [5, 4, 3, 2, 1]}
 \end{tabular}
 \EQ
 In  the  standard  prelude,   the   functions   \verb"enumFrom",
@@ -2162,11 +2162,11 @@ In  the  standard  prelude,   the   functions   \verb"enumFrom",
 are overloaded and may also be used  to
 enumerate lists of characters or floating point values:
 \begin{verbatim}
-    ? ['0'..'9'] ++ ['A'..'Z']
+    ? ['0'...'9'] ++ ['A'...'Z']
     0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
     (397 reductions, 542 cells)
 
-    ? [1.2, 1.35 .. 2.00]
+    ? [1.2, 1.35 ... 2.00]
     [1.2, 1.35, 1.5, 1.65, 1.8, 1.95]
     (56 reductions, 133 cells)
 \end{verbatim}
@@ -2174,7 +2174,7 @@ Arithmetic sequences such as those described above play the  same  role
 in functional programming languages as the iterative  `for'  constructs
 in traditional imperative languages.  A good example  of  this  is  the
 example in section 4 used to calculate the sum of the integers  from  1
-upto 10 -- \verb"sum [1..10]".   An  equivalent  program  in  an  imperative
+upto 10 -- \verb"sum [1...10]".   An  equivalent  program  in  an  imperative
 language might look something like (especially if you think of C!):
 \begin{verbatim}
     int i;
@@ -2187,7 +2187,7 @@ The advantages of the functional notation in this case are clear:
 \BSI
 \IT  It is more compact.
 \IT  It separates the task of  generating  the  sequence  of  integers
-      \verb"[1..10]" from the task of finding their sum.
+      \verb"[1...10]" from the task of finding their sum.
 \IT  It does not require the declaration or use of auxiliary variables
       such as \verb"i" and \verb"total" in the above.
 \ESI
@@ -2206,7 +2206,7 @@ There are three kinds of qualifier that can be used in Gofer:
      is  used  to  extract
      each element that matches the pattern pat from the list exp in the
      order that they elements appear in that list.  A simple example of
-     this is the expression \verb"[x*x | x<-[1..10]]" which denotes  the  list
+     this is the expression \verb"[x*x | x<-[1...10]]" which denotes  the  list
      of the squares of the integers between  1  and  10  inclusive  and
      evaluates to [1, 4, 9, 16, 25, 36, 49, 64, 81, 100] as expected.
 
@@ -2215,8 +2215,8 @@ There are three kinds of qualifier that can be used in Gofer:
 \begin{verbatim}
     [ e | pat <- exp ]  =  loop exp
                            where loop []       = []
-                                 loop (pat:xs) = e : loop xs
-                                 loop (_:xs)   = loop xs
+                                 loop (pat::xs) = e :: loop xs
+                                 loop (_::xs)   = loop xs
 \end{verbatim}
      If \verb"pat" is an irrefutable pattern (for example,  a  variable)  then
      this is equivalent to:
@@ -2277,18 +2277,18 @@ practice:
 \IT  Variables generated by later qualifiers  vary  more  quickly  than
      those generated by earlier qualifiers:
 \begin{verbatim}
-    ? [ (x,y) | x<-[1..3], y<-[1..2] ]
+    ? [ (x,y) | x<-[1...3], y<-[1...2] ]
     [(1,1), (1,2), (2,1), (2,2), (3,1), (3,2)]
     (107 reductions, 246 cells)
     ?
 \end{verbatim}
 \IT  Later qualifiers may use the values generated by earlier ones:
 \begin{verbatim}
-    ? [ (x,y) | x<-[1..3], y<-[1..x]]
+    ? [ (x,y) | x<-[1...3], y<-[1..x]]
     [(1,1), (2,1), (2,2), (3,1), (3,2), (3,3)]
     (107 reductions, 246 cells)
 
-    ? [ x | x<-[1..10], even x ]
+    ? [ x | x<-[1...10], even x ]
     [2, 4, 6, 8, 10]
     (108 reductions, 171 cells)
     ?
@@ -2313,10 +2313,10 @@ practice:
      but the first uses more reductions and cells  because  it  repeats
      the evaluation of \verb"even x" for each possible value of \verb"y".
 \begin{verbatim}
-    ? [ (x,y) | x<-[1..3], y<-[1..2], even x ]
+    ? [ (x,y) | x<-[1...3], y<-[1...2], even x ]
     [(2,1), (2,2)]
     (110 reductions, 186 cells)
-    ? [ (x,y) | x<-[1..3], even x, y<-[1..2] ]
+    ? [ (x,y) | x<-[1...3], even x, y<-[1...2] ]
     [(2,1), (2,2)]
     (62 reductions, 118 cells)
     ? 
@@ -2327,11 +2327,11 @@ practice:
      expression uses a local definition to ensure that  the  evaluation
      is not repeated:
 \begin{verbatim}
-    ? [ fact.x + y | x<-[1..3], y<-[1..2] ]
+    ? [ fact.x + y | x<-[1...3], y<-[1...2] ]
     [2, 3, 3, 4, 7, 8]
     (246 reductions, 398 cells)
 
-    ? [ fact.x + y | x<-[1..3], fact.x = fact.x, y<-[1..2] ]
+    ? [ fact.x + y | x<-[1...3], fact.x = fact.x, y<-[1...2] ]
     [2, 3, 3, 4, 7, 8]
     (173 reductions, 294 cells)
     ?
@@ -2428,13 +2428,13 @@ this is the \verb"scanl" function whose definition in the standard prelude:
 \begin{verbatim}
     scanl f q xs = q : (case xs of
                         []   -> []
-                        x:xs -> scanl f (f q x) xs)
+                        x::xs -> scanl f (f q x) xs)
 \end{verbatim}
 is equivalent to:
 \begin{verbatim}
     scanl f q xs = q : scanl' xs
                    where scanl' []     = []
-                         scanl' (x:xs) = scanl f (f q x) xs
+                         scanl' (x::xs) = scanl f (f q x) xs
 \end{verbatim}
 This latter form is precisely the definition used in [1] (but using the
 name \verb"scan" where Gofer uses \verb"scanl").
@@ -2459,13 +2459,13 @@ single equation of the form \verb"functionName = expr".  For example,  the
 standard function \verb"map" whose definition is usually written as:
 \begin{verbatim}
     map f []     = []
-    map f (x:xs) = f x : map f xs
+    map f (x::xs) = f x :: map f xs
 \end{verbatim}
 can also be defined by the equation:
 \begin{verbatim}
     map = \f xs -> case xs of
                      []     -> []
-                     (y:ys) -> f y : map f ys
+                     (y::ys) -> f y :: map f ys
 \end{verbatim}
 This kind  of  translation  is  used  in  the  implementation  of  many
 functional programming languages, including Gofer.   See  Simon  Peyton
@@ -2511,7 +2511,7 @@ abbreviations for \verb"(*) e" and \verb"flip (*) e" respectively,
 where  \verb"flip"
 is the function defined by:
 \begin{verbatim}
-     flip        :: (a -> b -> c) -> b -> a -> c
+     flip        : (a -> b -> c) -> b -> a -> c
      flip  f x y  =  f y x
 \end{verbatim}
 There is an important special case which occurs with an  expression  of
@@ -2529,31 +2529,31 @@ As described in section 9.12, it is often useful to be able to  declare
 the type of a variable defined in a function or pattern  binding.   For
 much the same reasons, Gofer allows expressions of the form:
 \begin{verbatim}
-    expr :: type
+    expr : type
 \end{verbatim}
 so that the type of an expression can be  specified  explicitly.   Note
 that the \verb":t" command can be used  to  find  the  type  of  a  particular
 expression that is inferred by Gofer:
 \begin{verbatim}
     ? :t  \x -> [x]
-    \x -> [x] :: a -> [a]
+    \x -> [x] : a -> [a]
 
     ? :t  sum . map length
-    sum . map length :: [[a]] -> Int
+    sum . map length : [[a]] -> Int
 \end{verbatim}
 The types inferred in each case can be modified by  including  explicit
 types in these expressions:
 \begin{verbatim}
-    ? :t  (\x -> [x]) :: Char -> String
-    \x -> [x] :: Char -> String
+    ? :t  (\x -> [x]) : Char -> String
+    \x -> [x] : Char -> String
 
-    ? :t  sum . map (length :: String -> Int)
-    sum . map length :: [String] -> Int
+    ? :t  sum . map (length : String -> Int)
+    sum . map length : [String] -> Int
 \end{verbatim}
 Note that an error occurs if the type declared in an  explicitly  typed
 expression is not compatible with the type inferred by Gofer:
 \begin{verbatim}
-    ? :t (\x -> [x]) :: Int -> a
+    ? :t (\x -> [x]) : Int -> a
     ERROR: Declared type too general
     *** Expression    : \x -> [x]
     *** Declared type : Int -> a
@@ -2622,7 +2622,7 @@ fahrenheit scales:
 \begin{verbatim}
     data Temp = Centigrade Float | Fahrenheit Float
 
-    freezing                  :: Temp -> Bool
+    freezing                  : Temp -> Bool
     freezing (Centigrade temp) = temp <= 0.0
     freezing (Fahrenheit temp) = temp <= 32.0
 \end{verbatim}
@@ -2690,7 +2690,7 @@ branches of the tree from left to right.  The first definition  uses  a
 simple definition, whilst the second uses an  `accumulating  parameter'
 giving a more efficient algorithm:
 \begin{verbatim}
-    leaves, leaves'  :: Tree a -> [a]
+    leaves, leaves'  : Tree a -> [a]
 
     leaves (Lf l)  = [l]
     leaves (l:^:r) = leaves l ++ leaves r
@@ -2747,9 +2747,9 @@ either using an explicitly typed expression (section 10.6)  or  a  type
 declaration (section 9.12):
 \begin{verbatim}
     ? :t ['c']
-    ['c'] :: [Char]
-    ? :t ['c'] :: String
-    ['c'] :: String
+    ['c'] : [Char]
+    ? :t ['c'] : String
+    ['c'] : String
     ?
 \end{verbatim}
 Unlike the datatype declarations described  in  the  previous  section,
@@ -2925,7 +2925,7 @@ may be obtained in each case:
 A simple example of a program using these facilities to output a short
 message on the standard output stream is:
 \begin{verbatim}
-    helloWorld      :: Dialogue
+    helloWorld      : Dialogue
     helloWorld resps = [AppendChan stdout "hello, world"]
 \end{verbatim} 
 Any expression entered into Gofer of type \verb"Dialogue" will be treated as
@@ -2945,7 +2945,7 @@ be illustrated using lambda expressions:
     ? \resps -> [AppendChan stdout "hello, world"]
     v128
     (1 reduction, 7 cells)
-    ? (\resps -> [AppendChan stdout "hello, world"]) :: Dialogue
+    ? (\resps -> [AppendChan stdout "hello, world"]) : Dialogue
     hello, world
  
     (1 reduction, 28 cells)
@@ -2978,7 +2978,7 @@ corresponding request had been produced:
 The next example takes a single string as a parameter and displays  the
 contents of the corresponding file:
 \begin{verbatim}
-    showFile               :: String -> Dialogue 
+    showFile               : String -> Dialogue 
     showFile name ~(read:_) = [ReadFile name, AppendChan stdout result] 
      where result = case read of Str contents -> contents 
                                  Failure _    -> "Can't open " ++ name 
@@ -3014,7 +3014,7 @@ request is successful, the other if the request fails.
 As an example, the \verb"ReadFile" request  is  represented  by  the  function
 \verb"readFile" whose definition is equivalent to:
 \begin{verbatim}
-    readFile name fail succ ~(r:rs) = ReadFile name : rest rs
+    readFile name fail succ ~(r::rs) = ReadFile name : rest rs
      where rest = case r of Str s           -> succ s
                             Failure ioerror -> fail ioerror
 \end{verbatim}
@@ -3087,19 +3087,19 @@ corresponding to the six different kinds of I/O  request  described  in
 the previous section.  Full definitions for each of these functions are
 given in appendix B:
 \begin{verbatim}
-    readFile   :: String -> FailCont -> StrCont -> Dialogue
-    writeFile  :: String -> String -> FailCont -> SuccCont -> Dialogue
-    appendFile :: String -> String -> FailCont -> SuccCont -> Dialogue
-    readChan   :: String -> FailCont -> StrCont  -> Dialogue
-    appendChan :: String -> String -> FailCont -> SuccCont -> Dialogue
-    echo       :: Bool -> FailCont -> SuccCont -> Dialogue
+    readFile   : String -> FailCont -> StrCont -> Dialogue
+    writeFile  : String -> String -> FailCont -> SuccCont -> Dialogue
+    appendFile : String -> String -> FailCont -> SuccCont -> Dialogue
+    readChan   : String -> FailCont -> StrCont  -> Dialogue
+    appendChan : String -> String -> FailCont -> SuccCont -> Dialogue
+    echo       : Bool -> FailCont -> SuccCont -> Dialogue
 \end{verbatim}
 As an illustration of the use of these functions, we show how  each  of
 the example programs from the previous section can be  rewritten  using
 the  continuation  based  style  of  I/O,  starting  with  the  program
 \verb"helloWorld":
 \begin{verbatim}
-    helloWorld :: Dialogue
+    helloWorld : Dialogue
     helloWorld  = appendChan stdout "hello, world" abort done
 \end{verbatim}
 In this case, the explicit type declaration is  not  actually  required
@@ -3112,21 +3112,21 @@ way, \verb"done"  is  the  trivial  dialogue  which  terminates  immediately
 without any action.  Both of these values are defined in the standard
 prelude:
 \begin{verbatim}
-   done         :: Dialogue
+   done         : Dialogue
    done resps    = []
-   abort        :: FailCont
+   abort        : FailCont
    abort ioerror = done
 \end{verbatim} 
 Using the same approach, the \verb"showFile" and \verb"main"  programs  from  the
 previous section are written as:
 \begin{verbatim}
-    showFile :: String -> Dialogue
+    showFile : String -> Dialogue
     showFile name
      = readFile name (\ioerror -> appendChan stdout
                                      ("Can't open " ++ name) abort done)
                      (\contents-> appendChan stdout contents abort done)
  
-    main :: Dialogue
+    main : Dialogue
     main  = appendChan stdout "Please type a filename: " abort
             (readChan stdin abort
             (\userInput -> let (name : _) = lines userInput in
@@ -3147,7 +3147,7 @@ There are two functions defined in the standard prelude  which  can  be
 used to `execute' functions of this kind as interactive programs:
 \BI
 \IT  \verb"interact f" executes 
-     \verb"f::String->String" as an interactive  program
+     \verb"f:String->String" as an interactive  program
      with echo on.  This  means  that  characters  are  read  from  the
      keyboard a line at a time.  The usual editing characters  such  as
      backspace can be used to correct mistakes which are noticed before
@@ -3185,11 +3185,11 @@ The definitions of \verb"interact" and \verb"run"
 provide  further  examples  of
 Gofer programs using simple I/O facilities:
 \begin{verbatim}
-    interact        :: (String -> String) -> Dialogue
+    interact        : (String -> String) -> Dialogue
     interact f       = readChan stdin abort
                             (\s -> appendChan stdout (f s) abort done)
  
-    run             :: (String -> String) -> Dialogue
+    run             : (String -> String) -> Dialogue
     run f            = echo False abort (interact f)
 \end{verbatim} 
 (Exercise for the interested reader:  construct alternative definitions
@@ -3348,18 +3348,18 @@ layout rule.  A file containing the following definitions:
     data Stack a = Empty
                  | MkStack a (Stack a)
 
-    push    :: a -> Stack a -> Stack a
+    push    : a -> Stack a -> Stack a
     push x s = MkStack x s
 
-    size  :: Stack a -> Int
+    size  : Stack a -> Int
     size s = length (stkToList s) where
                stkToList Empty         = []
-               stkToList (MkStack x s) = x:xs where xs = stkToList s
+               stkToList (MkStack x s) = x::xs where xs = stkToList s
 
-    pop :: Stack a -> (a, Stack a)
+    pop : Stack a -> (a, Stack a)
     pop (MkStack x s) = (x, case s of r -> i r where i x = x)
 
-    top :: Stack a -> a
+    top : Stack a -> a
     top (MkStack x s) = x
 \end{verbatim}
 will be treated by Gofer as if it has been written:
@@ -3367,18 +3367,18 @@ will be treated by Gofer as if it has been written:
     {data Stack a = Empty
                   | MkStack a (Stack a)
 
-    ;push    :: a -> Stack a -> Stack a
+    ;push    : a -> Stack a -> Stack a
     ;push x s = MkStack x s
 
-    ;size  :: Stack a -> Int
+    ;size  : Stack a -> Int
     ;size s = length (stkToList s) where
                {stkToList Empty = []
-               ;stkToList (MkStack x s) = x:xs where {xs = stkToList s
+               ;stkToList (MkStack x s) = x::xs where {xs = stkToList s
 
-    }};pop :: Stack a -> (a, Stack a)
+    }};pop : Stack a -> (a, Stack a)
     ;pop (MkStack x s) = (x, case s of {r -> i r where {i x = x}})
 
-    ;top :: Stack a -> a
+    ;top : Stack a -> a
     ;top (MkStack x s) = x
     }
 \end{verbatim}
@@ -3387,7 +3387,7 @@ written on a single line (and hence entered  directly  into  the  Gofer
 system) without explicit use of the layout characters 
 `\verb"{"', `\verb"}"' and `\verb";"':
 \begin{verbatim}
-    ? len [1..10] where len [] = 0;  len (x:xs) = 1 + len xs
+    ? len.[1...10] where len.[] = 0;  len.(x::xs) = 1 + len.xs
     10
     (81 reductions, 108 cells)
 
@@ -3486,7 +3486,7 @@ declaration of this class given in the standard prelude is as follows:
 \begin{verbatim}
 
     class Eq a where
-        (==), (/=) :: a -> a -> Bool
+        (==), (/=) : a -> a -> Bool
         x /= y      = not (x == y)
 \end{verbatim}
 There are three parts in any class declaration.   For  this  particular
@@ -3540,8 +3540,8 @@ the following two functions:
 \end{verbatim}
 are:
 \begin{verbatim}
-    elem   :: Eq a => a -> [a] -> Bool
-    subset :: Eq a => [a] -> [a] -> Bool
+    elem   : Eq a => a -> [a] -> Bool
+    subset : Eq a => [a] -> [a] -> Bool
 \end{verbatim}
 (On the  other  hand,  if  none  of  the  functions  used  in  a
 particular expression or definition are overloaded then there will  not
@@ -3583,9 +3583,9 @@ number of simple instances of the class \verb"Eq":
 
     instance Eq a => Eq [a] where
         []     == []     =  True
-        []     == (y:ys) =  False
-        (x:xs) == []     =  False
-        (x:xs) == (y:ys) =  x==y && xs==ys
+        []     == (y::ys) =  False
+        (x::xs) == []     =  False
+        (x::xs) == (y::ys) =  x==y && xs==ys
 \end{verbatim}
 The interpretation of these declarations is as follows:
 \BI
@@ -3633,7 +3633,7 @@ The interpretation of these declarations is as follows:
      example.  The context \verb"Eq" a is used in the  last  equation  in  the
      declaration:
 \begin{verbatim}
-    (x:xs) == (y:ys)  =  x==y && xs==ys
+    (x::xs) == (y::ys)  =  x==y && xs==ys
 \end{verbatim}
      which contains three occurrences of the \verb"(==)" operator;  the  first
      and third are used to compare lists of type \verb"[a]", whilst the second
@@ -3839,7 +3839,7 @@ class to define a function \verb"cat" (inspired by the Unix  command  of
 the same name) which uses the I/O facilities  of  Gofer  to  print  the
 contents of one or more files on the terminal:
 \begin{verbatim}
-    class    Cat a        where cat  :: a -> Dialogue
+    class    Cat a        where cat  : a -> Dialogue
     instance Cat [Char]   where cat n = showFile n done
     instance Cat [[Char]] where cat   = foldr showFile done
 
@@ -3933,7 +3933,7 @@ To understand how these definitions work, we need to take a look  at  a
 specific dictionary.  Following the original instance declaration  used
 for \verb"Eq Int", the corresponding dictionary is:
 \BQ
-%                    d :: Eq Int
+%                    d : Eq Int
 %                    +------------+------------+
 %                    |            |            |
 %                    | primEqInt  |  defNeq d  |
@@ -3949,7 +3949,7 @@ for \verb"Eq Int", the corresponding dictionary is:
 \put(40,0){\line(0,1){10}}
 \put(10,5){\makebox(0,0){{\tt primEqInt}}}
 \put(30,5){\makebox(0,0){{\tt defNeq d}}}
-\put(0,11){\makebox(0,0)[bl]{{\tt d :: Eq Int}}}
+\put(0,11){\makebox(0,0)[bl]{{\tt d : Eq Int}}}
 \end{picture}
 \EQ
 Note that the  dictionary  variable  \verb"d"  is  used  as  a  name  for  the
@@ -3958,7 +3958,7 @@ can include references to the same dictionary.
 
 It turns out that predicates  play  a  very  similar  role  for
 dictionaries as types play for normal values.  This motivates  our  use
-of the notation \verb"d :: Eq Int" to indicate that \verb"d" 
+of the notation \verb"d : Eq Int" to indicate that \verb"d" 
 is a dictionary for  the
 instance \verb"Eq Int".  One difference between these, particularly  important
 for theoretical work, is that dictionary values are uniquely determined
@@ -4015,13 +4015,13 @@ instance declarations for  \verb"Eq"
     eqPair d (x,y) (u,v)   = (==) (#3 d) x u && (==) (#4 d) y v
 
     eqList d [] []         = True
-    eqList d []     (y:ys) = False
-    eqList d (x:xs) []     = False
-    eqList d (x:xs) (y:ys) = (==) (#3 d) x y && (==) d xs ys
+    eqList d []     (y::ys) = False
+    eqList d (x::xs) []     = False
+    eqList d (x::xs) (y::ys) = (==) (#3 d) x y && (==) d xs ys
 \end{verbatim}
 The dictionary structure for \verb"Eq (Int, [Int])" is as follows.  Note  that
 the Gofer system ensures that there is at most  one  dictionary  for  a
-particular instance of a class, and that the dictionary \verb"d1 :: Eq Int" in
+particular instance of a class, and that the dictionary \verb"d1 : Eq Int" in
 this system is automatically shared between \verb"d2" and \verb"d3":
 \BQ
 \setlength{\unitlength}{1mm}
@@ -4063,7 +4063,7 @@ this system is automatically shared between \verb"d2" and \verb"d3":
 \put(0,37){\makebox(0,0)[bl]{{\tt d3::Eq (Int,[Int])}}}
 \end{picture}
 \EQ
-%   d3 :: Eq (Int, [Int])
+%   d3 : Eq (Int, [Int])
 %   +------------+------------+------------+------------+
 %   |            |            |            |            |
 %   | eqPair d3  | defNeq d3  | d1::Eq Int |d2::Eq [Int]|
@@ -4072,14 +4072,14 @@ this system is automatically shared between \verb"d2" and \verb"d3":
 %                                   |            |
 %                    +--------------+            |
 %                    |                           |
-%                    |        d2 :: Eq [Int]     V 
+%                    |        d2 : Eq [Int]     V 
 %                    |        +------------+------------+------------+
 %                    |        |            |            |            |
 %                    |        | eqList d2  | defNeq d2  | d1::Eq Int |
 %                    |        |            |            |            |
 %                    |        +------------+------------+-----+------+
 %                    |                                        |
-%       d1 :: Eq Int V                                        |
+%       d1 : Eq Int V                                        |
 %       +------------+------------+                           |
 %       |            |            |                           |
 %       | primEqInt  | defNeq d1  |<--------------------------+
@@ -4143,8 +4143,8 @@ versions  of  an  ordering  defined  on  their
 elements:
 \begin{verbatim}
     class Eq a => Ord a where
-        (<), (<=), (>), (>=) :: a -> a -> Bool
-        max, min             :: a -> a -> a
+        (<), (<=), (>), (>=) : a -> a -> Bool
+        max, min             : a -> a -> a
 
         x <  y            = x <= y && x /= y
         x >= y            = y <= x
@@ -4241,8 +4241,8 @@ Classes with no member functions (corresponding to dictionaries with no
 member functions) are sometimes useful as a convenient abbreviation for
 a list of predicates.  For example:
 \begin{verbatim}
-    class  C a  where  cee :: a -> a
-    class  D a  where  dee :: a -> a
+    class  C a  where  cee : a -> a
+    class  D a  where  dee : a -> a
 
     class  (C a, D a) => CandD a
 \end{verbatim}
@@ -4259,9 +4259,9 @@ and \verb"D a" unless  explicit
 signatures are used:
 \begin{verbatim}
     ? :t dee . cee
-    \d129 d130 -> dee d130 . cee d129 :: (C a, D a) => a -> a
-    ? :t dee . cee :: CandD a => a -> a
-    \d129 -> dee (#2 d129) . cee (#1 d129) :: CandD a => a -> a
+    \d129 d130 -> dee d130 . cee d129 : (C a, D a) => a -> a
+    ? :t dee . cee : CandD a => a -> a
+    \d129 -> dee (#2 d129) . cee (#1 d129) : CandD a => a -> a
     ?
 \end{verbatim}
 In Haskell, all instances of  a  class  such  as  \verb"CandD"  must  have
@@ -4320,14 +4320,14 @@ The original type and translation for eg1 given above can  be  produced
 by including an explicit type signature  in  the  file  containing  the
 definition of \verb"eg1":
 \begin{verbatim}
-    eg1   ::  (Eq [a], Eq a) => a -> Bool
+    eg1   :  (Eq [a], Eq a) => a -> Bool
     eg1 x  =  [x] == [x]  ||  x == x
 \end{verbatim}
 But even with this definition, Gofer will still always try to  minimise
 the number of dictionaries used in any particular expression:
 \begin{verbatim}
     ? :t eg1
-    \d153 -> eg1 d153 (#3 d153) :: Eq [a] => a -> Bool
+    \d153 -> eg1 d153 (#3 d153) : Eq [a] => a -> Bool
     ?
 \end{verbatim}
 As another example, consider the expression \verb"(\x y->  x==x  ||  y==y)".
@@ -4337,7 +4337,7 @@ using Gofer:
     ? :t (\x y-> x==x || y==y)
     \d121 d122 x y -> (==) d122 x x ||
                       (==) d121 y y
-                  :: (Eq b, Eq a) => a -> b -> Bool
+                  : (Eq b, Eq a) => a -> b -> Bool
     ?
 \end{verbatim}
 Note that the translation has two dictionary parameters \verb"d121"  
@@ -4348,10 +4348,10 @@ both of these dictionaries can be obtained from a  dictionary  for  the
 predicate \verb"Eq (a,b)", we can use an explicit type signature to produce  a
 translation which needs only one dictionary parameter:
 \begin{verbatim}
-    ? :t (\x y-> x==x || y==y) :: Eq (a,b) => a -> b -> Bool
+    ? :t (\x y-> x==x || y==y) : Eq (a,b) => a -> b -> Bool
     \d121 x y -> (==) (#3 d121) x x ||
                  (==) (#4 d121) y y
-             :: Eq (a,b) => a -> b -> Bool
+             : Eq (a,b) => a -> b -> Bool
     ?
 \end{verbatim}
 
@@ -4426,8 +4426,8 @@ Further examples of unresolved overloading occur  with  other  classes.
 As an example consider the class \verb"Reader" defined by:
 \begin{verbatim}
     class Reader a where 
-        parse   :: String -> a   
-        unparse :: a -> String
+        parse   : String -> a   
+        unparse : a -> String
 \end{verbatim}
 whose  member  functions  provide  methods  for  obtaining  the  string
 representation of an element of an instance type,  and  for  converting
@@ -4452,7 +4452,7 @@ the string representation of a boolean value!
 This can be fixed by using an explicit type declaration,  although  the
 expression still produces unresolved overloading:
 \begin{verbatim}
-    ? (parse . unparse) :: Reader a => a -> a
+    ? (parse . unparse) : Reader a => a -> a
     ERROR: Unresolved overloading
     *** type        : Reader a => a -> a
     *** translation : \d130 -> parse d130 . unparse d130
@@ -4462,7 +4462,7 @@ Notice however that the type of this expression  is  not  ambiguous  so
 that the unresolved overloading in this example can be eliminated  when
 the function is actually used:
 \begin{verbatim}
-    ? ((parse . unparse) :: Reader a => a -> a) 'a'
+    ? ((parse . unparse) : Reader a => a -> a) 'a'
     'a'
     (4 reductions, 11 cells)
     ?
@@ -4486,7 +4486,7 @@ this kind of ambiguity:
 \IT  Using an explicitly typed expression: Assuming  for  example  that
      \verb"Char" is an instance of \verb"Reader", we can write:
 \begin{verbatim}
-    ? unparse . (parse :: String -> Char)
+    ? unparse . (parse : String -> Char)
     v113 {dict} . v112 {dict}
     (5 reductions, 42 cells)
     ?
@@ -4495,7 +4495,7 @@ this kind of ambiguity:
      number of places, it  might  be  better  to  define  an  auxiliary
      function and use that instead:
 \begin{verbatim}
-    charParse :: String -> Char
+    charParse : String -> Char
     charParse  = parse
 
     ? unparse . charParse
@@ -4520,7 +4520,7 @@ this kind of ambiguity:
 \end{verbatim}
      where the standard prelude operator \verb"asTypeOf" defined by:
 \begin{verbatim}
-    asTypeOf      :: a -> a -> a
+    asTypeOf      : a -> a -> a
     x `asTypeOf` _ = x
 \end{verbatim}
      is used to ensure that the type of parse in the definition of \verb"f" is
@@ -4530,7 +4530,7 @@ this kind of ambiguity:
 
      The resulting type for \verb"f" is:
 \begin{verbatim}
-    f :: Reader a => a -> String -> String
+    f : Reader a => a -> String -> String
 \end{verbatim}
      Notice how the addition of the dummy parameter has  been  used  to
      eliminate the ambiguity present in the original type.
@@ -4574,9 +4574,9 @@ alternative definition for the class \verb"Eq"
 in  which  the  \verb"(==)"  and  \verb"(/=)"
 operators are placed in different classes:
 \begin{verbatim}
-    class Neq a => Eq a  where  (==) :: a -> a -> Bool
+    class Neq a => Eq a  where  (==) : a -> a -> Bool
 
-    class Eq a => Neq a  where  (/=) :: a -> a -> Bool
+    class Eq a => Neq a  where  (/=) : a -> a -> Bool
                                 x/=y  = not (x == y)
 \end{verbatim}
 (These declarations clash with those in the standard prelude and
@@ -4620,7 +4620,7 @@ dictionaries will be generated:
 \end{picture}
 \EQ
 %
-%        d1 :: Eq Int                   d2 :: Neq Int
+%        d1 : Eq Int                   d2 : Neq Int
 %        +-----------+-----------+      +-----------+-----------+
 %        |           |           |      |           |           |
 %    +-->| primEqInt |d2::Neq Int+----->| defNeq d2 |d1::Eq Int +---+
@@ -4645,9 +4645,9 @@ override the  default  definition  for  \verb"(/=)".   In  other  words,  this
 approach would give the same effect as defining  \verb"(/=)"  as  a  top-level
 function rather than a member function in the class \verb"Eq":
 \begin{verbatim}
-    class Eq a  where  (==) :: a -> a -> Bool
+    class Eq a  where  (==) : a -> a -> Bool
 
-    (/=)   ::  Eq a => a -> a -> Bool
+    (/=)    :  Eq a => a -> a -> Bool
     x /= y  =  not (x == y)
 \end{verbatim}
 There are other situations in which recursive dictionaries of the  kind
@@ -4656,7 +4656,7 @@ following section.  Unfortunately, the lack of restrictions on the form
 of class and instance declarations can also lead to  problems  in  some
 (mostly pathological) cases.  As an example, consider the class:
 \begin{verbatim}
-    class Bad [a] => Bad a  where  bad :: a -> a
+    class Bad [a] => Bad a  where  bad : a -> a
 \end{verbatim}
 Without defining any instances of \verb"Bad", it is not possible to  construct
 any dictionaries for instances of \verb"Bad":
@@ -4723,7 +4723,7 @@ overloading resolution.
 The following declaration introduces a class  \verb"Iso"  whose  elements  are
 pairs of isomorphic types:
 \begin{verbatim}
-    class Iso b a => Iso a b  where  iso :: a -> b
+    class Iso b a => Iso a b  where  iso : a -> b
 \end{verbatim}
 The single member function \verb"iso"  represents  the  isomorphism  mapping
 elements of type \verb"a" 
@@ -4758,14 +4758,14 @@ expression \verb"iso 2 == 3" is:
 \put(50,8){\circle*{1.5}}
 
 \put(30,8){\makebox(0,0){{\tt id}}}
-\put(20,13){\makebox(0,0)[bl]{{\tt d:: Iso Int Int}}}
+\put(20,13){\makebox(0,0)[bl]{{\tt d: Iso Int Int}}}
 \end{picture}
 \EQ
 %
-%                   d :: Iso Int Int
+%                   d : Iso Int Int
 %                   +--------------+--------------+
 %                   |              |              |
-%               +-->|      id      |d::Iso Int Int+--+
+%               +-->|      id      |d:Iso Int Int +--+
 %               |   |              |              |  |
 %               |   +--------------+--------------+  |
 %               |                                    |
@@ -4813,7 +4813,7 @@ declarations:
     *** type        : Iso [(Int,Int)] a => a
     *** translation : \d126 -> iso d126 [(1,2),(3,4)]
 
-    ? (iso [(1,2),(3,4)]) :: ([Int],[Int])
+    ? (iso [(1,2),(3,4)]) : ([Int],[Int])
     ([1, 3],[2, 4])
     (22 reductions, 64 cells)
     ?
@@ -4822,9 +4822,9 @@ A second example of a multiple  parameter  type  class  is  defined  as
 follows:
 \begin{verbatim}
     class Ord a => Collects a b where
-        emptyCollection :: b
-        addToCollection :: a -> b -> b
-        listCollection  :: b -> [a]
+        emptyCollection : b
+        addToCollection : a -> b -> b
+        listCollection  : b -> [a]
 \end{verbatim}
 The basic intuition is that the predicate \verb"Collects a b"  indicates  that
 elements of type \verb"b" can be used to represent collections of elements  of
@@ -4855,7 +4855,7 @@ actually produces a function with ambiguous type:
 \begin{verbatim}
     ? :t foldr addToCollection emptyCollection
     \d139 d140 -> foldr (addToCollection d140) (emptyCollection d139)
-              :: (Collects c b, Collects a b) => [a] -> b
+              : (Collects c b, Collects a b) => [a] -> b
     ?
 \end{verbatim}
 which cannot be resolved, even with an explicit type declaration.
@@ -4880,9 +4880,9 @@ to implement the  fully  hierarchy  of  Haskell  numeric  classes,  the
 standard prelude uses a single numeric type class Num defined by:
 \begin{verbatim}
     class Eq a => Num a where           -- simplified numeric class
-        (+), (-), (*), (/) :: a -> a -> a
-        negate             :: a -> a
-        fromInteger        :: Int -> a
+        (+), (-), (*), (/) : a -> a -> a
+        negate             : a -> a
+        fromInteger        : Int -> a
 \end{verbatim}
 The first four member functions \verb"(+)", \verb"(-)", 
 \verb"(*)",  \verb"(/)"  are  the  standard
@@ -4942,7 +4942,7 @@ types.  As an example of this, the  standard  prelude  function  \verb"sum",
 roughly equivalent to:
 \begin{verbatim}
     sum []     = 0
-    sum (x:xs) = x + sum xs
+    sum (x::xs) = x + sum xs
 \end{verbatim}
 has type \verb"[Int] -> Int",  
 rather than the  more general \verb"Num a => [a] -> a"
@@ -4952,9 +4952,9 @@ integer constant 0 in the first line of the definition.  Replacing this
 with the expression fromInteger 0 leads to the following definition for
 a generic sum function of the required type:
 \begin{verbatim}
-    genericSum       :: Num a => [a] -> a
+    genericSum       : Num a => [a] -> a
     genericSum []     = fromInteger 0
-    genericSum (x:xs) = x + genericSum xs
+    genericSum (x::xs) = x + genericSum xs
 \end{verbatim}
 For example:
 \begin{verbatim}
@@ -4994,7 +4994,7 @@ problem has been detected, will typically `default'  the  unknown  type
 represented by the type variable a above to be Int, so that the  result
 is actually equivalent to the following:
 \begin{verbatim}
-    ? (fromInteger 2 + fromInteger 3) :: Int
+    ? (fromInteger 2 + fromInteger 3) : Int
     5
     (4 reductions, 8 cells)
     ?
@@ -5018,7 +5018,7 @@ evaluation, this has a number of advantages for classes in which member
 functions are defined by variable declarations as in section 9.10.   As
 an example, consider the class Finite defined by:
 \begin{verbatim}
-    class Finite a  where  members :: [a]
+    class Finite a  where  members : [a]
 \end{verbatim}
 The only member in this class is a list enumerating the elements of the
 type.  For example:
@@ -5031,10 +5031,10 @@ type.  For example:
 In order to overcome any problems with unresolved overloading, explicit
 type signatures are often needed to resolve overloading:
 \begin{verbatim}
-    ? members :: [Bool]
+    ? members : [Bool]
     [False, True]
     (6 reductions, 26 cells)
-    ? length (members :: [((Bool,Bool),(Bool,Bool))])
+    ? length (members : [((Bool,Bool),(Bool,Bool))])
     16
     (103 reductions, 195 cells)
     ?
@@ -5051,7 +5051,7 @@ example:
 We can also use the technique of passing a `dummy' parameter to resolve
 overloading problems in a function definition:
 \begin{verbatim}
-    size  :: Finite a => a -> Int
+    size  : Finite a => a -> Int
     size x = length (members `asTypeOf` [x])
 \end{verbatim}
 which calculates the number of elements of  a  finite  type,  given  an
@@ -5088,7 +5088,7 @@ from a file of definitions, so that they are not deleted at the end  of
 each calculation, using an explicitly typed  variable  definition  such
 as:
 \begin{verbatim}
-    boolBoolMembers = members :: [(Bool,Bool)]
+    boolBoolMembers = members : [(Bool,Bool)]
 \end{verbatim}
 This forces Gofer to construct the dictionary \verb"Finite (Bool,Bool)"  when
 the file of definitions is loaded and prevents it from being deleted at
@@ -5132,20 +5132,20 @@ to supply the required dictionary parameters.   For  example,  given  a
 function definition such as:
 \begin{verbatim}
     isElement x []     =  False
-    isElement x (y:ys) =  x==y || isElement x ys
+    isElement x (y::ys) =  x==y || isElement x ys
 \end{verbatim}
 we first add a dictionary parameter for the use of the overloaded  \verb"(==)"
 operator on the right hand side, obtaining:
 \begin{verbatim}
     isElement x []     = False
-    isElement x (y:ys) = (==) d x y || isElement x ys
+    isElement x (y::ys) = (==) d x y || isElement x ys
 \end{verbatim}
 Finally, we have to add the variable \verb"d"  as  a  new  parameter  for  the
 function \verb"isElement", on both the  left  and  right  hand  sides  of  the
 definition:
 \begin{verbatim}
     isElement d x []     = False
-    isElement d x (y:ys) = (==) d x y || isElement d x ys
+    isElement d x (y::ys) = (==) d x y || isElement d x ys
 \end{verbatim}
 The monomorphism restriction imposes conditions which prevent this last
 step from being used for certain kinds  of  value  binding.
@@ -5239,8 +5239,8 @@ to a particular value binding:
 \end{verbatim} 
      and hence the correct types for \verb"plus" and \verb"times" are:
 \begin{verbatim} 
-    plus  :: (Num a, Num b) => a -> a -> a
-    times :: (Num a, Num b) => b -> b -> b
+    plus  : (Num a, Num b) => a -> a -> a
+    times : (Num a, Num b) => b -> b -> b
 \end{verbatim}   
      both of which are ambiguous.
 
@@ -5294,7 +5294,7 @@ to a particular value binding:
      defined is intended to be used as an overloaded  value.   In  this
      case, we need only include the declaration:
 \begin{verbatim}
-    twiceMembers :: Finite a => [a]
+    twiceMembers : Finite a => [a]
 \end{verbatim}
      in the file containing the definition for \verb"twiceMembers" to suppress
      the previous error message and allow the function to be used as  a
@@ -5323,7 +5323,7 @@ to a particular value binding:
 \begin{verbatim}
     aNumber = length (twiceMembers::[Bool]) +
               length (twiceMembers::[(Bool,Bool)])  
-              where twiceMembers :: Finite a => [a]
+              where twiceMembers : Finite a => [a]
                     twiceMembers  = members ++ members
 \end{verbatim}
 \EI
@@ -5601,73 +5601,73 @@ infixr 2 ||
 \end{verbatim}
 \subsubsection*{Standard combinators}
 \begin{verbatim}
-primitive strict "primStrict" :: (a -> b) -> a -> b
+primitive strict "primStrict" : (a -> b) -> a -> b
 
-const          :: a -> b -> a
+const          : a -> b -> a
 const k x       = k
 
-id             :: a -> a
+id             : a -> a
 id    x         = x
 
-curry          :: ((a,b) -> c) -> a -> b -> c
+curry          : ((a,b) -> c) -> a -> b -> c
 curry f a b     =  f (a,b)
 
-uncurry        :: (a -> b -> c) -> (a,b) -> c
+uncurry        : (a -> b -> c) -> (a,b) -> c
 uncurry f (a,b) = f a b
 
-fst            :: (a,b) -> a
+fst            : (a,b) -> a
 fst (x,_)       = x
 
-snd            :: (a,b) -> b
+snd            : (a,b) -> b
 snd (_,y)       = y
 
-fst3           :: (a,b,c) -> a
+fst3           : (a,b,c) -> a
 fst3 (x,_,_)    = x
 
-snd3           :: (a,b,c) -> b
+snd3           : (a,b,c) -> b
 snd3 (_,x,_)    = x
 
-thd3           :: (a,b,c) -> c
+thd3           : (a,b,c) -> c
 thd3 (_,_,x)    = x
 
-(.)	       :: (b -> c) -> (a -> b) -> (a -> c)
+(.)	       : (b -> c) -> (a -> b) -> (a -> c)
 (f . g) x       = f (g x)
 
-flip           :: (a -> b -> c) -> b -> a -> c
+flip           : (a -> b -> c) -> b -> a -> c
 flip  f x y     = f y x
 \end{verbatim}
 \subsubsection*{Boolean functions}
 \begin{verbatim}
-(&&), (||)     :: Bool -> Bool -> Bool
+(&&), (||)     : Bool -> Bool -> Bool
 False && x      = False
 True  && x      = x
 
 False || x      = x
 True  || x      = True
 
-not            :: Bool -> Bool
+not            : Bool -> Bool
 not True        = False
 not False       = True
 
-and, or        :: [Bool] -> Bool
+and, or        : [Bool] -> Bool
 and             = foldr (&&) True
 or              = foldr (||) False
 
-any, all       :: (a -> Bool) -> [a] -> Bool
+any, all       : (a -> Bool) -> [a] -> Bool
 any p           = or  . map p
 all p           = and . map p
 
-otherwise      :: Bool
+otherwise      : Bool
 otherwise       = True
 \end{verbatim}
 \subsubsection*{Character functions}
 \begin{verbatim}
-primitive ord "primCharToInt" :: Char -> Int
-primitive chr "primIntToChar" :: Int -> Char
+primitive ord "primCharToInt" : Char -> Int
+primitive chr "primIntToChar" : Int -> Char
 
 
-isAscii, isControl, isPrint, isSpace            :: Char -> Bool
-isUpper, isLower, isAlpha, isDigit, isAlphanum  :: Char -> Bool
+isAscii, isControl, isPrint, isSpace            : Char -> Bool
+isUpper, isLower, isAlpha, isDigit, isAlphanum  : Char -> Bool
 
 isAscii c     =  ord c < 128
 
@@ -5685,7 +5685,7 @@ isDigit c     =  c >= '0'   &&  c <= '9'
 isAlphanum c  =  isAlpha c  ||  isDigit c
 
 
-toUpper, toLower      :: Char -> Char
+toUpper, toLower      : Char -> Char
 
 toUpper c | isLower c  = chr (ord c - ord 'a' + ord 'A')
           | otherwise  = c
@@ -5696,12 +5696,12 @@ toLower c | isUpper c  = chr (ord c - ord 'A' + ord 'a')
 \subsubsection*{Standard type classes}
 \begin{verbatim}
 class Eq a where
-    (==), (/=) :: a -> a -> Bool
+    (==), (/=) : a -> a -> Bool
     x /= y      = not (x == y)
 
 class Eq a => Ord a where
-    (<), (<=), (>), (>=) :: a -> a -> Bool
-    max, min             :: a -> a -> a
+    (<), (<=), (>), (>=) : a -> a -> Bool
+    max, min             : a -> a -> a
 
     x <  y            = x <= y && x /= y
     x >= y            = y <= x
@@ -5713,34 +5713,34 @@ class Eq a => Ord a where
             | y <= x  = y
 
 class Ord a => Ix a where
-    range   :: (a,a) -> [a]
-    index   :: (a,a) -> a -> Int
-    inRange :: (a,a) -> a -> Bool
+    range   : (a,a) -> [a]
+    index   : (a,a) -> a -> Int
+    inRange : (a,a) -> a -> Bool
 
 class Ord a => Enum a where
-    enumFrom       :: a -> [a]              -- [n..]
-    enumFromThen   :: a -> a -> [a]         -- [n,m..]
-    enumFromTo     :: a -> a -> [a]         -- [n..m]
-    enumFromThenTo :: a -> a -> a -> [a]    -- [n,n'..m]
+    enumFrom       : a -> [a]              -- [n...]
+    enumFromThen   : a -> a -> [a]         -- [n,m...]
+    enumFromTo     : a -> a -> [a]         -- [n..m]
+    enumFromThenTo : a -> a -> a -> [a]    -- [n,n'..m]
 
     enumFromTo n m        = takeWhile (m>=) (enumFrom n)
     enumFromThenTo n n' m = takeWhile ((if n'>=n then (>=) else (<=)) m)
                                       (enumFromThen n n')
 
 class Eq a => Num a where               -- simplified numeric class
-    (+), (-), (*), (/) :: a -> a -> a
-    negate             :: a -> a
-    fromInteger	       :: Int -> a
+    (+), (-), (*), (/) : a -> a -> a
+    negate             : a -> a
+    fromInteger	       : Int -> a
 \end{verbatim}
 \subsubsection*{Type class instances}
 \begin{verbatim}
 primitive primEqInt    "primEqInt",
-	  primLeInt    "primLeInt"   :: Int -> Int -> Bool
+	  primLeInt    "primLeInt"   : Int -> Int -> Bool
 primitive primPlusInt  "primPlusInt",
 	  primMinusInt "primMinusInt",
 	  primDivInt   "primDivInt",
-	  primMulInt   "primMulInt"  :: Int -> Int -> Int
-primitive primNegInt   "primNegInt"  :: Int -> Int
+	  primMulInt   "primMulInt"  : Int -> Int -> Int
+primitive primNegInt   "primNegInt"  : Int -> Int
 
 instance Eq Int  where (==) = primEqInt
 
@@ -5764,13 +5764,13 @@ instance Num Int where
     fromInteger x = x
 
 primitive primEqFloat    "primEqFloat",
-          primLeFloat    "primLeFloat"    :: Float -> Float -> Bool
+          primLeFloat    "primLeFloat"    : Float -> Float -> Bool
 primitive primPlusFloat  "primPlusFloat", 
           primMinusFloat "primMinusFloat", 
           primDivFloat   "primDivFloat",
-          primMulFloat   "primMulFloat"   :: Float -> Float -> Float 
-primitive primNegFloat   "primNegFloat"   :: Float -> Float
-primitive primIntToFloat "primIntToFloat" :: Int -> Float
+          primMulFloat   "primMulFloat"   : Float -> Float -> Float 
+primitive primNegFloat   "primNegFloat"   : Float -> Float
+primitive primIntToFloat "primIntToFloat" : Int -> Float
 
 instance Eq Float where (==) = primEqFloat
 
@@ -5803,14 +5803,14 @@ instance Enum Char where
 
 instance Eq a => Eq [a] where
     []     == []     =  True
-    []     == (y:ys) =  False
-    (x:xs) == []     =  False
-    (x:xs) == (y:ys) =  x==y && xs==ys
+    []     == (y::ys) =  False
+    (x::xs) == []     =  False
+    (x::xs) == (y::ys) =  x==y && xs==ys
 
 instance Ord a => Ord [a] where
     []     <= _      =  True
     (_:_)  <= []     =  False
-    (x:xs) <= (y:ys) =  x<y || (x==y && xs<=ys)
+    (x::xs) <= (y::ys) =  x<y || (x==y && xs<=ys)
 
 instance (Eq a, Eq b) => Eq (a,b) where
     (x,y) == (u,v)  =  x==u && y==v
@@ -5824,26 +5824,26 @@ instance Eq Bool where
 \begin{verbatim}
 primitive div    "primDivInt",
           rem    "primRemInt",
-          mod    "primModInt"    :: Int -> Int -> Int
+          mod    "primModInt"    : Int -> Int -> Int
 
-subtract  :: Num a => a -> a -> a
+subtract  : Num a => a -> a -> a
 subtract   = flip (-)
 
-even, odd :: Int -> Bool
+even, odd : Int -> Bool
 even x     = x `rem` 2 == 0
 odd        = not . even
 
-gcd       :: Int -> Int -> Int
+gcd       : Int -> Int -> Int
 gcd x y    = gcd' (abs x) (abs y)
              where gcd' x 0 = x
                    gcd' x y = gcd' y (x `rem` y)
 
-lcm       :: Int -> Int -> Int
+lcm       : Int -> Int -> Int
 lcm _ 0    = 0
 lcm 0 _    = 0
 lcm x y    = abs ((x `div` gcd x y) * y)
 
-(^)       :: Int -> Int -> Int
+(^)       : Int -> Int -> Int
 x ^ 0      = 1
 x ^ (n+1)  = f x n x
              where f _ 0 y = y
@@ -5851,81 +5851,81 @@ x ^ (n+1)  = f x n x
                              g x n | even n    = g (x*x) (n`div`2)
                                    | otherwise = f x (n-1) (x*y)
 
-abs :: Int -> Int
+abs : Int -> Int
 abs x    | x >= 0  = x
          | x <  0  = - x
 
-signum :: Int -> Int
+signum : Int -> Int
 signum x | x == 0  = 0
          | x > 0   = 1
          | x < 0   = -1
 
-sum, product    :: [Int] -> Int
+sum, product    : [Int] -> Int
 sum              = foldl' (+) 0
 product          = foldl' (*) 1
 
-sums, products	:: [Int] -> [Int]
+sums, products	: [Int] -> [Int]
 sums             = scanl (+) 0
 products         = scanl (*) 1
 \end{verbatim}
 \subsubsection*{Standard list processing functions}
 \begin{verbatim}
-head             :: [a] -> a
-head (x:_)        = x
+head             : [a] -> a
+head (x::_)        = x
 
-last             :: [a] -> a
+last             : [a] -> a
 last [x]          = x
-last (_:xs)       = last xs
+last (_::xs)       = last xs
 
-tail             :: [a] -> [a]
-tail (_:xs)       = xs
+tail             : [a] -> [a]
+tail (_::xs)       = xs
 
-init             :: [a] -> [a]
+init             : [a] -> [a]
 init [x]          = [x]
-init (x:xs)       = x : init xs
+init (x::xs)       = x :: init xs
 
-(++)             :: [a] -> [a] -> [a]    -- append lists.  Associative with
+(++)             : [a] -> [a] -> [a]    -- append lists.  Associative with
 []     ++ ys      = ys                   -- left and right identity [].
-(x:xs) ++ ys      = x:(xs++ys)
+(x::xs) ++ ys      = x::(xs++ys)
 
-length		 :: [a] -> Int           -- calculate length of list
+length		 : [a] -> Int           -- calculate length of list
 length            = foldl' (\n _ -> n+1) 0
 
-(!!)             :: [a] -> Int -> a      -- xs!!n selects the nth element of
+(!!)             : [a] -> Int -> a      -- xs!!n selects the nth element of
 (x:_)  !! 0       = x                    -- the list xs (first element xs!!0)
-(_:xs) !! (n+1)   = xs !! n              -- for any n < length xs.
+(_::xs) !! (n+1)   = xs !! n              -- for any n < length xs.
 
-iterate          :: (a -> a) -> a -> [a] -- generate the infinite list
+iterate          : (a -> a) -> a -> [a] -- generate the infinite list
 iterate f x       = x : iterate f (f x)  -- [x, f x, f (f x), ...
 
-repeat           :: a -> [a]             -- generate the infinite list
-repeat x          = xs where xs = x:xs   -- [x, x, x, x, ...
+repeat           : a -> [a]             -- generate the infinite list
+repeat x          = xs where xs = x::xs   -- [x, x, x, x, ...
 
-cycle            :: [a] -> [a]           -- generate the infinite list
+cycle            : [a] -> [a]           -- generate the infinite list
 cycle xs          = xs' where xs'=xs++xs'-- xs ++ xs ++ xs ++ ...
 
-copy             :: Int -> a -> [a]      -- make list of n copies of x
-copy n x          = take n xs where xs = x:xs
+copy             : Int -> a -> [a]      -- make list of n copies of x
+copy n x          = take n xs where xs = x::xs
 
-nub              :: Eq a => [a] -> [a]   -- remove duplicates from list
+nub              : Eq a => [a] -> [a]   -- remove duplicates from list
 nub []            = []
-nub (x:xs)        = x : nub (filter (x/=) xs)
+nub (x::xs)        = x :: nub (filter (x/=) xs)
 
-reverse          :: [a] -> [a]           -- reverse elements of list
+reverse          : [a] -> [a]           -- reverse elements of list
 reverse           = foldl (flip (:)) []
 
-elem, notElem    :: Eq a => a -> [a] -> Bool
+elem, notElem    : Eq a => a -> [a] -> Bool
 elem              = any . (==)           -- test for membership in list
 notElem           = all . (/=)           -- test for non-membership
 
-maximum, minimum :: Ord a => [a] -> a
+maximum, minimum : Ord a => [a] -> a
 maximum           = foldl1 max          -- max element in non-empty list
 minimum           = foldl1 min          -- min element in non-empty list
 
-concat           :: [[a]] -> [a]        -- concatenate list of lists
+concat           : [[a]] -> [a]        -- concatenate list of lists
 concat            = foldr (++) []
 
-transpose        :: [[a]] -> [[a]]      -- transpose list of lists
+transpose        : [[a]] -> [[a]]      -- transpose list of lists
 transpose         = foldr
                       (\xs xss -> zipWith (:) xs (xss ++ repeat []))
                       []
@@ -5934,7 +5934,7 @@ transpose         = foldr
 -- list is empty, without using (==) and hence avoiding a constraint of the
 -- form Eq [a].
 
-null             :: [a] -> Bool
+null             : [a] -> Bool
 null []           = True
 null (_:_)        = False
 
@@ -5942,10 +5942,10 @@ null (_:_)        = False
 -- list from the first list.  It is a kind of inverse of (++) in the sense
 -- that  (xs ++ ys) \\ xs = ys for any finite list xs of proper values xs.
 
-(\\)             :: Eq a => [a] -> [a] -> [a]
+(\\)             : Eq a => [a] -> [a] -> [a]
 (\\)              = foldl del
                     where []     `del` _  = []
-                          (x:xs) `del` y
+                          (x::xs) `del` y
                              | x == y     = xs
                              | otherwise  = x : xs `del` y
 
@@ -5954,13 +5954,13 @@ null (_:_)        = False
 -- the corresponding list of results.  filter p xs returns the sublist of xs
 -- containing those elements which satisfy the predicate p.
  
-map              :: (a -> b) -> [a] -> [b]
+map              : (a -> b) -> [a] -> [b]
 map f []          = []
-map f (x:xs)      = f x : map f xs
+map f (x::xs)      = f x : map f xs
 
-filter           :: (a -> Bool) -> [a] -> [a]
+filter           : (a -> Bool) -> [a] -> [a]
 filter _ []       = []
-filter p (x:xs)
+filter p (x::xs)
     | p x         = x : xs'
     | otherwise   = xs'
                   where xs' = filter p xs
@@ -5977,46 +5977,46 @@ filter p (x:xs)
 -- functions:
 -- e.g.  foldr f a xs = foldl (flip f) a (reverse xs)  for finite lists xs.
 
-foldl            :: (a -> b -> a) -> a -> [b] -> a
+foldl            : (a -> b -> a) -> a -> [b] -> a
 foldl f z []      = z
-foldl f z (x:xs)  = foldl f (f z x) xs
+foldl f z (x::xs)  = foldl f (f z x) xs
 
-foldl1           :: (a -> a -> a) -> [a] -> a
-foldl1 f (x:xs)   = foldl f x xs
+foldl1           : (a -> a -> a) -> [a] -> a
+foldl1 f (x::xs)   = foldl f x xs
 
-foldl'           :: (a -> b -> a) -> a -> [b] -> a
+foldl'           : (a -> b -> a) -> a -> [b] -> a
 foldl' f a []     =  a
-foldl' f a (x:xs) =  strict (foldl' f) (f a x) xs
+foldl' f a (x::xs) =  strict (foldl' f) (f a x) xs
 
-scanl            :: (a -> b -> a) -> a -> [b] -> [a]
+scanl            : (a -> b -> a) -> a -> [b] -> [a]
 scanl f q xs      = q : (case xs of
                          []   -> []
-                         x:xs -> scanl f (f q x) xs)
+                         x::xs -> scanl f (f q x) xs)
 
-scanl1           :: (a -> a -> a) -> [a] -> [a]
-scanl1 f (x:xs)   = scanl f x xs
+scanl1           : (a -> a -> a) -> [a] -> [a]
+scanl1 f (x::xs)   = scanl f x xs
 
-scanl'           :: (a -> b -> a) -> a -> [b] -> [a]
+scanl'           : (a -> b -> a) -> a -> [b] -> [a]
 scanl' f q xs     = q : (case xs of
                          []   -> []
-                         x:xs -> strict (scanl' f) (f q x) xs)
+                         x::xs -> strict (scanl' f) (f q x) xs)
 
-foldr            :: (a -> b -> b) -> b -> [a] -> b
+foldr            : (a -> b -> b) -> b -> [a] -> b
 foldr f z []      = z
-foldr f z (x:xs)  = f x (foldr f z xs)
+foldr f z (x::xs)  = f x (foldr f z xs)
 
-foldr1           :: (a -> a -> a) -> [a] -> a
+foldr1           : (a -> a -> a) -> [a] -> a
 foldr1 f [x]      = x
-foldr1 f (x:xs)   = f x (foldr1 f xs)
+foldr1 f (x::xs)   = f x (foldr1 f xs)
 
-scanr            :: (a -> b -> b) -> b -> [a] -> [b]
+scanr            : (a -> b -> b) -> b -> [a] -> [b]
 scanr f q0 []     = [q0]
-scanr f q0 (x:xs) = f x q : qs
+scanr f q0 (x::xs) = f x q : qs
                     where qs@(q:_) = scanr f q0 xs
 
-scanr1           :: (a -> a -> a) -> [a] -> [a]
+scanr1           : (a -> a -> a) -> [a] -> [a]
 scanr1 f [x]      = [x]
-scanr1 f (x:xs)   = f x q : qs
+scanr1 f (x::xs)   = f x q : qs
                     where qs@(q:_) = scanr1 f xs
 \end{verbatim}
 \subsubsection*{List breaking functions}
@@ -6034,43 +6034,43 @@ scanr1 f (x:xs)   = f x q : qs
 --   takeUntil p xs  returns the list of elements upto and including the
 --                   first element of xs which satisfies p
 
-take                :: Int -> [a] -> [a]
+take                : Int -> [a] -> [a]
 take 0     _         = []
 take _     []        = []
-take (n+1) (x:xs)    = x : take n xs
+take (n+1) (x::xs)    = x : take n xs
 
-drop                :: Int -> [a] -> [a]
+drop                : Int -> [a] -> [a]
 drop 0     xs        = xs
 drop _     []        = []
-drop (n+1) (_:xs)    = drop n xs
+drop (n+1) (_::xs)    = drop n xs
 
-splitAt             :: Int -> [a] -> ([a], [a])
+splitAt             : Int -> [a] -> ([a], [a])
 splitAt 0     xs     = ([],xs)
 splitAt _     []     = ([],[])
-splitAt (n+1) (x:xs) = (x:xs',xs'') where (xs',xs'') = splitAt n xs
+splitAt (n+1) (x::xs) = (x::xs',xs'') where (xs',xs'') = splitAt n xs
 
-takeWhile           :: (a -> Bool) -> [a] -> [a]
+takeWhile           : (a -> Bool) -> [a] -> [a]
 takeWhile p []       = []
-takeWhile p (x:xs)
-         | p x       = x : takeWhile p xs
+takeWhile p (x::xs)
+         | p x       = x :: takeWhile p xs
          | otherwise = []
 
-takeUntil           :: (a -> Bool) -> [a] -> [a]
+takeUntil           : (a -> Bool) -> [a] -> [a]
 takeUntil p []       = []
-takeUntil p (x:xs)
+takeUntil p (x::xs)
        | p x         = [x]
-       | otherwise   = x : takeUntil p xs
+       | otherwise   = x :: takeUntil p xs
 
-dropWhile           :: (a -> Bool) -> [a] -> [a]
+dropWhile           : (a -> Bool) -> [a] -> [a]
 dropWhile p []       = []
-dropWhile p xs@(x:xs')
+dropWhile p xs@(x::xs')
          | p x       = dropWhile p xs'
          | otherwise = xs
 
-span, break         :: (a -> Bool) -> [a] -> ([a],[a])
+span, break         : (a -> Bool) -> [a] -> ([a],[a])
 span p []            = ([],[])
-span p xs@(x:xs')
-         | p x       = let (ys,zs) = span p xs' in (x:ys,zs)
+span p xs@(x::xs')
+         | p x       = let (ys,zs) = span p xs' in (x::ys,zs)
          | otherwise = ([],xs)
 break p              = span (not . p)
 
@@ -6082,108 +6082,108 @@ break p              = span (not . p)
 --   unwords ws  joins the list of words ws into a single string
 --               with words separated by spaces.
 
-lines     :: String -> [String]
+lines     : String -> [String]
 lines ""   = []
 lines s    = l : (if null s' then [] else lines (tail s'))
              where (l, s') = break ('\n'==) s
 
-words     :: String -> [String]
+words     : String -> [String]
 words s    = case dropWhile isSpace s of
                   "" -> []
                   s' -> w : words s''
                         where (w,s'') = break isSpace s'
 
-unlines   :: [String] -> String
+unlines   : [String] -> String
 unlines    = concat . map (\l -> l ++ "\n")
 
-unwords   :: [String] -> String
+unwords   : [String] -> String
 unwords [] = []
-unwords ws = foldr1 (\w s -> w ++ ' ':s) ws
+unwords ws = foldr1 (\w s -> w ++ ' '::s) ws
 \end{verbatim}
 \subsubsection*{Merging and sorting lists}
 \begin{verbatim}
-merge               :: Ord a => [a] -> [a] -> [a] 
+merge               : Ord a => [a] -> [a] -> [a] 
 merge []     ys      = ys
 merge xs     []      = xs
-merge (x:xs) (y:ys)
-        | x <= y     = x : merge xs (y:ys)
-        | otherwise  = y : merge (x:xs) ys
+merge (x::xs) (y::ys)
+        | x <= y     = x : merge xs (y::ys)
+        | otherwise  = y : merge (x::xs) ys
 
-sort                :: Ord a => [a] -> [a]
+sort                : Ord a => [a] -> [a]
 sort                 = foldr insert []
 
-insert              :: Ord a => a -> [a] -> [a]
+insert              : Ord a => a -> [a] -> [a]
 insert x []          = [x]
-insert x (y:ys)
-        | x <= y     = x:y:ys
-        | otherwise  = y:insert x ys
+insert x (y::ys)
+        | x <= y     = x:y::ys
+        | otherwise  = y::insert x ys
 
-qsort               :: Ord a => [a] -> [a]
+qsort               : Ord a => [a] -> [a]
 qsort []             = []
-qsort (x:xs)         = qsort [ u | u<-xs, u<x ] ++
+qsort (x::xs)         = qsort [ u | u<-xs, u<x ] ++
                              [ x ] ++
                        qsort [ u | u<-xs, u>=x ]
 \end{verbatim}
 \subsubsection*{zip and zipWith families of functions}
 \begin{verbatim}
-zip  :: [a] -> [b] -> [(a,b)]
+zip  : [a] -> [b] -> [(a,b)]
 zip   = zipWith  (\a b -> (a,b))
 
-zip3 :: [a] -> [b] -> [c] -> [(a,b,c)]
+zip3 : [a] -> [b] -> [c] -> [(a,b,c)]
 zip3  = zipWith3 (\a b c -> (a,b,c))
 
-zip4 :: [a] -> [b] -> [c] -> [d] -> [(a,b,c,d)]
+zip4 : [a] -> [b] -> [c] -> [d] -> [(a,b,c,d)]
 zip4  = zipWith4 (\a b c d -> (a,b,c,d))
 
-zip5 :: [a] -> [b] -> [c] -> [d] -> [e] -> [(a,b,c,d,e)]
+zip5 : [a] -> [b] -> [c] -> [d] -> [e] -> [(a,b,c,d,e)]
 zip5  = zipWith5 (\a b c d e -> (a,b,c,d,e))
 
-zip6 :: [a] -> [b] -> [c] -> [d] -> [e] -> [f] -> [(a,b,c,d,e,f)]
+zip6 : [a] -> [b] -> [c] -> [d] -> [e] -> [f] -> [(a,b,c,d,e,f)]
 zip6  = zipWith6 (\a b c d e f -> (a,b,c,d,e,f))
 
-zip7 :: [a] -> [b] -> [c] -> [d] -> [e] -> [f] -> [g] -> [(a,b,c,d,e,f,g)]
+zip7 : [a] -> [b] -> [c] -> [d] -> [e] -> [f] -> [g] -> [(a,b,c,d,e,f,g)]
 zip7  = zipWith7 (\a b c d e f g -> (a,b,c,d,e,f,g))
 
 
-zipWith                  :: (a->b->c) -> [a]->[b]->[c]
-zipWith z (a:as) (b:bs)   = z a b : zipWith z as bs
+zipWith                  : (a->b->c) -> [a]->[b]->[c]
+zipWith z (a::as) (b::bs)   = z a b :: zipWith z as bs
 zipWith _ _      _        = []
 
-zipWith3                 :: (a->b->c->d) -> [a]->[b]->[c]->[d]
-zipWith3 z (a:as) (b:bs) (c:cs)
-                          = z a b c : zipWith3 z as bs cs
+zipWith3                 : (a->b->c->d) -> [a]->[b]->[c]->[d]
+zipWith3 z (a::as) (b::bs) (c::cs)
+                          = z a b c :: zipWith3 z as bs cs
 zipWith3 _ _ _ _          = []
 
-zipWith4                 :: (a->b->c->d->e) -> [a]->[b]->[c]->[d]->[e]
-zipWith4 z (a:as) (b:bs) (c:cs) (d:ds)
-                          = z a b c d : zipWith4 z as bs cs ds
+zipWith4                 : (a->b->c->d->e) -> [a]->[b]->[c]->[d]->[e]
+zipWith4 z (a::as) (b::bs) (c::cs) (d::ds)
+                          = z a b c d :: zipWith4 z as bs cs ds
 zipWith4 _ _ _ _ _        = []
 
-zipWith5                 :: (a->b->c->d->e->f) -> [a]->[b]->[c]->[d]->[e]->[f]
-zipWith5 z (a:as) (b:bs) (c:cs) (d:ds) (e:es)
-                          = z a b c d e : zipWith5 z as bs cs ds es
+zipWith5                 : (a->b->c->d->e->f) -> [a]->[b]->[c]->[d]->[e]->[f]
+zipWith5 z (a::as) (b::bs) (c::cs) (d::ds) (e::es)
+                          = z a b c d e :: zipWith5 z as bs cs ds es
 zipWith5 _ _ _ _ _ _      = []
 
-zipWith6                 :: (a->b->c->d->e->f->g)
+zipWith6                 : (a->b->c->d->e->f->g)
                             -> [a]->[b]->[c]->[d]->[e]->[f]->[g]
-zipWith6 z (a:as) (b:bs) (c:cs) (d:ds) (e:es) (f:fs)
-                          = z a b c d e f : zipWith6 z as bs cs ds es fs
+zipWith6 z (a::as) (b::bs) (c::cs) (d::ds) (e::es) (f::fs)
+                          = z a b c d e f :: zipWith6 z as bs cs ds es fs
 zipWith6 _ _ _ _ _ _ _    = []
 
-zipWith7                 :: (a->b->c->d->e->f->g->h)
+zipWith7                 : (a->b->c->d->e->f->g->h)
                              -> [a]->[b]->[c]->[d]->[e]->[f]->[g]->[h]
-zipWith7 z (a:as) (b:bs) (c:cs) (d:ds) (e:es) (f:fs) (g:gs)
-                          = z a b c d e f g : zipWith7 z as bs cs ds es fs gs
+zipWith7 z (a::as) (b::bs) (c::cs) (d::ds) (e::es) (f::fs) (g::gs)
+                          = z a b c d e f g :: zipWith7 z as bs cs ds es fs gs
 zipWith7 _ _ _ _ _ _ _ _  = []
 \end{verbatim}
 \subsubsection*{Formatted output}
 \begin{verbatim}
-primitive primPrint "primPrint"  :: Int -> a -> String -> String
+primitive primPrint "primPrint"  : Int -> a -> String -> String
 
-show'       :: a -> String
+show'       : a -> String
 show' x      = primPrint 0 x []
 
-cjustify, ljustify, rjustify :: Int -> String -> String
+cjustify, ljustify, rjustify : Int -> String -> String
 
 cjustify n s = space halfm ++ s ++ space (m - halfm)
                where m     = n - length s
@@ -6191,30 +6191,30 @@ cjustify n s = space halfm ++ s ++ space (m - halfm)
 ljustify n s = s ++ space (n - length s)
 rjustify n s = space (n - length s) ++ s
 
-space       :: Int -> String
+space       : Int -> String
 space n      = copy n ' '
 
-layn        :: [String] -> String
+layn        : [String] -> String
 layn         = lay 1 where lay _ []     = []
-                           lay n (x:xs) = rjustify 4 (show n) ++ ") "
+                           lay n (x::xs) = rjustify 4 (show n) ++ ") "
                                            ++ x ++ "\n" ++ lay (n+1) xs
 \end{verbatim}
 \subsubsection*{Miscellaneous}
 \begin{verbatim}
-until                  :: (a -> Bool) -> (a -> a) -> a -> a
+until                  : (a -> Bool) -> (a -> a) -> a -> a
 until p f x | p x       = x
             | otherwise = until p f (f x)
 
-until'                 :: (a -> Bool) -> (a -> a) -> a -> [a]
+until'                 : (a -> Bool) -> (a -> a) -> a -> [a]
 until' p f              = takeUntil p . iterate f
 
-error                  :: String -> a
+error                  : String -> a
 error msg | False       = error msg
 
-undefined              :: a
+undefined              : a
 undefined | False       = undefined
 
-asTypeOf               :: a -> a -> a
+asTypeOf               : a -> a -> a
 x `asTypeOf` _          = x
 \end{verbatim}
 \subsubsection*{A trimmed down version of the Haskell Text class}
@@ -6222,25 +6222,25 @@ x `asTypeOf` _          = x
 type  ShowS   = String -> String
 
 class Text a where 
-    showsPrec      :: Int -> a -> ShowS
-    showList       :: [a] -> ShowS
+    showsPrec      : Int -> a -> ShowS
+    showList       : [a] -> ShowS
 
     showsPrec       = primPrint
     showList []     = showString "[]"
-    showList (x:xs) = showChar '[' . shows x . showl xs
+    showList (x::xs) = showChar '[' . shows x . showl xs
                       where showl []     = showChar ']'
-                            showl (x:xs) = showChar ',' . shows x . showl xs
+                            showl (x::xs) = showChar ',' . shows x . showl xs
 
-shows      :: Text a => a -> ShowS
+shows      : Text a => a -> ShowS
 shows       =  showsPrec 0
 
-show       :: Text a => a -> String
+show       : Text a => a -> String
 show x      =  shows x ""
 
-showChar   :: Char -> ShowS
+showChar   : Char -> ShowS
 showChar    =  (:)
 
-showString :: String -> ShowS
+showString : String -> ShowS
 showString  =  (++)
 
 instance Text ()
@@ -6250,8 +6250,8 @@ instance Text Int
 instance Text Char where
     showList cs = showChar '"' . showl cs
                   where showl ""       = showChar '"'
-                        showl ('"':cs) = showString "\\\"" . showl cs
-                        showl (c:cs)   = showChar c . showl cs
+                        showl ('"'::cs) = showString "\\\"" . showl cs
+                        showl (c::cs)   = showChar c . showl cs
 			-- Haskell has   showLitChar c . showl cs
 
 instance Text a => Text [a]  where
@@ -6294,12 +6294,12 @@ type StrCont   =  String     -> Dialogue
 type FailCont  =  IOError    -> Dialogue
  
 done          ::                                                Dialogue
-readFile      :: String ->           FailCont -> StrCont     -> Dialogue
-writeFile     :: String -> String -> FailCont -> SuccCont    -> Dialogue
-appendFile    :: String -> String -> FailCont -> SuccCont    -> Dialogue
-readChan      :: String ->           FailCont -> StrCont     -> Dialogue
-appendChan    :: String -> String -> FailCont -> SuccCont    -> Dialogue
-echo          :: Bool ->             FailCont -> SuccCont    -> Dialogue
+readFile      : String ->           FailCont -> StrCont     -> Dialogue
+writeFile     : String -> String -> FailCont -> SuccCont    -> Dialogue
+appendFile    : String -> String -> FailCont -> SuccCont    -> Dialogue
+readChan      : String ->           FailCont -> StrCont     -> Dialogue
+appendChan    : String -> String -> FailCont -> SuccCont    -> Dialogue
+echo          : Bool ->             FailCont -> SuccCont    -> Dialogue
 
 done resps    =  []
 readFile name fail succ resps =
@@ -6315,18 +6315,18 @@ appendChan name contents fail succ resps =
 echo bool fail succ resps =
     (Echo bool) : succDispatch fail succ resps
 
-strDispatch fail succ (resp:resps) = 
+strDispatch fail succ (resp::resps) = 
             case resp of Str val     -> succ val resps
                          Failure msg -> fail msg resps
 
-succDispatch fail succ (resp:resps) = 
+succDispatch fail succ (resp::resps) = 
             case resp of Success     -> succ resps
                          Failure msg -> fail msg resps
 
-abort           :: FailCont
+abort           : FailCont
 abort err        = done
 
-exit            :: FailCont
+exit            : FailCont
 exit err         = appendChan stdout msg abort done
                    where msg = case err of ReadError s   -> s
                                            WriteError s  -> s
@@ -6334,17 +6334,17 @@ exit err         = appendChan stdout msg abort done
                                            FormatError s -> s
                                            OtherError s  -> s
 
-print           :: Text a => a -> Dialogue
+print           : Text a => a -> Dialogue
 print x          = appendChan stdout (show x) abort done
 
-prints          :: Text a => a -> String -> Dialogue
+prints          : Text a => a -> String -> Dialogue
 prints x s       = appendChan stdout (shows x s) abort done
 
-interact	:: (String -> String) -> Dialogue
+interact	: (String -> String) -> Dialogue
 interact f	 = readChan stdin abort
 			    (\x -> appendChan stdout (f x) abort done)
 
-run		:: (String -> String) -> Dialogue
+run		: (String -> String) -> Dialogue
 run f		 = echo False abort (interact f)
 
 \end{verbatim}
@@ -6566,7 +6566,7 @@ following points are particularly useful for this:
 
      ~~~~~Using the notation of [1]:~~~~~~~~~~~~~~~~~~~~~Using Gofer:
 \begin{verbatim}
-     filter p (x:xs)                  filter p (x:xs)
+     filter p (x::xs)                  filter p (x::xs)
        = x : filter p xs, if p x         | p x       = x : filter p xs
        = filter p xs,     otherwise      | otherwise = filter p xs
 \end{verbatim}
@@ -6628,7 +6628,7 @@ a good idea to use primitive functions directly in your programs.
 A number of primitive functions are builtin to the  Gofer  interpreter,
 and may be bound to function symbols using a declaration of the form:
 \begin{verbatim}
-    primitive name1 code1, name2 code2, ...., namen coden :: type
+    primitive name1 code1, name2 code2, ...., namen coden : type
 \end{verbatim}
 where each name is an identifier (or an  operator  symbol  enclosed  by
 parentheses) and each code is a string literal  taken  from  the  table
@@ -6640,7 +6640,7 @@ this feature to bind  a  function  named  \verb"primPrint"  to  the  primitive
 function with code name string \verb="primPrint"= and type 
 \verb"Int -> a ->  String -> String":
 \begin{verbatim}
-    primitive primPrint "primPrint"  :: Int -> a -> String -> String
+    primitive primPrint "primPrint"  : Int -> a -> String -> String
 \end{verbatim}
 The primitive functions currently available are:
 \BI
