@@ -415,7 +415,7 @@ a file so that these functions can be loaded and used by by  the  Gofer
 system.  For example, suppose that you create a file \verb"fact"  containing
 the following definition:
 \begin{verbatim}
-     fact n = product [1..n]
+     fact.n = product.[1..n]
 \end{verbatim}
 The \verb"product" function is another standard function which can  be  used
 to calculate the product of a list of integers, and so the  line  above
@@ -452,7 +452,7 @@ standard prelude.  Since the file  containing  the  definition  of  the
 factorial function has now  been  loaded,  we  can  make  use  of  this
 function in expressions entered to the interpreter:
 \begin{verbatim}
-    ? fact 6
+    ? fact.6
     720
     (57 reductions, 85 cells)
 \end{verbatim}
@@ -461,14 +461,14 @@ tells us that  the  number  of  ways  of  choosing  $r$  objects  from  a
 collection of $n$ objects is given by $n! / (r! * (n-r)!)$.  In Gofer, this
 function can be defined by:
 \begin{verbatim}
-    comb n r = fact n /(fact r * fact (n-r))
+    comb.n.r = fact.n /(fact.r * fact.(n-r))
 \end{verbatim}
 In order to use this function, we can either edit the file \verb"fact" which
 contains  the  definition  of  the  factorial  function,   adding   the
 definition of \verb"comb" on a new line, or we can include the definition as
 part of an expression entered whilst using Gofer:
-\begin{verbatim}
-    ? comb 5 2 where comb n r = fact n /(fact r * fact (n-r))
+\begin{verbatim}    
+    ? comb.5.2 where comb.n.r = fact.n /(fact.r * fact.(n-r))
     10
     (110 reductions, 161 cells)
     ? 
@@ -731,7 +731,7 @@ expression has the indicated type.  For example:
 The most important property of the type system is that it  is  possible
 to determine the type of an expression without having to  evaluate  it.
 For example, the information given above  is  sufficient  to  determine
-that \verb"fact 42 :: Int" without needing to calculate $42!$ first.
+that \verb"fact.42 :: Int" without needing to calculate $42!$ first.
 
 Gofer has a wide range of built-in types, described  in  the  following
 sections.  In addition, Gofer also includes facilities for defining new
@@ -1146,15 +1146,15 @@ examples of the kind of problem that might occur:
      be used to calculate the factorial of an integer,  it  is  clearly
      meaningless to try to  determine  the  factorial  of  a  character
      value.  This kind of problem can be detected using  the  types  of
-     the components of an expression.  In the expression \verb"fact 'A'", we
+     the components of an expression.  In the expression \verb"fact.'A'", we
      can see that the argument \verb"'A'" has type \verb"Char"
      which does  not  match
      the argument type Int of the factorial function.  This error  will
      be detected by Gofer if you try to evaluate the expression:
 \begin{verbatim}
-         ? fact 'A'
+         ? fact.'A'
          ERROR: Type error in application
-         *** expression     : fact 'A'
+         *** expression     : fact.'A'
          *** term           : 'A'
          *** type           : Char
          *** does not match : Int
@@ -1221,9 +1221,9 @@ to  determine  which  equation  applies.   This   process   is   called
 the simplest kind of pattern -- a variable.  As  an  example,  consider
 the factorial function defined in section 5:
 \begin{verbatim}
-    fact n = product [1..n]
+    fact.n = product.[1..n]
 \end{verbatim}
-If we then wish to evaluate the expression \verb"fact 6" we first match  the
+If we then wish to evaluate the expression \verb"fact.6" we first match  the
 expression \verb"6" against the pattern \verb"n" 
 and then evaluate the expression
 obtained from \verb"product [1..n]" by replacing 
@@ -1231,13 +1231,13 @@ the variable \verb"n"  with  the
 expression \verb"6".  The process of matching the arguments  of  a  function
 against the patterns in its definition and obtaining another expression
 to be evaluated is called a `reduction'.  Using Gofer, it  is  easy  to
-verify that the evaluation of \verb"fact 6" takes one  more  reduction  than
+verify that the evaluation of \verb"fact.6" takes one  more  reduction  than
 that of \verb"product [1..6]":
 \begin{verbatim}
-    ? fact 6
+    ? fact.6
     720
     (57 reductions, 85 cells)
-    ? product [1..6]
+    ? product.[1...6]
     720
     (56 reductions, 85 cells)
     ? 
@@ -1430,7 +1430,7 @@ We can split the problem up into two special cases:
 This process can be expressed directly in  Gofer  using  a  conditional
 expression:
 \begin{verbatim}
-    fact1 n  =  if n==0 then 1 else n * fact1 (n-1)
+    fact1.n  =  if n==0 then 1 else n * fact1.(n-1)
 \end{verbatim}
 This definition may seem rather circular; in  order  to  calculate  the
 value of $n!$, we must first calculate $(n-1)!$, and unless $n$  is  1,  this
@@ -1441,12 +1441,12 @@ the case where the value of $0!$ is required -- and this does not require
 any further calculation.  The following diagram illustrates how  $6!$  is
 evaluated using \verb"fact1":
 \begin{verbatim}
-    fact1 6  ==>  6 * fact1 5
-             ==>  6 * (5 * fact1 4)
-             ==>  6 * (5 * (4 * fact1 3))
-             ==>  6 * (5 * (4 * (3 * fact1 2)))
-             ==>  6 * (5 * (4 * (3 * (2 * fact1 1))))
-             ==>  6 * (5 * (4 * (3 * (2 * (1 * fact1 0)))))
+    fact1.6  ==>  6 * fact1.5
+             ==>  6 * (5 * fact1.4)
+             ==>  6 * (5 * (4 * fact1.3))
+             ==>  6 * (5 * (4 * (3 * fact1.2)))
+             ==>  6 * (5 * (4 * (3 * (2 * fact1.1))))
+             ==>  6 * (5 * (4 * (3 * (2 * (1 * fact1.0)))))
              ==>  6 * (5 * (4 * (3 * (2 * (1 * 1)))))
              ==>  6 * (5 * (4 * (3 * (2 * 1))))
              ==>  6 * (5 * (4 * (3 * 2)))
@@ -1458,38 +1458,38 @@ evaluated using \verb"fact1":
 Incidentally, there are several other ways  of  writing  the  recursive
 definition of \verb"fact1" above in Gofer.  For example, using guards:
 \begin{verbatim}
-    fact2 n
+    fact2.n
       | n==0        =  1
-      | otherwise   =  n * fact2 (n-1)
+      | otherwise   =  n * fact2.(n-1)
 \end{verbatim}
 or using pattern matching with an integer constant:
 \begin{verbatim}
-    fact3 0         =  1
-    fact3 n         =  n * fact3 (n-1)
+    fact3.0         =  1
+    fact3.n         =  n * fact3.(n-1)
 \end{verbatim}
 Which of these you use is largely a matter of personal taste.
 
 Yet another style of definition uses the \verb=(n+k)=  patterns  mentioned  in
 section 9.1:
 \begin{verbatim}
-    fact4 0         =  1
-    fact4 (n+1)     =  (n+1) * fact4 n
+    fact4.0         =  1
+    fact4.(n+1)     =  (n+1) * fact4.n
 \end{verbatim}
 which is equivalent to:
 \begin{verbatim}
-    fact5 n | n==0  =  1
-            | n>=1  =  n * fact5 (n-1)
+    fact5.n | n==0  =  1
+            | n>=1  =  n * fact5.(n-1)
 \end{verbatim}
 Although each of the above definitions gives the same  result
 as the original \verb"fact" function  for  each  non-negative  integer,  the
 functions can still be distinguished by the values obtained  when  they
 are applied to negative integers:
 \BSI
-\IT  \verb"fact (-1)" evaluates to the integer 1.
-\IT  \verb"fact1 (-1)" causes Gofer to enter an infinite loop, which is only
+\IT  \verb"fact.(-1)" evaluates to the integer 1.
+\IT  \verb"fact1.(-1)" causes Gofer to enter an infinite loop, which is only
      eventually terminated when Gofer runs out of `stack space'.
-\IT  \verb"fact4 (-1)" causes an evaluation error and prints the
-      message \verb"{fact4 (-1)}" on the screen.
+\IT  \verb"fact4.(-1)" causes an evaluation error and prints the
+      message \verb"{fact4.(-1)}" on the screen.
 \ESI
 To most people, this suggests that the definition of \verb"fact4" is perhaps
 preferable to that of either \verb"fact" or \verb"fact1" 
@@ -1538,8 +1538,8 @@ map introduced in earlier sections:
 \begin{verbatim}
     product []     = 1
     product (x:xs) = x * product xs
-    map f []      =  []
-    map f (x:xs)  =  f x : map f xs
+    map.f.[]      =  []
+    map.f.(x:xs)  =  f.x : map.f.xs
 \end{verbatim}
 
 \section{Lazy evaluation}
@@ -1553,12 +1553,12 @@ Gofer evaluates expressions using a technique  sometimes  described  as
 \ESI
 The first of these ideas is illustrated by the following function:
 \begin{verbatim}
-    ignoreArgument x = "I didn't need to evaluate x"
+    ignoreArgument.x = "I didn't need to evaluate x"
 \end{verbatim}
 Since the result of the function \verb"ignoreArgument" doesn't depend on the
 value of its argument \verb"x", that argument will not be evaluated:
 \begin{verbatim}
-    ? ignoreArgument (1/0)
+    ? ignoreArgument.(1/0)
     I didn't need to evaluate x
     (1 reduction, 31 cells)
     ?
@@ -1569,8 +1569,8 @@ achieved using the function \verb"strict" defined in the  standard  prelude;
 An expression of the form \verb"strict f x" is evaluated by first evaluating
 the argument \verb"x" and then applying the function \verb"f" to the result:
 \begin{verbatim}
-    ? strict ignoreArgument (1/0)
-    {primDivInt 1 0}
+    ? strict ignoreArgument.(1/0)
+    {primDivInt.1.0}
     (4 reductions, 29 cells)
     ?
 \end{verbatim}
@@ -1653,7 +1653,7 @@ same two approaches used to calculate the maximum value in the list:
     (10612 reductions, 20732 cells)
     ?
 \end{verbatim}
-This difference is caused by the fact that each  element  in  the  list
+This difference is caused by the fact.1 had each  element  in  the  list
 produced by \verb"sort" is  only  known  once  the  values  of  all  of  the
 preceding elements are also known.  Thus  the  complete  list  must  be
 sorted in order to obtain the last element.
@@ -1758,7 +1758,7 @@ both the second argument and the result are lists, so that the type  of
 \]
 But what can be said about the types $a$, $b$, $c$ and  $d$?   One  possibility
 would be to choose $a = b = c = d = \TT{Int}$ which would  be  acceptable  for
-expressions such as  \verb"map fact [1,2,3,4]",  but  this  would  not  be
+expressions such as  \verb"map fact.[1,2,3,4]",  but  this  would  not  be
 suitable in an expression such as  \verb"map chr [65,75,32]"  because  the
 \verb"chr" function does not have type \verb"Int -> Int".
 
@@ -2322,16 +2322,16 @@ practice:
     ? 
 \end{verbatim}
      The following example illustrates a similar kind of behaviour with
-     local definitions; in the first case the expression  \verb"fact x"  is
+     local definitions; in the first case the expression  \verb"fact.x"  is
      evaluated twice for each possible value of \verb"x", whilst the  second
      expression uses a local definition to ensure that  the  evaluation
      is not repeated:
 \begin{verbatim}
-    ? [ fact x + y | x<-[1..3], y<-[1..2] ]
+    ? [ fact.x + y | x<-[1..3], y<-[1..2] ]
     [2, 3, 3, 4, 7, 8]
     (246 reductions, 398 cells)
 
-    ? [ factx + y | x<-[1..3], factx = fact x, y<-[1..2] ]
+    ? [ fact.x + y | x<-[1..3], fact.x = fact.x, y<-[1..2] ]
     [2, 3, 3, 4, 7, 8]
     (173 reductions, 294 cells)
     ?
@@ -3327,11 +3327,11 @@ be described as follows:
      otherwise unexpected token is encountered.  This part of the rule
      makes it possible to use expressions such as:
 \begin{verbatim}
-    let a = fact 12 in a+a
+    let a = fact.12 in a+a
 \end{verbatim}
      without needing to use the layout characters explicitly as in:
 \begin{verbatim}
-    let {a = fact 12} in a+a.
+    let {a = fact.12} in a+a.
 \end{verbatim}
 \IT  Lines containing only whitespace (blanks and tabs) and comments do
      not affect the use of the layout rule.
