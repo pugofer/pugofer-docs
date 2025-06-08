@@ -42,5 +42,3 @@ Dockerfile text
 # Special for this repo
 # troff man page; maybe it shouldnt be there eol=lf?
 *.1 text diff eol=lf
-
-
