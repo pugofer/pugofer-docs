@@ -3,3 +3,23 @@
 
 # Workspace settings folder
 .vscode
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Ignore editor files
+*.swp
+*.swo
+*.bak
+*~
+
+# Ignore log files
+*.log
+
+# Ignore temporary files
+*.tmp
