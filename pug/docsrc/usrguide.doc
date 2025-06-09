@@ -554,17 +554,17 @@ The following operator declarations are taken from the standard prelude:
 
 and their use is illustrated by the following examples:
 
- Expression:     Equivalent to:   Reasons:
- -----------     --------------   --------
- 1 + 2 - 3       (1 + 2) - 3      (+) and (-) have the same  precedence
-                                  and group to the left.
- x : ys ++ zs    x : (ys ++ zs)   (:) and (++) have the same precedence
-                                  and group to the right
- x == y || z     (x == y) || z    (==) has higher precedence than (||).
- 3 * 4 + 5       (3 * 4) + 5      (*) has higher precedence than (+).
- y `elem` z:zs   y `elem` (z:zs)  (:) has higher precedence than elem.
- 12 / 6 / 3      syntax error     ambiguous  use  of  (/);  could  mean
-                                  either (12/6)/3 or 12/(6/3).
+ Expression:     Equivalent to:    Reasons:
+ -----------     --------------    --------
+ 1 + 2 - 3       (1 + 2) - 3       (+) and (-) have the same  precedence
+                                   and group to the left.
+ x :: ys ++ zs    x :: (ys ++ zs)  (::) and (++) have the same precedence
+                                   and group to the right
+ x == y || z     (x == y) || z     (==) has higher precedence than (||).
+ 3 * 4 + 5       (3 * 4) + 5       (*) has higher precedence than (+).
+ y `elem` z::zs   y `elem` (z::zs) (::) has higher precedence than elem.
+ 12 / 6 / 3      syntax error      ambiguous  use  of  (/);  could  mean
+                                   either (12/6)/3 or 12/(6/3).
 
 Note that function application always binds more tightly than any infix
 operator symbol.  For example, the expression "f x + g y" is equivalent
@@ -800,10 +800,10 @@ of type a.  There are several ways of writing list expressions:
       single element onto the front  of  another  list  using  the  (:)
       operator (pronounced "cons").  These notations are equivalent:
 
-       [1,3,10]  =  1 : [3,10]  =  1 : 3 : [10]  =  1 : 3 : 10 : []
+       [1,3,10]  =  1 :: [3,10]  =  1 :: 3 :: [10]  =  1 :: 3 :: 10 :: []
 
-      (the (:) operator groups to the right so 1 :  3  :  10  :  []  is
-      equivalent to (1:(3:(10:[]))) -- a list whose first element is 1,
+      (the (::) operator groups to the right so 1 :: 3 :: 10 :: []  is
+      equivalent to (1::(3::(10::[]))) -- a list whose first element is 1,
       second element is 3 and last element is 10).
 
 The  standard  prelude  includes  a  wide  range   of   functions   for
@@ -848,8 +848,8 @@ element of a list is called x, then it is often useful to use the  name
 xs for a list of such values, suggesting that a list contains a  number
 of "x"s.  Similarly, a list of lists might be  called  xss.   Once  you
 have understood this convention it  is  much  easier  to  remember  the
-relationship between the variables in the  expression  (x:xs)  than  it
-would be if different names had been used such as (a:b).]
+relationship between the variables in the  expression  (x::xs)  than  it
+would be if different names had been used such as (a::b).]
 
 
 .ST 7.7  Strings
@@ -1147,7 +1147,7 @@ illustrated by the following examples:
                               elements,  the  second  of  which  is the
                               integer 2.
                      []       matches the empty list.
-                     (x:xs)   matches a non-empty  list with head x and
+                     (x::xs)   matches a non-empty  list with head x and
                               tail xs.
 
   o  As patterns:    p@(x,y)  matches a  pair  whose  first and  second
@@ -1349,18 +1349,18 @@ to find the length of a given list.  There are two cases to consider:
 
   o  If the list is empty then it has length 0
 
-  o  Otherwise, it is non-empty and can be written in the  form  (x:xs)
+  o  Otherwise, it is non-empty and can be written in the  form  (x::xs)
      for some element x and some list xs.  Thus the  original  list  is
      one element longer than xs, and so has length 1 + len xs.
 
 Writing these two cases out leads directly to the following definition:
 
     len []      =  0
-    len (x:xs)  =  1 + len xs
+    len (x::xs)  =  1 + len xs
 
 The following diagram illustrates the way that  this  function  can  be
 used to determine the length of the list [1,2,3,4] (remember that  this
-is just an abbreviation for 1 : 2 : 3 : 4 : []):
+is just an abbreviation for 1 :: 2 :: 3 :: 4 :: []):
 
     len [1,2,3,4]  ==>  1 + len [2,3,4]
                    ==>  1 + (1 + len [3,4])
@@ -1377,10 +1377,10 @@ definitions which use similar ideas to define the functions product and
 map introduced in earlier sections:
 
     product []     = 1
-    product (x:xs) = x * product xs
+    product (x::xs) = x * product xs
 
     map f []      =  []
-    map f (x:xs)  =  f x : map f xs
+    map f (x::xs)  =  f x :: map f xs
 
 
 .ST 9.6  Lazy evaluation
@@ -1516,7 +1516,7 @@ are no longer required).
 As a simple example, consider the following function which can be  used
 to produce infinite lists of integer values:
 
-    countFrom n = n : countFrom (n+1)
+    countFrom n = n :: countFrom (n+1)
 
 If we evaluate the expression "countFrom 1", Gofer just prints the list
 of integer values beginning with 1 until it is interrupted.  Once  each
@@ -1553,7 +1553,7 @@ enables us to describe an object without being tied to  one  particular
 application of that object.  Consider the following definition for  the
 infinite list of powers of two [1, 2, 4, 8, ...]:
 
-    powersOfTwo = 1 : map double powersOfTwo 
+    powersOfTwo = 1 :: map double powersOfTwo 
                   where double n = 2*n
 
 This list be used in a variety of ways; using the operator (!!) defined
@@ -1670,7 +1670,7 @@ of characters used in a list of strings.  A simple  recursive  function
 provides one solution:
 
     countChars []     = 0
-    countChars (w:ws) = length w + countChars ws 
+    countChars (w::ws) = length w + countChars ws 
 
     ? countChars ["super","cali","fragi","listic"]
     20
@@ -1756,9 +1756,9 @@ section 9.1.  As a simple example of  pattern  bindings,  here  is  one
 possible definition for the function "head"  which  returns  the  first
 element in a list of values:
 
-    head xs  =  x  where  (x:ys) = xs
+    head xs  =  x  where  (x::ys) = xs
 
-[The definition  "head (x:_) = x"  used  in  the  standard  prelude  is
+[The definition  "head (x::_) = x"  used  in  the  standard  prelude  is
 slightly more efficient, but otherwise equivalent.]
 
 [ASIDE: Note that pattern bindings are treated quite  differently  from
@@ -1785,8 +1785,8 @@ the two lists resulting  from  the  recursive  call  to  "span"  is  as
 follows:
 
     span p []               = ([],[])
-    span p xs@(x:xs')
-                | p x       = let (ys,zs) = span p xs' in (x:ys,zs)
+    span p xs@(x::xs')
+                | p x       = let (ys,zs) = span p xs' in (x::ys,zs)
                 | otherwise = ([],xs)
 
 
@@ -1795,7 +1795,7 @@ right hand side of a pattern binding is not evaluated until  the  value
 of one of the  variables  bound  by  that  pattern  is  required.   The
 definition:
 
-    (0:xs) = [1,2,3]
+    (0::xs) = [1,2,3]
 
 will not cause any errors when it is loaded into Gofer, but will  cause
 an error if we attempt to evaluate the variable xs:
@@ -1813,7 +1813,7 @@ binding conforms with the pattern on the left.
 Compare this  with  the  behaviour  of  pattern  matching  in  function
 definitions such as:
 
-    ? example [1] where example (0:xs) = "Hello"
+    ? example [1] where example (0::xs) = "Hello"
     {v126 [1]}
     (4 reductions, 22 cells)
     ?
@@ -1853,20 +1853,20 @@ semantic domain, and is the only value having all possible types):
    (\~[x, (a,b)] -> x) [(0,1),undefined] = {undefined}
    (\~[x,~(a,b)] -> x) [(0,1),undefined] = (0,1)
 
-   (\ (x:xs) -> x:x:xs) undefined = {undefined}
-   (\~(x:xs) -> x:x:xs) undefined = {undefined}:{undefined}:{undefined}
+   (\ (x::xs) -> x::x::xs) undefined = {undefined}
+   (\~(x::xs) -> x::x::xs) undefined = {undefined}::{undefined}::{undefined}
 
 Irrefutable patterns are not used very frequently,  although  they  are
 particularly convenient in some situations (see  section  12  for  some
 examples).  Be careful not to use irrefutable patterns where  they  are
 not appropriate.  An attempt to define a map function "map'" using:
 
-    map' f ~(x:xs) = f x : map' f xs
+    map' f ~(x::xs) = f x :: map' f xs
     map' f []      = []
 
 turns out to be equivalent to the definition:
 
-    map' f ys  =  f x : map f xs where (x:xs) = ys
+    map' f ys  =  f x :: map f xs where (x::xs) = ys
 
 and will not behave as you might have intended:
 
@@ -2057,8 +2057,8 @@ There are three kinds of qualifier that can be used in Gofer:
 
           [ e | pat <- exp ]  =  loop exp
                                  where loop []       = []
-                                       loop (pat:xs) = e : loop xs
-                                       loop (_:xs)   = loop xs
+                                       loop (pat::xs) = e :: loop xs
+                                       loop (_::xs)   = loop xs
 
      If pat is an irrefutable pattern (for example,  a  variable)  then
      this is equivalent to:
@@ -2261,15 +2261,15 @@ with a `=' symbol).  The complete case expression is  then  treated  as
 being equivalent to the expression "newName e".  A  simple  example  of
 this is the "scanl" function whose definition in the standard prelude:
 
-    scanl f q xs = q : (case xs of
+    scanl f q xs = q :: (case xs of
                         []   -> []
-                        x:xs -> scanl f (f q x) xs)
+                        x::xs -> scanl f (f q x) xs)
 
 is equivalent to:
 
-    scanl f q xs = q : scanl' xs
+    scanl f q xs = q :: scanl' xs
                    where scanl' []     = []
-                         scanl' (x:xs) = scanl f (f q x) xs
+                         scanl' (x::xs) = scanl f (f q x) xs
 
 This latter form is precisely the definition used in [1] (but using the
 name "scan" where Gofer uses "scanl").
@@ -2294,13 +2294,13 @@ single equation of the form <functionName> = <expr>.  For example,  the
 standard function "map" whose definition is usually written as:
 
     map f []     = []
-    map f (x:xs) = f x : map f xs
+    map f (x::xs) = f x :: map f xs
 
 can also be defined by the equation:
 
     map = \f xs -> case xs of
                      []     -> []
-                     (y:ys) -> f y : map f ys
+                     (y::ys) -> f y :: map f ys
 
 This kind  of  translation  is  used  in  the  implementation  of  many
 functional programming languages, including Gofer.   See  Simon  Peyton
@@ -2800,7 +2800,7 @@ request is successful, the other if the request fails.
 As an example, the ReadFile request  is  represented  by  the  function
 "readFile" whose definition is equivalent to:
 
-    readFile name fail succ ~(r:rs) = ReadFile name : rest rs
+    readFile name fail succ ~(r::rs) = ReadFile name :: rest rs
      where rest = case r of Str s           -> succ s
                             Failure ioerror -> fail ioerror
 
@@ -3141,7 +3141,7 @@ layout rule.  A file containing the following definitions:
     size  : Stack a -> Int
     size s = length (stkToList s) where
                stkToList Empty         = []
-               stkToList (MkStack x s) = x:xs where xs = stkToList s
+               stkToList (MkStack x s) = x::xs where xs = stkToList s
 
     pop : Stack a -> (a, Stack a)
     pop (MkStack x s) = (x, case s of r -> i r where i x = x)
@@ -3160,7 +3160,7 @@ will be treated by Gofer as if it has been written:
     ;size  : Stack a -> Int
     ;size s = length (stkToList s) where
                {stkToList Empty = []
-               ;stkToList (MkStack x s) = x:xs where {xs = stkToList s
+               ;stkToList (MkStack x s) = x::xs where {xs = stkToList s
 
     }};pop : Stack a -> (a, Stack a)
     ;pop (MkStack x s) = (x, case s of {r -> i r where {i x = x}})
@@ -3173,7 +3173,7 @@ Note that some of the more sophisticated forms of expression cannot  be
 written on a single line (and hence entered  directly  into  the  Gofer
 system) without explicit use of the layout characters `{', `}' and `;':
 
-    ? len [1...10] where len [] = 0;  len (x:xs) = 1 + len xs
+    ? len [1...10] where len [] = 0;  len (x::xs) = 1 + len xs
     10
     (81 reductions, 108 cells)
 
@@ -3369,9 +3369,9 @@ number of simple instances of the class Eq:
 
     instance Eq a => Eq [a] where
         []     == []     =  True
-        []     == (y:ys) =  False
-        (x:xs) == []     =  False
-        (x:xs) == (y:ys) =  x==y && xs==ys
+        []     == (y::ys) =  False
+        (x::xs) == []     =  False
+        (x::xs) == (y::ys) =  x==y && xs==ys
 
 The interpretation of these declarations is as follows:
 
@@ -3409,7 +3409,7 @@ The interpretation of these declarations is as follows:
      example.  The context Eq a is used in the  last  equation  in  the
      declaration:
 
-                     (x:xs) == (y:ys)  =  x==y && xs==ys
+                     (x::xs) == (y::ys)  =  x==y && xs==ys
 
      which contains three occurrences of the (==) operator;  the  first
      and third are used to compare lists of type [a], whilst the second
@@ -3757,9 +3757,9 @@ from the definitions of (==) given in the instance declarations for  Eq
     eqPair d (x,y) (u,v)   = (==) (#3 d) x u && (==) (#4 d) y v
 
     eqList d [] []         = True
-    eqList d []     (y:ys) = False
-    eqList d (x:xs) []     = False
-    eqList d (x:xs) (y:ys) = (==) (#3 d) x y && (==) d xs ys
+    eqList d []     (y::ys) = False
+    eqList d (x::xs) []     = False
+    eqList d (x::xs) (y::ys) = (==) (#3 d) x y && (==) d xs ys
 
 The dictionary structure for Eq (Int, [Int]) is as follows.  Note  that
 the Gofer system ensures that there is at most  one  dictionary  for  a
@@ -4562,7 +4562,7 @@ types.  As an example of this, the  standard  prelude  function  "sum",
 roughly equivalent to:
 
     sum []     = 0
-    sum (x:xs) = x + sum xs
+    sum (x::xs) = x + sum xs
 
 has type [Int] -> Int,  rather than the  more general Num a => [a] -> a
 which could be used to find the sum of a list of numeric values in  any
@@ -4573,7 +4573,7 @@ a generic sum function of the required type:
 
     genericSum       : Num a => [a] -> a
     genericSum []     = fromInteger 0
-    genericSum (x:xs) = x + genericSum xs
+    genericSum (x::xs) = x + genericSum xs
 
 For example:
 
@@ -4754,20 +4754,20 @@ to supply the required dictionary parameters.   For  example,  given  a
 function definition such as:
 
     isElement x []     =  False
-    isElement x (y:ys) =  x==y || isElement x ys
+    isElement x (y::ys) =  x==y || isElement x ys
 
 we first add a dictionary parameter for the use of the overloaded  (==)
 operator on the right hand side, obtaining:
 
     isElement x []     = False
-    isElement x (y:ys) = (==) d x y || isElement x ys
+    isElement x (y::ys) = (==) d x y || isElement x ys
 
 Finally, we have to add the variable d  as  a  new  parameter  for  the
 function isElement, on both the  left  and  right  hand  sides  of  the
 definition:
 
     isElement d x []     = False
-    isElement d x (y:ys) = (==) d x y || isElement d x ys
+    isElement d x (y::ys) = (==) d x y || isElement d x ys
 
 The monomorphism restriction imposes conditions which prevent this last
 step from being used for certain kinds of value binding.
@@ -5389,8 +5389,8 @@ following points are particularly useful for this:
 
      Using the notation of [1]:       Using Gofer:
 
-     filter p (x:xs)                  filter p (x:xs)
-       = x : filter p xs, if p x         | p x       = x : filter p xs
+     filter p (x::xs)                  filter p (x::xs)
+       = x :: filter p xs, if p x         | p x       = x :: filter p xs
        = filter p xs,     otherwise      | otherwise = filter p xs
 
   o  In Gofer,  list comprehension qualifiers  are separated by  commas
