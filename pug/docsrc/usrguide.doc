@@ -1653,14 +1653,14 @@ Functions which manipulate  other  functions  in  this  way  are  often
 described as `higher-order functions'.  Consider the following example,
 taken from the standard prelude:
 
-    (.)       : (b -> c) -> (a -> b) -> (a -> c)
-    (f . g) x  = f (g x)
+    (;)       : (a -> b) -> (b -> c) -> (a -> c)
+    (g ; f) x  = f (g x)
 
-As indicated by the type declaration, we think of the (.) operator as a
+As indicated by the type declaration, we think of the (;) operator as a
 function taking two function arguments and returning  another  function
 value as its result.  If f and  g  are  functions  of  the  appropriate
-types, then (f . g) is a function called the composition of f  with  g.
-Applying (f . g) to a value is equivalent to applying g to that  value,
+types, then (g ; f) is a function called the composition of f  with  g.
+Applying (g ; f) to a value is equivalent to applying g to that  value,
 and then applying f to the result [As described, far  more  eloquently,
 by the second line of the declaration above!].
 
@@ -1682,7 +1682,7 @@ number of characters by  first  combining  all  of  the  words  in  the
 argument list into a single word (using concat) and  then  finding  the
 length of that word:
 
-    ? (length . concat) ["super","cali","fragi","listic"]
+    ? (concat ; length) ["super","cali","fragi","listic"]
     20
     (113 reductions, 211 cells)
     ?
@@ -1691,7 +1691,7 @@ Another solution is to first find the length of each word in  the  list
 (using the "map" function to apply "length"  to  each  word)  and  then
 calculate the sum of these individual lengths:
 
-    ? (sum . map length) ["super","cali","fragi","listic"]
+    ? (map ; sum length) ["super","cali","fragi","listic"]
     20
     (105 reductions, 172 cells)
     ?
@@ -1708,7 +1708,7 @@ almost always consisting of a single equation of the form:
 by function declarations of arity>0 are guaranteed to be functions, the
 values defined by variable declarations may or may not be functions:
 
-    odd = not . even   -- if an integer is not even then it must be odd
+    odd = even ; not   -- if an integer is not even then it must be odd
     val = sum [1...100]
 
 Note that variables defined like this at the top level  of  a  file  of
@@ -2365,8 +2365,8 @@ expression that is inferred by Gofer:
     ? :t  \x -> [x]
     \x -> [x] : a -> [a]
 
-    ? :t  sum . map length
-    sum . map length : [[a]] -> Int
+    ? :t  map ; sum length
+    map ; sum length : [[a]] -> Int
 
     ? 
 
@@ -2376,8 +2376,8 @@ types in these expressions:
     ? :t  (\x -> [x]) : Char -> String
     \x -> [x] : Char -> String
 
-    ? :t  sum . map (length : String -> Int)
-    sum . map length : [String] -> Int
+    ? :t  map ; sum (length : String -> Int)
+    map ; sum length : [String] -> Int
 
     ?
 
@@ -2495,7 +2495,7 @@ giving a more efficient algorithm:
 
     leaves' t = leavesAcc t []
                  where leavesAcc (Lf l)  = (l:)
-                       leavesAcc (l:^:r) = leavesAcc l . leavesAcc r
+                       leavesAcc (l:^:r) = leavesAcc r ; leavesAcc l
 
 Using the binary tree above as an example:
 
@@ -3769,20 +3769,20 @@ this system is automatically shared between d2 and d3:
    d3 : Eq (Int, [Int])
    +------------+------------+------------+------------+
    |            |            |            |            |
-   | eqPair d3  | defNeq d3  | d1:Eq Int |d2:Eq [Int]|
+   | eqPair d3  | defNeq d3  | d1:Eq Int |d2:Eq [Int]  |
    |            |            |            |            |
    +------------+------------+-----+------+-----+------+
                                    |            |
                     +--------------+            |
                     |                           |
-                    |        d2 : Eq [Int]     V 
+                    |        d2 : Eq [Int]      V 
                     |        +------------+------------+------------+
                     |        |            |            |            |
                     |        | eqList d2  | defNeq d2  | d1:Eq Int |
                     |        |            |            |            |
                     |        +------------+------------+-----+------+
                     |                                        |
-       d1 : Eq Int V                                        |
+       d1 : Eq Int  V                                        |
        +------------+------------+                           |
        |            |            |                           |
        | primEqInt  | defNeq d1  |<--------------------------+
@@ -3941,10 +3941,10 @@ signatures are used, the Gofer  type  system  will  not  use  a  single
 predicate of the form CandD a instead of the two predicates C a and D a
 unless  explicit signatures are used:
 
-    ? :t dee . cee
-    \d129 d130 -> dee d130 . cee d129 : (C a, D a) => a -> a
-    ? :t dee . cee : CandD a => a -> a
-    \d129 -> dee (#2 d129) . cee (#1 d129) : CandD a => a -> a
+    ? :t cee ; dee
+    \d129 d130 -> cee d129 ; dee d130 : (C a, D a) => a -> a
+    ? :t cee ; dee : CandD a => a -> a
+    \d129 -> cee (#1 d129) ; dee (#2 d129) : CandD a => a -> a
     ?
 
 In Haskell,  all  instances  of  a  class  such  as  CandD  must   have
@@ -4111,18 +4111,18 @@ whose  member  functions  provide  methods  for  obtaining  the  string
 representation of an element of an instance type,  and  for  converting
 such representations  back  into  the  original values.  (The  standard
 Haskell Text class  contains  similar  functions.)   Now  consider  the
-expression "parse . unparse" which maps values from  some  instance  of
+expression "unparse ; parse" which maps values from  some  instance  of
 Reader to  values  of  another  instance  via  an  intermediate  string
 representation.
 
-    ? parse . unparse
+    ? unparse ; parse
     ERROR: Unresolved overloading
     *** type        : (Reader a, Reader b) => a -> b
-    *** translation : \d129 d130 -> parse d130 . unparse d129
+    *** translation : \d129 d130 -> unparse d129 ; parse d130
     ?
 
 One of the first things that might surprise the reader here is that the
-value produced by "parse . unparse" does not have to  be  of  the  same
+value produced by "unparse ; parse" does not have to  be  of  the  same
 type as the argument; for example, we would not usually expect to  have
 any sensible interpretation for a floating point number  obtained  from
 the string representation of a boolean value!
@@ -4130,29 +4130,29 @@ the string representation of a boolean value!
 This can be fixed by using an explicit type declaration,  although  the
 expression still produces unresolved overloading:
 
-    ? (parse . unparse) : Reader a => a -> a
+    ? (unparse ; parse) : Reader a => a -> a
     ERROR: Unresolved overloading
     *** type        : Reader a => a -> a
-    *** translation : \d130 -> parse d130 . unparse d130
+    *** translation : \d130 -> unparse d130 ; parse d130
     ?
 
 Notice however that the type of this expression  is  not  ambiguous  so
 that the unresolved overloading in this example can be eliminated  when
 the function is actually used:
 
-    ? ((parse . unparse) : Reader a => a -> a) 'a'
+    ? ((unparse ; parse) : Reader a => a -> a) 'a'
     'a'
     (4 reductions, 11 cells)
     ?
 
-A more serious problem occurs with the  expression  "unparse  .  parse"
+A more serious problem occurs with the  expression  "parse ; unparse"
 which maps string values to string values via some  intermediate  type.
 Clearly this will lead to a problem with unresolved overloading:
 
-    ? unparse . parse
+    ? parse ; unparse
     ERROR: Unresolved overloading
     *** type        : Reader a => String -> String
-    *** translation : \d130 -> unparse d130 . parse (#0 d130)
+    *** translation : \d130 ->  parse (#0 d130); unparse d130
     ?
 
 Notice that the type obtained in  this  case  is  ambiguous;  the  type
@@ -4163,8 +4163,8 @@ this kind of ambiguity:
   o  Using an explicitly typed expression: Assuming  for  example  that
      Char is an instance of Reader, we can write:
 
-         ? unparse . (parse : String -> Char)
-         v113 {dict} . v112 {dict}
+         ? (parse : String -> Char) ; unparse
+         v112 {dict} ; v113 {dict}
          (5 reductions, 42 cells)
          ?
 
@@ -4175,8 +4175,8 @@ this kind of ambiguity:
          charParse : String -> Char
          charParse  = parse
 
-         ? unparse . charParse
-         v113 {dict} . charParse
+         ? charParse ; unparse
+         charParse ; v113 {dict}
          (4 reductions, 37 cells)
          ?
 
@@ -4187,13 +4187,13 @@ this kind of ambiguity:
   o  Using an extra dummy parameter in a  function  definition.   In  a
      definition such as:
 
-         f = unparse . parse
+         f = parse ; unparse
 
      we can introduce an additional dummy parameter `x'  which  is  not
      used except to determine the type of the result produced by  parse
      in f:
 
-         f x  =  unparse . (parse `asTypeOf` (\""->x))
+         f x  =  (parse `asTypeOf` (\""->x)) ; unparse
 
      where the standard prelude operator `asTypeOf` defined by:
 
