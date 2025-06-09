@@ -244,7 +244,7 @@ prompt and waiting for the next expression.  For example:
     ? (2+3)*8
     40
     (5 reductions, 9 cells)
-    ? sum [1..10]
+    ? sum [1...10]
     55
     (91 reductions, 130 cells)
     ? 
@@ -257,8 +257,8 @@ memory) that were used during the calculation.  These  figures  can  be
 useful for comparing the performance of different ways of carrying  out
 the same calculation.
 
-In the second example, the user typed  the  expression  "sum  [1..10]".
-The notation "[1..10]" represents the list of integers between 1 and 10
+In the second example, the user typed  the  expression  "sum  [1...10]".
+The notation "[1...10]" represents the list of integers between 1 and 10
 inclusive, and "sum" is a  standard  function  which  can  be  used  to
 determine the sum of a list of integers.  Thus the result  obtained  by
 Gofer is:
@@ -276,7 +276,7 @@ and this calculation is certainly more efficient as it uses only  1/9th
 of the number of reductions and 1/5th of the number  of  cells  as  the
 original calculation.  On the other hand, the  original  expression  is
 much shorter and you are much less likely to make a mistake  typing  in
-the expression "sum [1..200]" than you would be if you tried  to  enter
+the expression "sum [1...200]" than you would be if you tried  to  enter
 the sum of the integers from 1 to 200 directly.
 
 You will learn more about the kind of expressions that can  be  entered
@@ -297,7 +297,7 @@ a file so that these functions can be loaded and used by by  the  Gofer
 system.  For example, suppose that you create a file "fact"  containing
 the following definition:
 
-     fact n = product [1..n]
+     fact n = product [1...n]
 
 The "product" function is another standard function which can  be  used
 to calculate the product of a list of integers, and so the  line  above
@@ -423,7 +423,7 @@ that they are written:
      with a capital  letter  as  mentioned  above.   In  addition,  the
      following operator symbols have special uses in Gofer:
 
-         ::    =    ..    @    \    |    <-    ->    ~    =>
+         :    =    ...    @    \    |    <-    ->    ~    =>
 
      All other operator  symbols can be used as variables  or  function
      names, including each of the following examples:
@@ -582,20 +582,20 @@ primitive expressions such as numeric constants, Gofer assigns  a  type
 to each expression that describes the kind of value represented by  the
 expression.
 
-In  general  we write  object :: type  to indicate  that  a  particular
+In  general  we write  object : type  to indicate  that  a  particular
 expression has the indicated type.  For example:
 
-    42   :: Int         indicating that  42  is an  integer (Int is the
+    42   : Int         indicating that  42  is an  integer (Int is the
                         name for the type of integer values).
 
-    fact :: Int -> Int  indicating  that  "fact"  is a  function  which
+    fact : Int -> Int  indicating  that  "fact"  is a  function  which
                         takes  an  integer  argument  and  returns   an
                         integer value (its factorial).
 
 The most important property of the type system is that it  is  possible
 to determine the type of an expression without having to  evaluate  it.
 For example, the information given above  is  sufficient  to  determine
-that fact 42 :: Int without needing to calculate 42! first.
+that fact 42 : Int without needing to calculate 42! first.
 
 Gofer has a wide range of built-in types, described  in  the  following
 sections.  In addition, Gofer also includes facilities for defining new
@@ -613,7 +613,7 @@ In mathematics, the result of applying a function f to an argument x is
 traditionally written as f(x).  In many situations,  these  parentheses
 are unnecessary and may be omitted when using Gofer.
 
-e.g. if f :: t1 -> t2 and x :: t1 then f x is the result of applying
+e.g. if f : t1 -> t2 and x : t1 then f x is the result of applying
      f to x and has type t2.
 
 
@@ -646,7 +646,7 @@ Represented by the type "Bool", there are two boolean values written as
 "True" and "False".   The  standard  prelude  includes  several  useful
 functions for manipulating boolean values:
 
-    (&&), (||) :: Bool -> Bool -> Bool
+    (&&), (||) : Bool -> Bool -> Bool
 
         The value of the expression b && d is True if and only if  both
         b and d are True.  If b is False then d is not evaluated.
@@ -654,7 +654,7 @@ functions for manipulating boolean values:
         The value of the expression b || d is True if either of b or  d
         is True.  If b is True then d is not evaluated.
 
-    not  :: Bool -> Bool
+    not  : Bool -> Bool
 
         The value of the expression not b is the opposite boolean value
         to that of b; not True = False, not False = True.
@@ -773,8 +773,8 @@ In contrast with  some  common  languages  (such  as  C,  for  example)
 character values are quite distinct from integers; however the standard
 prelude does include functions:
 
-                   ord :: Char -> Int
-                   chr :: Int -> Char
+                   ord : Char -> Int
+                   chr : Int -> Char
 
 which enable you to map a character to its corresponding  ASCII  value,
 or from an ASCII value to the corresponding character:
@@ -941,9 +941,9 @@ written (t1, t2, ..., tn) whose elements are also written in  the  form
 (x1, x2, ..., xn) where the expressions x1, x2, ..., xn have types  t1,
 t2, ..., tn respectively.
 
-    e.g.  (1, [2], 3)   :: (Int, [Int], Int)
-          ('a', False)  :: (Char, Bool)
-          ((1,2),(3,4)) :: ((Int, Int), (Int, Int))
+    e.g.  (1, [2], 3)   : (Int, [Int], Int)
+          ('a', False)  : (Char, Bool)
+          ((1,2),(3,4)) : ((Int, Int), (Int, Int))
 
 Note that, unlike lists, the elements in a  tuple  may  have  different
 types, although the number of elements in the tuple is fixed.
@@ -969,7 +969,7 @@ examples of the kind of problem that might occur:
      characters, or perhaps pressing the wrong keys  instead.   In  the
      following example, the user has missed out a `[' character:
 
-         ? sum 1..100]
+         ? sum 1...100]
          ERROR: Syntax error in input (unexpected `..')
          ?
 
@@ -979,7 +979,7 @@ examples of the kind of problem that might occur:
      that you have misspelt the name of a function, or that  the  files
      defining a function have not yet been loaded.  For example:
 
-         ? sum [1..n]
+         ? sum [1...n]
          ERROR: Undefined variable "n"
          ? 
 
@@ -1065,21 +1065,21 @@ to  determine  which  equation  applies.   This   process   is   called
 the simplest kind of pattern -- a variable.  As  an  example,  consider
 the factorial function defined in section 5:
 
-    fact n = product [1..n]
+    fact n = product [1...n]
 
 If we then wish to evaluate the expression "fact 6" we first match  the
 expression "6" against the pattern "n" and then evaluate the expression
-obtained from "product [1..n]" by replacing the variable "n"  with  the
+obtained from "product [1...n]" by replacing the variable "n"  with  the
 expression "6".  The process of matching the arguments  of  a  function
 against the patterns in its definition and obtaining another expression
 to be evaluated is called a `reduction'.  Using Gofer, it  is  easy  to
 verify that the evaluation of "fact 6" takes one  more  reduction  than
-that of "product [1..6]":
+that of "product [1...6]":
 
     ? fact 6
     720
     (57 reductions, 85 cells)
-    ? product [1..6]
+    ? product [1...6]
     720
     (56 reductions, 85 cells)
     ? 
@@ -1182,7 +1182,7 @@ using the notation of guards introduced in the next section:
 Each of the equations in a function  definition  may  contain  `guards'
 which require  certain conditions  on  the  values  of  the  function's
 arguments to be met.  As an example, here is a function which uses  the
-standard prelude function even :: Int -> Bool to determine whether  its
+standard prelude function even : Int -> Bool to determine whether  its
 argument is an even integer or not, and returns the  string  "even"  or
 "odd" as appropriate:
 
@@ -1455,12 +1455,12 @@ Consider the task  of  finding  the  smallest  element  of  a  list  of
 integers.  The standard prelude includes a function "minimum" which can
 be used for this very purpose:
 
-    ? minimum [100,99..1]
+    ? minimum [100,99...1]
     1
     (809 reductions, 1322 cells)
     ?
 
-(The expression [100,99..1] denotes the list of integers from 1 to  100
+(The expression [100,99...1] denotes the list of integers from 1 to  100
 arranged in decreasing order, as described in section 10.1).
 
 A rather different approach involves sorting the elements of  the  list
@@ -1470,7 +1470,7 @@ resulting list  (using  the  standard  function  "head").   Of  course,
 sorting the list in its entirety is  likely  to  require  significantly
 more work than the previous approach:
 
-    ? sort [100,99..1]
+    ? sort [100,99...1]
     [1, 2, 3, 4, 5, 6, 7, 8, ... etc ..., 99, 100]
     (10712 reductions, 21519 cells)
     ?
@@ -1479,7 +1479,7 @@ However, thanks to lazy-evaluation, calculating just the first  element
 of the sorted list actually requires less work in this particular  case
 than the first solution using "minimum":
 
-    ? head (sort [100,99..1])
+    ? head (sort [100,99...1])
     1
     (713 reductions, 1227 cells)
     ?
@@ -1489,10 +1489,10 @@ depends rather heavily on the particular algorithm  used  to  "sort"  a
 list of elements.  The results are rather different if we  compare  the
 same two approaches used to calculate the maximum value in the list:
 
-    ? maximum [100,99..1]
+    ? maximum [100,99...1]
     100
     (812 reductions, 1225 cells)
-    ? last (sort [100,99..1])
+    ? last (sort [100,99...1])
     100
     (10612 reductions, 20732 cells)
     ?
@@ -1625,15 +1625,15 @@ to be very useful.  Here are the types of some of the other polymorphic
 functions which have been used in previous  examples  which  illustrate
 this point:
 
-    length :: [a] -> Int
-    (++)   :: [a] -> [a] -> [a]
-    concat :: [[a]] -> [a]
+    length : [a] -> Int
+    (++)   : [a] -> [a] -> [a]
+    concat : [[a]] -> [a]
 
 Thus we can use precisely the same "length" function to determine  both
 the length of a list of integers as well as finding  the  length  of  a
 string:
 
-    ? length [1..10]
+    ? length [1...10]
     10
     (98 reductions, 138 cells)
     ? length "Hello"
@@ -1653,7 +1653,7 @@ Functions which manipulate  other  functions  in  this  way  are  often
 described as `higher-order functions'.  Consider the following example,
 taken from the standard prelude:
 
-    (.)       :: (b -> c) -> (a -> b) -> (a -> c)
+    (.)       : (b -> c) -> (a -> b) -> (a -> c)
     (f . g) x  = f (g x)
 
 As indicated by the type declaration, we think of the (.) operator as a
@@ -1709,7 +1709,7 @@ by function declarations of arity>0 are guaranteed to be functions, the
 values defined by variable declarations may or may not be functions:
 
     odd = not . even   -- if an integer is not even then it must be odd
-    val = sum [1..100]
+    val = sum [1...100]
 
 Note that variables defined like this at the top level  of  a  file  of
 definitions will be evaluated using lazy evaluation.  The first time we
@@ -1733,7 +1733,7 @@ Because of this behaviour,  we  should  probably  try  to  avoid  using
 variable declarations where the resulting value will require a  lot  of
 storage space.  If we load a file of definitions including the line:
 
-    longList = [1..10000]
+    longList = [1...10000]
 
 and  then  evaluate  the  expression  "length   longList"   (eventually
 obtaining the expected result of 10000), then Gofer will  evaluate  the
@@ -1775,7 +1775,7 @@ think of as `returning more  than  one  value'  --  although  they  are
 actually packaged up in a single value such as a tuple.  As an example,
 consider the function "span" defined in the standard prelude.
 
-    span :: (a -> Bool) -> [a] -> ([a],[a])
+    span : (a -> Bool) -> [a] -> ([a],[a])
 
 If xs is a list of values and p is a predicate, then span p xs  returns
 the pair of lists (ys,zs) such that ys++zs == xs, all of  the  elements
@@ -1884,7 +1884,7 @@ types of its arguments and the return  value  as  in  some  programming
 languages.  Despite this, Gofer allows the use of type declarations  of
 the form:
 
-                var1, ..., varn :: type
+                var1, ..., varn : type
 
 which enable the programmer  to  declare  the  intended  types  of  the
 variables var1,  ...,  varn  defined  in  either  function  or  pattern
@@ -1908,11 +1908,11 @@ declarations of this kind in a program:
      an explicit type declaration  to restrict the type of "idInt" to a
      particular instance of the polymorphic type a -> a:
 
-         idInt :: Int -> Int
+         idInt : Int -> Int
 
      Note that a declaration such as:
 
-         idInt :: Int -> a
+         idInt : Int -> a
 
      is not a valid type for the function "idInt"  (the  value  of  the
      expression "idInt 42" is an  integer  and  cannot  be  treated  as
@@ -1951,25 +1951,25 @@ the four forms of sequence  expression  that  can  be  used  in  Gofer,
 together with their translation using the standard functions  enumFrom,
 enumFromTo, enumFromThen and enumFromThenTo:
 
-    [ n .. ]         enumFrom n
+    [ n ... ]         enumFrom n
 
                      Produces the (potentially infinite) list of values
                      starting with the value of  n  and  increasing  in
                      single steps.
 
-                     e.g. [1..] = [1, 2, 3, 4, 5, 6, 7, 8, 9, etc...
+                     e.g. [1...] = [1, 2, 3, 4, 5, 6, 7, 8, 9, etc...
 
-    [ n .. m ]       enumFromTo n m
+    [ n ... m ]       enumFromTo n m
 
                      Produces the list of  elements  from  n  upto  and
                      including m in single steps.  If m is less than  n
                      then the list is empty.
 
-                     e.g. [-3..3] = [-3, -2, -1, 0, 1, 2, 3]
-                          [1..1]  = [1]
-                          [9..0]  = []
+                     e.g. [-3...3] = [-3, -2, -1, 0, 1, 2, 3]
+                          [1...1]  = [1]
+                          [9...0]  = []
 
-    [ n, m .. ]      enumFromThen n m
+    [ n, m ... ]      enumFromThen n m
 
                      Produces the (potentially infinite) list of values
                      whose first two elements are given by the values n
@@ -1977,35 +1977,35 @@ enumFromTo, enumFromThen and enumFromThenTo:
                      elements of the list are increasing  in  steps  of
                      the same size.  A similar result is obtained if  m
                      is less than n  in  which  case  the  elements  of
-                     [n,m..] will be decreasing.  If n and m are  equal
-                     then [n,m..] is an infinite  list  in  which  each
+                     [n,m...] will be decreasing.  If n and m are  equal
+                     then [n,m...] is an infinite  list  in  which  each
                      element is equal to n.
 
-                     e.g. [1,3..] = [1, 3, 5, 7, 9, 11, 13, etc...
-                          [0,0..] = [0, 0, 0, 0, 0, 0, 0, etc...
-                          [5,4..] = [5, 4, 3, 2, 1, 0, -1, etc...
+                     e.g. [1,3...] = [1, 3, 5, 7, 9, 11, 13, etc...
+                          [0,0...] = [0, 0, 0, 0, 0, 0, 0, etc...
+                          [5,4...] = [5, 4, 3, 2, 1, 0, -1, etc...
 
-    [ n, n' .. m ]   enumFromThenTo n n' m
+    [ n, n' ... m ]   enumFromThenTo n n' m
 
-                     Produces the list of elements from  [n,n'..]  upto
+                     Produces the list of elements from  [n,n'...]  upto
                      the limit value m.   If  m  is  less  than  n  and
-                     [n,n'..] is increasing, or m is greater than n and
-                     [n,n'..] is decreasing the  resulting list will be
+                     [n,n'...] is increasing, or m is greater than n and
+                     [n,n'...] is decreasing the  resulting list will be
                      empty.
 
-                     e.g. [1,3..12] = [1, 3, 5, 7, 9, 11]
-                          [0,0..10] = [0, 0, 0, 0, 0, 0, 0, etc...
-                          [5,4..1]  = [5, 4, 3, 2, 1]
+                     e.g. [1,3...12] = [1, 3, 5, 7, 9, 11]
+                          [0,0...10] = [0, 0, 0, 0, 0, 0, 0, etc...
+                          [5,4...1]  = [5, 4, 3, 2, 1]
 
 In  the  standard  prelude,   the   functions   enumFrom,   enumFromTo,
 enumFromThen and enumFromThenTo are overloaded and may also be used  to
 enumerate lists of characters or floating point values:
 
-    ? ['0'..'9'] ++ ['A'..'Z']
+    ? ['0'...'9'] ++ ['A'...'Z']
     0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
     (397 reductions, 542 cells)
 
-    ? [1.2, 1.35 .. 2.00]
+    ? [1.2, 1.35... 2.00]
     [1.2, 1.35, 1.5, 1.65, 1.8, 1.95]
     (56 reductions, 133 cells)
 
@@ -2015,7 +2015,7 @@ Arithmetic sequences such as those described above play the  same  role
 in functional programming languages as the iterative  `for'  constructs
 in traditional imperative languages.  A good example  of  this  is  the
 example in section 4 used to calculate the sum of the integers  from  1
-upto 10 -- "sum [1..10]".   An  equivalent  program  in  an  imperative
+upto 10 -- "sum [1...10]".   An  equivalent  program  in  an  imperative
 language might look something like (especially if you think of C!):
 
     int i;
@@ -2029,7 +2029,7 @@ The advantages of the functional notation in this case are clear:
    o  It is more compact.
 
    o  It separates the task of  generating  the  sequence  of  integers
-      [1..10] from the task of finding their sum.
+      [1...10] from the task of finding their sum.
 
    o  It does not require the declaration or use of auxiliary variables
       such as "i" and "total" in the above.
@@ -2048,7 +2048,7 @@ There are three kinds of qualifier that can be used in Gofer:
   o  Generators: A qualifier of the form pat<-exp is  used  to  extract
      each element that matches the pattern pat from the list exp in the
      order that they elements appear in that list.  A simple example of
-     this is the expression [x*x | x<-[1..10]] which denotes  the  list
+     this is the expression [x*x | x<-[1...10]] which denotes  the  list
      of the squares of the integers between  1  and  10  inclusive  and
      evaluates to [1, 4, 9, 16, 25, 36, 49, 64, 81, 100] as expected.
 
@@ -2118,18 +2118,18 @@ practice:
   o  Variables generated by later qualifiers  vary  more  quickly  than
      those generated by earlier qualifiers:
 
-         ? [ (x,y) | x<-[1..3], y<-[1..2] ]
+         ? [ (x,y) | x<-[1...3], y<-[1...2] ]
          [(1,1), (1,2), (2,1), (2,2), (3,1), (3,2)]
          (107 reductions, 246 cells)
          ?
 
   o  Later qualifiers may use the values generated by earlier ones:
 
-         ? [ (x,y) | x<-[1..3], y<-[1..x]]
+         ? [ (x,y) | x<-[1...3], y<-[1...x]]
          [(1,1), (2,1), (2,2), (3,1), (3,2), (3,3)]
          (107 reductions, 246 cells)
 
-         ? [ x | x<-[1..10], even x ]
+         ? [ x | x<-[1...10], even x ]
          [2, 4, 6, 8, 10]
          (108 reductions, 171 cells)
          ?
@@ -2154,11 +2154,11 @@ practice:
      but the first uses more reductions and cells  because  it  repeats
      the evaluation of "even x" for each possible value of "y".
 
-         ? [ (x,y) | x<-[1..3], y<-[1..2], even x ]
+         ? [ (x,y) | x<-[1...3], y<-[1...2], even x ]
          [(2,1), (2,2)]
          (110 reductions, 186 cells)
 
-         ? [ (x,y) | x<-[1..3], even x, y<-[1..2] ]
+         ? [ (x,y) | x<-[1...3], even x, y<-[1...2] ]
          [(2,1), (2,2)]
          (62 reductions, 118 cells)
          ? 
@@ -2169,11 +2169,11 @@ practice:
      expression uses a local definition to ensure that  the  evaluation
      is not repeated:
 
-         ? [ fact x + y | x<-[1..3], y<-[1..2] ]
+         ? [ fact x + y | x<-[1...3], y<-[1...2] ]
          [2, 3, 3, 4, 7, 8]
          (246 reductions, 398 cells)
 
-         ? [ factx + y | x<-[1..3], factx = fact x, y<-[1..2] ]
+         ? [ factx + y | x<-[1...3], factx = fact x, y<-[1...2] ]
          [2, 3, 3, 4, 7, 8]
          (173 reductions, 294 cells)
          ?
@@ -2338,7 +2338,7 @@ In Gofer, the expressions "(e *)" and "(* e)" are actually  treated  as
 abbreviations for "(*) e" and "flip (*) e" respectively,  where  "flip"
 is the function defined by:
 
-     flip        :: (a -> b -> c) -> b -> a -> c
+     flip        : (a -> b -> c) -> b -> a -> c
      flip  f x y  =  f y x
 
 There is an important special case which occurs with an  expression  of
@@ -2356,35 +2356,35 @@ As described in section 9.12, it is often useful to be able to  declare
 the type of a variable defined in a function or pattern  binding.   For
 much the same reasons, Gofer allows expressions of the form:
 
-                         <expr> :: <type>
+                         <expr> : <type>
 
 so that the type of an expression can be  specified  explicitly.   Note
 that the :t command can be used  to  find  the  type  of  a  particular
 expression that is inferred by Gofer:
 
     ? :t  \x -> [x]
-    \x -> [x] :: a -> [a]
+    \x -> [x] : a -> [a]
 
     ? :t  sum . map length
-    sum . map length :: [[a]] -> Int
+    sum . map length : [[a]] -> Int
 
     ? 
 
 The types inferred in each case can be modified by  including  explicit
 types in these expressions:
 
-    ? :t  (\x -> [x]) :: Char -> String
-    \x -> [x] :: Char -> String
+    ? :t  (\x -> [x]) : Char -> String
+    \x -> [x] : Char -> String
 
-    ? :t  sum . map (length :: String -> Int)
-    sum . map length :: [String] -> Int
+    ? :t  sum . map (length : String -> Int)
+    sum . map length : [String] -> Int
 
     ?
 
 Note that an error occurs if the type declared in an  explicitly  typed
 expression is not compatible with the type inferred by Gofer:
 
-    ? :t (\x -> [x]) :: Int -> a
+    ? :t (\x -> [x]) : Int -> a
     ERROR: Declared type too general
     *** Expression    : \x -> [x]
     *** Declared type : Int -> a
@@ -2445,7 +2445,7 @@ fahrenheit scales:
 
     data Temp = Centigrade Float | Fahrenheit Float
 
-    freezing                  :: Temp -> Bool
+    freezing                  : Temp -> Bool
     freezing (Centigrade temp) = temp <= 0.0
     freezing (Fahrenheit temp) = temp <= 32.0
 
@@ -2488,7 +2488,7 @@ branches of the tree from left to right.  The first definition  uses  a
 simple definition, whilst the second uses an  `accumulating  parameter'
 giving a more efficient algorithm:
 
-    leaves, leaves'  :: Tree a -> [a]
+    leaves, leaves'  : Tree a -> [a]
 
     leaves (Lf l)  = [l]
     leaves (l:^:r) = leaves l ++ leaves r
@@ -2544,9 +2544,9 @@ either using an explicitly typed expression (section 10.6)  or  a  type
 declaration (section 9.12):
 
     ? :t ['c']
-    ['c'] :: [Char]
-    ? :t ['c'] :: String
-    ['c'] :: String
+    ['c'] : [Char]
+    ? :t ['c'] : String
+    ['c'] : String
     ?
 
 Unlike the datatype declarations described  in  the  previous  section,
@@ -2714,7 +2714,7 @@ may be obtained in each case:
 A simple example of a program using these facilities to output a short
 message on the standard output stream is:
 
-    helloWorld      :: Dialogue
+    helloWorld      : Dialogue
     helloWorld resps = [AppendChan stdout "hello, world"]
  
 Any expression entered into Gofer of type "Dialogue" will be treated as
@@ -2734,7 +2734,7 @@ be illustrated using lambda expressions:
     v128
     (1 reduction, 7 cells)
 
-    ? (\resps -> [AppendChan stdout "hello, world"]) :: Dialogue
+    ? (\resps -> [AppendChan stdout "hello, world"]) : Dialogue
     hello, world
  
     (1 reduction, 28 cells)
@@ -2766,7 +2766,7 @@ corresponding request had been produced:
 The next example takes a single string as a parameter and displays  the
 contents of the corresponding file:
 
-    showFile               :: String -> Dialogue 
+    showFile               : String -> Dialogue 
     showFile name ~(read:_) = [ReadFile name, AppendChan stdout result] 
      where result = case read of Str contents -> contents 
                                  Failure _    -> "Can't open " ++ name 
@@ -2872,19 +2872,19 @@ corresponding to the six different kinds of I/O  request  described  in
 the previous section.  Full definitions for each of these functions are
 given in appendix B:
 
-    readFile   :: String -> FailCont -> StrCont -> Dialogue
-    writeFile  :: String -> String -> FailCont -> SuccCont -> Dialogue
-    appendFile :: String -> String -> FailCont -> SuccCont -> Dialogue
-    readChan   :: String -> FailCont -> StrCont  -> Dialogue
-    appendChan :: String -> String -> FailCont -> SuccCont -> Dialogue
-    echo       :: Bool -> FailCont -> SuccCont -> Dialogue
+    readFile   : String -> FailCont -> StrCont -> Dialogue
+    writeFile  : String -> String -> FailCont -> SuccCont -> Dialogue
+    appendFile : String -> String -> FailCont -> SuccCont -> Dialogue
+    readChan   : String -> FailCont -> StrCont  -> Dialogue
+    appendChan : String -> String -> FailCont -> SuccCont -> Dialogue
+    echo       : Bool -> FailCont -> SuccCont -> Dialogue
 
 As an illustration of the use of these functions, we show how  each  of
 the example programs from the previous section can be  rewritten  using
 the  continuation  based  style  of  I/O,  starting  with  the  program
 "helloWorld":
 
-    helloWorld :: Dialogue
+    helloWorld : Dialogue
     helloWorld  = appendChan stdout "hello, world" abort done
 
 In this case, the explicit type declaration is  not  actually  required
@@ -2896,22 +2896,22 @@ way, "done"  is  the  trivial  dialogue  which  terminates  immediately
 without any action.   Both of these values are defined in the  standard
 prelude:
 
-   done         :: Dialogue
+   done         : Dialogue
    done resps    = []
 
-   abort        :: FailCont
+   abort        : FailCont
    abort ioerror = done
  
 Using the same approach, the "showFile" and "main"  programs  from  the
 previous section are written as:
 
-    showFile :: String -> Dialogue
+    showFile : String -> Dialogue
     showFile name
      = readFile name (\ioerror -> appendChan stdout
                                      ("Can't open " ++ name) abort done)
                      (\contents-> appendChan stdout contents abort done)
  
-    main :: Dialogue
+    main : Dialogue
     main  = appendChan stdout "Please type a filename: " abort
             (readChan stdin abort
             (\userInput -> let (name : _) = lines userInput in
@@ -2932,7 +2932,7 @@ at the keyboard into an output string to be displayed on the screen.
 There are two functions defined in the standard prelude  which  can  be
 used to `execute' functions of this kind as interactive programs:
 
-  o  "interact f" executes f::String->String as an interactive  program
+  o  "interact f" executes f:String->String as an interactive  program
      with echo on.  This  means  that  characters  are  read  from  the
      keyboard a line at a time.  The usual editing characters  such  as
      backspace can be used to correct mistakes which are noticed before
@@ -2967,11 +2967,11 @@ Haskell system using the definition below.]
 The definitions of "interact" and "run"  provide  further  examples  of
 Gofer programs using simple I/O facilities:
 
-    interact        :: (String -> String) -> Dialogue
+    interact        : (String -> String) -> Dialogue
     interact f       = readChan stdin abort
                             (\s -> appendChan stdout (f s) abort done)
  
-    run             :: (String -> String) -> Dialogue
+    run             : (String -> String) -> Dialogue
     run f            = echo False abort (interact f)
  
 [EXERCISE for the interested reader:  construct alternative definitions
@@ -3135,18 +3135,18 @@ layout rule.  A file containing the following definitions:
     data Stack a = Empty
                  | MkStack a (Stack a)
 
-    push    :: a -> Stack a -> Stack a
+    push    : a -> Stack a -> Stack a
     push x s = MkStack x s
 
-    size  :: Stack a -> Int
+    size  : Stack a -> Int
     size s = length (stkToList s) where
                stkToList Empty         = []
                stkToList (MkStack x s) = x:xs where xs = stkToList s
 
-    pop :: Stack a -> (a, Stack a)
+    pop : Stack a -> (a, Stack a)
     pop (MkStack x s) = (x, case s of r -> i r where i x = x)
 
-    top :: Stack a -> a
+    top : Stack a -> a
     top (MkStack x s) = x
 
 will be treated by Gofer as if it has been written:
@@ -3154,18 +3154,18 @@ will be treated by Gofer as if it has been written:
     {data Stack a = Empty
                   | MkStack a (Stack a)
 
-    ;push    :: a -> Stack a -> Stack a
+    ;push    : a -> Stack a -> Stack a
     ;push x s = MkStack x s
 
-    ;size  :: Stack a -> Int
+    ;size  : Stack a -> Int
     ;size s = length (stkToList s) where
                {stkToList Empty = []
                ;stkToList (MkStack x s) = x:xs where {xs = stkToList s
 
-    }};pop :: Stack a -> (a, Stack a)
+    }};pop : Stack a -> (a, Stack a)
     ;pop (MkStack x s) = (x, case s of {r -> i r where {i x = x}})
 
-    ;top :: Stack a -> a
+    ;top : Stack a -> a
     ;top (MkStack x s) = x
     }
 
@@ -3173,7 +3173,7 @@ Note that some of the more sophisticated forms of expression cannot  be
 written on a single line (and hence entered  directly  into  the  Gofer
 system) without explicit use of the layout characters `{', `}' and `;':
 
-    ? len [1..10] where len [] = 0;  len (x:xs) = 1 + len xs
+    ? len [1...10] where len [] = 0;  len (x:xs) = 1 + len xs
     10
     (81 reductions, 108 cells)
 
@@ -3241,7 +3241,7 @@ expression of the form C t1 t2 ... tn where t1, t2, ...,  tn  are  type
 expressions is called a predicate and represents the assertion that the
 specified tuple of types is an instance of the class C.
 
-Given a polymorphic function (e.g. map::(a->b)->[a]->[b]), we are  free
+Given a polymorphic function (e.g. map:(a->b)->[a]->[b]), we are  free
 to use the function at any type which can be obtained  by  substituting
 arbitrary types for each of the type variables in its type.  In  Gofer,
 a type expression may be qualified by  one  or  more  predicates  which
@@ -3271,7 +3271,7 @@ precisely those types whose elements can be tested for  equality.   The
 declaration of this class given in the standard prelude is as follows:
 
     class Eq a where
-        (==), (/=) :: a -> a -> Bool
+        (==), (/=) : a -> a -> Bool
         x /= y      = not (x == y)
 
 There are three parts in any class declaration.   For  this  particular
@@ -3326,8 +3326,8 @@ the following two functions:
 
 are:
 
-    elem   :: Eq a => a -> [a] -> Bool
-    subset :: Eq a => [a] -> [a] -> Bool
+    elem   : Eq a => a -> [a] -> Bool
+    subset : Eq a => [a] -> [a] -> Bool
 
 [ASIDE: On the  other  hand,  if  none  of  the  functions  used  in  a
 particular expression or definition are overloaded then there will  not
@@ -3613,7 +3613,7 @@ class to define a function "cat" (inspired by the unix (tm) command  of
 the same name) which uses the I/O facilities  of  Gofer  to  print  the
 contents of one or more files on the terminal:
 
-    class    Cat a        where cat  :: a -> Dialogue
+    class    Cat a        where cat  : a -> Dialogue
     instance Cat [Char]   where cat n = showFile n done
     instance Cat [[Char]] where cat   = foldr showFile done
 
@@ -3692,7 +3692,7 @@ To understand how these definitions work, we need to take a look  at  a
 specific dictionary.  Following the original instance declaration  used
 for Eq Int, the corresponding dictionary is:
 
-                    d :: Eq Int
+                    d : Eq Int
                     +------------+------------+
                     |            |            |
                     | primEqInt  |  defNeq d  |
@@ -3705,7 +3705,7 @@ can include references to the same dictionary.
 
 [ASIDE: It turns out that predicates  play  a  very  similar  role  for
 dictionaries as types play for normal values.  This motivates  our  use
-of the notation d :: Eq Int to indicate that d is a dictionary for  the
+of the notation d : Eq Int to indicate that d is a dictionary for  the
 instance Eq Int.  One difference between these, particularly  important
 for theoretical work, is that dictionary values are uniquely determined
 by predicates; if d1::p and d2::p for some predicate p, then d1 = d2.]
@@ -3763,26 +3763,26 @@ from the definitions of (==) given in the instance declarations for  Eq
 
 The dictionary structure for Eq (Int, [Int]) is as follows.  Note  that
 the Gofer system ensures that there is at most  one  dictionary  for  a
-particular instance of a class, and that the dictionary d1 :: Eq Int in
+particular instance of a class, and that the dictionary d1 : Eq Int in
 this system is automatically shared between d2 and d3:
 
-   d3 :: Eq (Int, [Int])
+   d3 : Eq (Int, [Int])
    +------------+------------+------------+------------+
    |            |            |            |            |
-   | eqPair d3  | defNeq d3  | d1::Eq Int |d2::Eq [Int]|
+   | eqPair d3  | defNeq d3  | d1:Eq Int |d2:Eq [Int]|
    |            |            |            |            |
    +------------+------------+-----+------+-----+------+
                                    |            |
                     +--------------+            |
                     |                           |
-                    |        d2 :: Eq [Int]     V 
+                    |        d2 : Eq [Int]     V 
                     |        +------------+------------+------------+
                     |        |            |            |            |
-                    |        | eqList d2  | defNeq d2  | d1::Eq Int |
+                    |        | eqList d2  | defNeq d2  | d1:Eq Int |
                     |        |            |            |            |
                     |        +------------+------------+-----+------+
                     |                                        |
-       d1 :: Eq Int V                                        |
+       d1 : Eq Int V                                        |
        +------------+------------+                           |
        |            |            |                           |
        | primEqInt  | defNeq d1  |<--------------------------+
@@ -3843,8 +3843,8 @@ non-strict  (<=),  (>=)  versions  of  an  ordering  defined  on  their
 elements:
 
     class Eq a => Ord a where
-        (<), (<=), (>), (>=) :: a -> a -> Bool
-        max, min             :: a -> a -> a
+        (<), (<=), (>), (>=) : a -> a -> Bool
+        max, min             : a -> a -> a
 
         x <  y            = x <= y && x /= y
         x >= y            = y <= x
@@ -3926,8 +3926,8 @@ Classes with no member functions (corresponding to dictionaries with no
 member functions) are sometimes useful as a convenient abbreviation for
 a list of predicates.  For example:
 
-    class  C a  where  cee :: a -> a
-    class  D a  where  dee :: a -> a
+    class  C a  where  cee : a -> a
+    class  D a  where  dee : a -> a
 
     class  (C a, D a) => CandD a
 
@@ -3942,9 +3942,9 @@ predicate of the form CandD a instead of the two predicates C a and D a
 unless  explicit signatures are used:
 
     ? :t dee . cee
-    \d129 d130 -> dee d130 . cee d129 :: (C a, D a) => a -> a
-    ? :t dee . cee :: CandD a => a -> a
-    \d129 -> dee (#2 d129) . cee (#1 d129) :: CandD a => a -> a
+    \d129 d130 -> dee d130 . cee d129 : (C a, D a) => a -> a
+    ? :t dee . cee : CandD a => a -> a
+    \d129 -> dee (#2 d129) . cee (#1 d129) : CandD a => a -> a
     ?
 
 In Haskell,  all  instances  of  a  class  such  as  CandD  must   have
@@ -3966,7 +3966,7 @@ Consider the function defined by the following equation:
     eg1 x   =   [x] == [x]  ||  x == x
 
 This definition does not restrict the type of x in any way except that,
-if x :: a, then there must be instances Eq [a] and Eq a which are  used
+if x : a, then there must be instances Eq [a] and Eq a which are  used
 for the two occurrences of the (==) operator in the equation.  We might
 therefore expect the type of eg1 to be:
 
@@ -3977,8 +3977,8 @@ with translation:
     eg1 d1 d2 x  =  (==) d1 [x] [x]  ||  (==) d2 x x
 
 However, as can be seen  from  the  case  where  a=Int  illustrated  in
-section 14.3, given d1::Eq [a] we can always find a dictionary for Eq a
-by taking the third element of d1 i.e. (#3 d1)::Eq a.  Since it is more
+section 14.3, given d1:Eq [a] we can always find a dictionary for Eq a
+by taking the third element of d1 i.e. (#3 d1):Eq a.  Since it is more
 efficient to select an element from a  dictionary  than  to  complicate
 both type and translation with extra parameters, the type  assigned  to
 "eg1" by default is:
@@ -3999,14 +3999,14 @@ The original type and translation for eg1 given above can  be  produced
 by including an explicit type signature  in  the  file  containing  the
 definition of eg1:
 
-    eg1   ::  (Eq [a], Eq a) => a -> Bool
+    eg1   :  (Eq [a], Eq a) => a -> Bool
     eg1 x  =  [x] == [x]  ||  x == x
 
 But even with this definition, Gofer will still always try to  minimise
 the number of dictionaries used in any particular expression:
 
     ? :t eg1
-    \d153 -> eg1 d153 (#3 d153) :: Eq [a] => a -> Bool
+    \d153 -> eg1 d153 (#3 d153) : Eq [a] => a -> Bool
     ?
 
 As another example, consider the expression "(\x y->  x==x  ||  y==y)".
@@ -4016,7 +4016,7 @@ using Gofer:
     ? :t (\x y-> x==x || y==y)
     \d121 d122 x y -> (==) d122 x x ||
                       (==) d121 y y
-                  :: (Eq b, Eq a) => a -> b -> Bool
+                  : (Eq b, Eq a) => a -> b -> Bool
     ?
 
 Note that the translation has two dictionary parameters d121  and  d122
@@ -4025,10 +4025,10 @@ both of these dictionaries can be obtained from a  dictionary  for  the
 predicate Eq (a,b), we can use an explicit type signature to produce  a
 translation which needs only one dictionary parameter:
 
-    ? :t (\x y-> x==x || y==y) :: Eq (a,b) => a -> b -> Bool
+    ? :t (\x y-> x==x || y==y) : Eq (a,b) => a -> b -> Bool
     \d121 x y -> (==) (#3 d121) x x ||
                  (==) (#4 d121) y y
-             :: Eq (a,b) => a -> b -> Bool
+             : Eq (a,b) => a -> b -> Bool
     ?
 
 
@@ -4089,7 +4089,7 @@ situations:
      kind is to use an explicit type signature.   For  example,  if  we
      specify that the second empty list is an empty list of type [Int]:
 
-         ? [] == ([]::[Int])
+         ? [] == ([]:[Int])
          True
          (2 reductions, 9 cells)
          ?
@@ -4104,8 +4104,8 @@ Further examples of unresolved overloading occur  with  other  classes.
 As an example consider the class Reader defined by:
 
     class Reader a where 
-        parse   :: String -> a   
-        unparse :: a -> String
+        parse   : String -> a   
+        unparse : a -> String
 
 whose  member  functions  provide  methods  for  obtaining  the  string
 representation of an element of an instance type,  and  for  converting
@@ -4130,7 +4130,7 @@ the string representation of a boolean value!
 This can be fixed by using an explicit type declaration,  although  the
 expression still produces unresolved overloading:
 
-    ? (parse . unparse) :: Reader a => a -> a
+    ? (parse . unparse) : Reader a => a -> a
     ERROR: Unresolved overloading
     *** type        : Reader a => a -> a
     *** translation : \d130 -> parse d130 . unparse d130
@@ -4140,7 +4140,7 @@ Notice however that the type of this expression  is  not  ambiguous  so
 that the unresolved overloading in this example can be eliminated  when
 the function is actually used:
 
-    ? ((parse . unparse) :: Reader a => a -> a) 'a'
+    ? ((parse . unparse) : Reader a => a -> a) 'a'
     'a'
     (4 reductions, 11 cells)
     ?
@@ -4163,7 +4163,7 @@ this kind of ambiguity:
   o  Using an explicitly typed expression: Assuming  for  example  that
      Char is an instance of Reader, we can write:
 
-         ? unparse . (parse :: String -> Char)
+         ? unparse . (parse : String -> Char)
          v113 {dict} . v112 {dict}
          (5 reductions, 42 cells)
          ?
@@ -4172,7 +4172,7 @@ this kind of ambiguity:
      number of places, it  might  be  better  to  define  an  auxiliary
      function and use that instead:
 
-         charParse :: String -> Char
+         charParse : String -> Char
          charParse  = parse
 
          ? unparse . charParse
@@ -4197,7 +4197,7 @@ this kind of ambiguity:
 
      where the standard prelude operator `asTypeOf` defined by:
 
-         asTypeOf      :: a -> a -> a
+         asTypeOf      : a -> a -> a
          x `asTypeOf` _ = x
 
      is used to ensure that the type of parse in the definition of f is
@@ -4206,7 +4206,7 @@ this kind of ambiguity:
 
      The resulting type for f is:
 
-          f :: Reader a => a -> String -> String
+          f : Reader a => a -> String -> String
 
      Notice how the addition of the dummy parameter has  been  used  to
      eliminate the ambiguity present in the original type.
@@ -4249,9 +4249,9 @@ single class.  The following example illustrates the technique with  an
 alternative definition for the class Eq in  which  the  (==)  and  (/=)
 operators are placed in different classes:
 
-    class Neq a => Eq a  where  (==) :: a -> a -> Bool
+    class Neq a => Eq a  where  (==) : a -> a -> Bool
 
-    class Eq a => Neq a  where  (/=) :: a -> a -> Bool
+    class Eq a => Neq a  where  (/=) : a -> a -> Bool
                                 x/=y  = not (x == y)
 
 
@@ -4267,10 +4267,10 @@ If we then give instance declarations:
 and try to evaluate the expression "2==3" then the following system  of
 dictionaries will be generated:
 
-        d1 :: Eq Int                   d2 :: Neq Int
+        d1 : Eq Int                   d2 : Neq Int
         +-----------+-----------+      +-----------+-----------+
         |           |           |      |           |           |
-    +-->| primEqInt |d2::Neq Int+----->| defNeq d2 |d1::Eq Int +---+
+    +-->| primEqInt |d2:Neq Int+----->| defNeq d2 |d1:Eq Int +---+
     |   |           |           |      |           |           |   |
     |   +-----------+-----------+      +-----------+-----------+   |
     |                                                              |
@@ -4292,9 +4292,9 @@ override the  default  definition  for  (/=).   In  other  words,  this
 approach would give the same effect as defining  (/=)  as  a  top-level
 function rather than a member function in the class Eq:
 
-    class Eq a  where  (==) :: a -> a -> Bool
+    class Eq a  where  (==) : a -> a -> Bool
 
-    (/=)   ::  Eq a => a -> a -> Bool
+    (/=)   :  Eq a => a -> a -> Bool
     x /= y  =  not (x == y)
 
 There are other situations in which recursive dictionaries of the  kind
@@ -4303,7 +4303,7 @@ following section.  Unfortunately, the lack of restrictions on the form
 of class and instance declarations can also lead to  problems  in  some
 (mostly pathological) cases.  As an example, consider the class:
 
-    class Bad [a] => Bad a  where  bad :: a -> a
+    class Bad [a] => Bad a  where  bad : a -> a
 
 Without defining any instances of Bad, it is not possible to  construct
 any dictionaries for instances of Bad:
@@ -4371,7 +4371,7 @@ overloading resolution.
 The following declaration introduces a class  Iso  whose  elements  are
 pairs of isomorphic types:
 
-    class Iso b a => Iso a b  where  iso :: a -> b
+    class Iso b a => Iso a b  where  iso : a -> b
 
 The single member function "iso"  represents  the  isomorphism  mapping
 elements of type a to corresponding  elements  of  type  b.   Note  the
@@ -4388,10 +4388,10 @@ following instance declaration:
 For example, the dictionary structure created in order to evaluate the
 expression "iso 2 = 3" is:
 
-                   d :: Iso Int Int
+                   d : Iso Int Int
                    +--------------+--------------+
                    |              |              |
-               +-->|      id      |d::Iso Int Int+--+
+               +-->|      id      |d:Iso Int Int+--+
                |   |              |              |  |
                |   +--------------+--------------+  |
                |                                    |
@@ -4436,7 +4436,7 @@ declarations:
     *** type        : Iso [(Int,Int)] a => a
     *** translation : \d126 -> iso d126 [(1,2),(3,4)]
 
-    ? (iso [(1,2),(3,4)]) :: ([Int],[Int])
+    ? (iso [(1,2),(3,4)]) : ([Int],[Int])
     ([1, 3],[2, 4])
     (22 reductions, 64 cells)
     ?
@@ -4445,9 +4445,9 @@ A second example of a multiple  parameter  type  class  is  defined  as
 follows:
 
     class Ord a => Collects a b where
-        emptyCollection :: b
-        addToCollection :: a -> b -> b
-        listCollection  :: b -> [a]
+        emptyCollection : b
+        addToCollection : a -> b -> b
+        listCollection  : b -> [a]
 
 The basic intuition is that the predicate Collects a b  indicates  that
 elements of type b can be used to represent collections of elements  of
@@ -4478,7 +4478,7 @@ actually produces a function with ambiguous type:
 
     ? :t foldr addToCollection emptyCollection
     \d139 d140 -> foldr (addToCollection d140) (emptyCollection d139)
-              :: (Collects c b, Collects a b) => [a] -> b
+              : (Collects c b, Collects a b) => [a] -> b
     ?
 
 which cannot be resolved, even with an explicit type declaration.
@@ -4503,9 +4503,9 @@ to  implement the  full  hierarchy  of  Haskell  numeric  classes,  the
 standard prelude uses a single numeric type class Num defined by:
 
     class Eq a => Num a where           -- simplified numeric class
-        (+), (-), (*), (/) :: a -> a -> a
-        negate             :: a -> a
-        fromInteger        :: Int -> a
+        (+), (-), (*), (/) : a -> a -> a
+        negate             : a -> a
+        fromInteger        : Int -> a
 
 The first four member functions (+), (-), (*),  (/)  are  the  standard
 arithmetic functions on instances of Num, whilst "negate" denotes unary
@@ -4571,7 +4571,7 @@ integer constant 0 in the first line of the definition.  Replacing this
 with the expression fromInteger 0 leads to the following definition for
 a generic sum function of the required type:
 
-    genericSum       :: Num a => [a] -> a
+    genericSum       : Num a => [a] -> a
     genericSum []     = fromInteger 0
     genericSum (x:xs) = x + genericSum xs
 
@@ -4613,7 +4613,7 @@ problem has been detected, will typically `default'  the  unknown  type
 represented by the type variable a above to be Int, so that the  result
 is actually equivalent to the following:
 
-    ? (fromInteger 2 + fromInteger 3) :: Int
+    ? (fromInteger 2 + fromInteger 3) : Int
     5
     (4 reductions, 8 cells)
     ?
@@ -4638,7 +4638,7 @@ evaluation, this has a number of advantages for classes in which member
 functions are defined by variable declarations as in section 9.10.   As
 an example, consider the class Finite defined by:
 
-    class Finite a  where  members :: [a]
+    class Finite a  where  members : [a]
 
 The only member in this class is a list enumerating the elements of the
 type.  For example:
@@ -4651,10 +4651,10 @@ type.  For example:
 In order to overcome any problems with unresolved overloading, explicit
 type signatures are often needed to resolve overloading:
 
-    ? members :: [Bool]
+    ? members : [Bool]
     [False, True]
     (6 reductions, 26 cells)
-    ? length (members :: [((Bool,Bool),(Bool,Bool))])
+    ? length (members : [((Bool,Bool),(Bool,Bool))])
     16
     (103 reductions, 195 cells)
     ?
@@ -4671,7 +4671,7 @@ example:
 We can also use the technique of passing a `dummy' parameter to resolve
 overloading problems in a function definition:
 
-    size  :: Finite a => a -> Int
+    size  : Finite a => a -> Int
     size x = length (members `asTypeOf` [x])
 
 which calculates the number of elements of  a  finite  type,  given  an
@@ -4708,7 +4708,7 @@ from a file of definitions, so that they are not deleted at the end  of
 each calculation, using an explicitly typed  variable  definition  such
 as:
 
-    boolBoolMembers = members :: [(Bool,Bool)]
+    boolBoolMembers = members : [(Bool,Bool)]
 
 This forces Gofer to construct the dictionary Finite (Bool,Bool)  when
 the file of definitions is loaded and prevents it from being deleted at
@@ -4863,8 +4863,8 @@ to a particular value binding:
  
      and hence the correct types for plus and times are:
  
-         plus  :: (Num a, Num b) => a -> a -> a
-         times :: (Num a, Num b) => b -> b -> b
+         plus  : (Num a, Num b) => a -> a -> a
+         times : (Num a, Num b) => b -> b -> b
      
      both of which are ambiguous.
 
@@ -4917,7 +4917,7 @@ to a particular value binding:
      defined is intended to be used as an overloaded  value.   In  this
      case, we need only include the declaration:
 
-         twiceMembers :: Finite a => [a]
+         twiceMembers : Finite a => [a]
 
      in the file containing the definition for twiceMembers to suppress
      the previous error message and allow the function to be used as  a
@@ -4926,8 +4926,8 @@ to a particular value binding:
      Note that the monomorphism restriction interferes with the use  of
      polymorphism.  For example, the definition:
 
-         aNumber = length (twiceMembers::[Bool]) +
-                   length (twiceMembers::[(Bool,Bool)])
+         aNumber = length (twiceMembers:[Bool]) +
+                   length (twiceMembers:[(Bool,Bool)])
                    where twiceMembers = members ++ members
 
      will not be accepted because the monomorphism  restriction  forces
@@ -4944,9 +4944,9 @@ to a particular value binding:
      Once again, this problem can  be  fixed  using  an  explicit  type
      declaration:
 
-         aNumber = length (twiceMembers::[Bool]) +
-                   length (twiceMembers::[(Bool,Bool)])  
-                   where twiceMembers :: Finite a => [a]
+         aNumber = length (twiceMembers:[Bool]) +
+                   length (twiceMembers:[(Bool,Bool)])  
+                   where twiceMembers : Finite a => [a]
                          twiceMembers  = members ++ members
 
 
@@ -5021,7 +5021,7 @@ Top-level grammar
                 |  infixl [<digit>] <op> {, <op>}   fixity declarations
                 |  infixr [<digit>] <op> {, <op>}
                 |  infix  [<digit>] <op> {, <op>}
-                |  primitive <prims> :: <type>      primitive bindings
+                |  primitive <prims> : <type>      primitive bindings
                 |  <class>                          class declaration
                 |  <inst>                           instance declaration
                 |  <decls>                          value declarations
@@ -5059,7 +5059,7 @@ Class and instance declarations
     <class>    ::= class [<context> =>] <pred> [<cbody>]
     <cbody>    ::= where "{" <cdecls> "}"           class body
     <cdecls>   ::= <cdecls>; <cdecls>               multiple declarations
-                |  <var> {, <var>} :: <type>        member functions
+                |  <var> {, <var>} : <type>        member functions
                 |  <fun> <rhs> [<where>]            default bindings
 
     <inst>     ::= instance [<context> =>] <pred> [<ibody>]
@@ -5071,7 +5071,7 @@ Value declarations
 ------------------
 
     <decls>  ::= <decls>; <decls>                 multiple declarations
-              |  <var> {, <var>} :: <sigType>     type declaration
+              |  <var> {, <var>} : <sigType>     type declaration
               |  <fun> <rhs> [<where>]            function binding
               |  <pat> <rhs> [<where>]            pattern binding
 
@@ -5096,7 +5096,7 @@ Expressions
               |  let "{" <decls> "}" in <exp>     local definition
               |  if <exp> then <exp> else <exp>   conditional expression
               |  case <exp> of "{" <alts> "}"     case expression
-              |  <opExp> :: <sigType>             typed expression
+              |  <opExp> : <sigType>             typed expression
               |  <opExp>
     <opExp>  ::= <opExp> <op> <opExp>             operator application
               |  <pfxExp>
@@ -5119,10 +5119,10 @@ Expressions
 
     <list>   ::= [ <exp> {, <exp>} ]              enumerated list
               |  <exp> "|" <quals>                list comprehension
-              |  <exp> ..                         arithmetic sequence
-              |  <exp>, <exp> ..
-              |  <exp> .. <exp>
-              |  <exp>, <exp> .. <exp>
+              |  <exp> ...                         arithmetic sequence
+              |  <exp>, <exp> ...
+              |  <exp> ... <exp>
+              |  <exp>, <exp> ... <exp>
     <quals>  ::= <quals>, <quals>                 multiple qualifiers
               |  <pat> <- <exp>                   generator
               |  <pat> = <exp>                    local definition
@@ -5448,11 +5448,11 @@ a good idea to use primitive functions directly in your programs.]
 A number of primitive functions are builtin to the  Gofer  interpreter,
 and may be bound to function symbols using a declaration of the form:
 
-    primitive name1 code1, name2 code2, ...., namen coden :: type
+    primitive name1 code1, name2 code2, ...., namen coden : type
 
 where each name is an identifier (or an  operator  symbol  enclosed  by
 parentheses) and each code is a string literal  taken  from  the  table
-below.  The type specified to the right of the  ::  symbol  must  be  a
+below.  The type specified to the right of the  :  symbol  must  be  a
 valid type for the functions being defined -- WARNING: GOFER  DOES  NOT
 ATTEMPT TO CHECK FOR SUITABILITY OF THE DECLARED TYPE.   The  following
 definition, taken from the standard prelude,  illustrates  the  use  of
@@ -5460,7 +5460,7 @@ this feature to bind  a  function  named  primPrint  to  the  primitive
 function with code name string "primPrint" and type Int -> a ->  String
 -> String:
 
-    primitive primPrint "primPrint"  :: Int -> a -> String -> String
+    primitive primPrint "primPrint"  : Int -> a -> String -> String
 
 The primitive functions currently available are:
 
