@@ -1033,8 +1033,8 @@ A standard function called "error" is defined in the  standard  prelude
 which is often useful for ensuring that appropriate error messages  are
 produced when an error occurs:
 
-    ? error "Problem has occurred"
-    {error "Problem has occurred"}
+    ? error."Problem has occurred"
+    {error."Problem has occurred"}
     (23 reductions, 99 cells)
     ? 
 .pa
@@ -1049,7 +1049,7 @@ will usually need to define a collection of new functions for  specific
 problems and calculations.  The declaration of a function  "f"  usually
 takes the form of a number of equations of the form:
 
-            f <pat1> <pat2> ... <patn>  =   <rhs>
+            f.<pat1>.<pat2>...<patn>  =  <rhs>
 
 (or an equivalent expression, if "f"  is  written  as  by  an  operator
 symbol).   Each  of  the  expressions  <pat1>,  <pat2>,   ...,   <patn>
@@ -1105,10 +1105,10 @@ used in patterns.  For example, if we define a function "hello" by:
 
 then:
 
-    ? hello "Mark"
+    ? hello."Mark"
     Howdy
     (1 reduction, 12 cells)
-    ? hello "Fred"
+    ? hello."Fred"
     Hello Fred, nice to meet you!
     (13 reductions, 66 cells)
     ?
@@ -1117,16 +1117,16 @@ Note that the  order  in  which  the  equations  are  written  is  very
 important because Gofer always uses the first applicable equation.   If
 instead we had defined the function with the equations:
 
-    hello name    =  "Hello " ++ name ++ ", nice to meet you!"
-    hello "Mark"  =  "Howdy"
+    hello.name    =  "Hello " ++ name ++ ", nice to meet you!"
+    hello."Mark"  =  "Howdy"
 
 then the results obtained using this function would have been a  little
 different:
 
-    ? hello "Mark"
+    ? hello."Mark"
     Hello Mark, nice to meet you!
     (13 reductions, 66 cells)
-    ? hello "Fred"
+    ? hello."Fred"
     Hello Fred, nice to meet you!
     (13 reductions, 66 cells)
     ?
@@ -1396,12 +1396,12 @@ Gofer evaluates expressions using a technique  sometimes  described  as
 
 The first of these ideas is illustrated by the following function:
 
-    ignoreArgument x = "I didn't need to evaluate x"
+    ignoreArgument.x = "I didn't need to evaluate x"
 
 Since the result of the function "ignoreArgument" doesn't depend on the
 value of its argument "x", that argument will not be evaluated:
 
-    ? ignoreArgument (1/0)
+    ? ignoreArgument.(1/0)
     I didn't need to evaluate x
     (1 reduction, 31 cells)
     ?
@@ -1412,8 +1412,8 @@ achieved using the function "strict" defined in the  standard  prelude;
 An expression of the form "strict f x" is evaluated by first evaluating
 the argument "x" and then applying the function "f" to the result:
 
-    ? strict ignoreArgument (1/0)
-    {primDivInt 1 0}
+    ? strict.ignoreArgument.(1/0)
+    {primDivInt.1.0}
     (4 reductions, 29 cells)
     ?
 
@@ -1455,7 +1455,7 @@ Consider the task  of  finding  the  smallest  element  of  a  list  of
 integers.  The standard prelude includes a function "minimum" which can
 be used for this very purpose:
 
-    ? minimum [100,99...1]
+    ? minimum.[100,99...1]
     1
     (809 reductions, 1322 cells)
     ?
@@ -1470,7 +1470,7 @@ resulting list  (using  the  standard  function  "head").   Of  course,
 sorting the list in its entirety is  likely  to  require  significantly
 more work than the previous approach:
 
-    ? sort [100,99...1]
+    ? sort.[100,99...1]
     [1, 2, 3, 4, 5, 6, 7, 8, ... etc ..., 99, 100]
     (10712 reductions, 21519 cells)
     ?
@@ -1479,7 +1479,7 @@ However, thanks to lazy-evaluation, calculating just the first  element
 of the sorted list actually requires less work in this particular  case
 than the first solution using "minimum":
 
-    ? head (sort [100,99...1])
+    ? head.(sort.[100,99...1])
     1
     (713 reductions, 1227 cells)
     ?
@@ -1489,10 +1489,10 @@ depends rather heavily on the particular algorithm  used  to  "sort"  a
 list of elements.  The results are rather different if we  compare  the
 same two approaches used to calculate the maximum value in the list:
 
-    ? maximum [100,99...1]
+    ? maximum.[100,99...1]
     100
     (812 reductions, 1225 cells)
-    ? last (sort [100,99...1])
+    ? last.(sort.[100,99...1])
     100
     (10612 reductions, 20732 cells)
     ?
@@ -1516,16 +1516,16 @@ are no longer required).
 As a simple example, consider the following function which can be  used
 to produce infinite lists of integer values:
 
-    countFrom n = n :: countFrom (n+1)
+    countFrom.n = n :: countFrom.(n+1)
 
-If we evaluate the expression "countFrom 1", Gofer just prints the list
+If we evaluate the expression "countFrom.1", Gofer just prints the list
 of integer values beginning with 1 until it is interrupted.  Once  each
 element in the list has been printed, the storage  used  to  hold  that
 element can be reused to hold later elements in the  list.   Evaluating
 this expression is equivalent to using an `infinite' loop to print  the
 list of integers in an imperative programming language:
 
-    ? countFrom 1
+    ? countFrom.1
     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,^C{Interrupted!}
     (53 reductions, 160 cells)
     ?
@@ -1537,15 +1537,15 @@ many iterations).  For example, using  "countFrom"  together  with  the
 function "take" defined in the standard  prelude,  we  can  repeat  the
 calculation from section 4 to find the sum of the integers 1 to 10:
 
-    ? sum.(take 10 (countFrom 1))
+    ? sum.(take.10.(countFrom.1))
     55
     (62 reductions, 119 cells)
     ?
 
-[ASIDE: The expression "take n xs" evaluates to a list  containing  the
+[ASIDE: The expression "take.n.xs" evaluates to a list  containing  the
 first n elements of the list xs (or to xs itself if the  list  contains
-fewer than n elements).  Thus "countFrom 1" generates the infinite list
-of integers, "take 10" ensures that only the  first  ten  elements  are
+fewer than n elements).  Thus "countFrom.1" generates the infinite list
+of integers, "take.10" ensures that only the  first  ten  elements  are
 calculated, and "sum" calculates the sum of those integers as before.]
 
 A particular advantage of using infinite data  structures  is  that  it
@@ -1561,7 +1561,7 @@ in the standard prelude [xs!!n evaluates to the nth element of the list
 xs], we can define a function to find the nth power of 2 for any  given
 integer n:
 
-    twoToThe n = powersOfTwo !! n 
+    twoToThe.n = powersOfTwo !! n 
 
 Alternatively, we can use the list "powersOfTwo" to define  a  function
 mapping lists of  bits  (represented  by  integers  0  and  1)  to  the
@@ -1570,14 +1570,14 @@ multiply each by the corresponding power of two and calculate the  sum.
 Using functions from the standard  prelude,  this  translates  directly
 into the definition:
 
-    binToDec ds = sum.(zipWith (*) (reverse ds) powersOfTwo)
+    binToDec.ds = sum.(zipWith.(*).(reverse.ds).powersOfTwo)
 
 For example:
 
-    ? twoToThe 12
+    ? twoToThe.12
     4096
     (15 reductions, 21 cells)
-    ? binToDec [1,0,1,1,0]
+    ? binToDec.[1,0,1,1,0]
     22
     (40 reductions, 85 cells)
     ?
@@ -1600,8 +1600,8 @@ both the second argument and the result are lists, so that the type  of
 
 But what can be said about the types a, b, c and  d?   One  possibility
 would be to choose a = b = c = d = Int which would  be  acceptable  for
-expressions such as  "map  fact  [1,2,3,4]",  but  this  would  not  be
-suitable in an expression such as  "map  chr  [65,75,32]"  because  the
+expressions such as  "map.fact.[1,2,3,4]",  but  this  would  not  be
+suitable in an expression such as  "map.chr.[65,75,32]"  because  the
 "chr" function does not have type Int -> Int.
 
 Notice however that the argument type of "f" must be the  same  as  the
@@ -1654,7 +1654,7 @@ described as `higher-order functions'.  Consider the following example,
 taken from the standard prelude:
 
     (;)       : (a -> b) -> (b -> c) -> (a -> c)
-    (g ; f) x  = f (g x)
+    (g ; f).x  = f.(g.x)
 
 As indicated by the type declaration, we think of the (;) operator as a
 function taking two function arguments and returning  another  function
@@ -1682,7 +1682,7 @@ number of characters by  first  combining  all  of  the  words  in  the
 argument list into a single word (using concat) and  then  finding  the
 length of that word:
 
-    ? (concat ; length) ["super","cali","fragi","listic"]
+    ? (concat ; length).["super","cali","fragi","listic"]
     20
     (113 reductions, 211 cells)
     ?
@@ -1691,7 +1691,7 @@ Another solution is to first find the length of each word in  the  list
 (using the "map" function to apply "length"  to  each  word)  and  then
 calculate the sum of these individual lengths:
 
-    ? (map ; sum length) ["super","cali","fragi","listic"]
+    ? (map.length ; sum).["super","cali","fragi","listic"]
     20
     (105 reductions, 172 cells)
     ?
@@ -1735,7 +1735,7 @@ storage space.  If we load a file of definitions including the line:
 
     longList = [1...10000]
 
-and  then  evaluate  the  expression  "length   longList"   (eventually
+and  then  evaluate  the   expression   "length.longList"   (eventually
 obtaining the expected result of 10000), then Gofer will  evaluate  the
 definition of "longList" and replace  it  with  the  complete  list  of
 integers from  1  upto  10000.   Unlike  other  memory  used  during  a
@@ -1756,9 +1756,9 @@ section 9.1.  As a simple example of  pattern  bindings,  here  is  one
 possible definition for the function "head"  which  returns  the  first
 element in a list of values:
 
-    head xs  =  x  where  (x::ys) = xs
+    head.xs  =  x  where  (x::ys) = xs
 
-[The definition  "head (x::_) = x"  used  in  the  standard  prelude  is
+[The definition  "head.(x::_) = x"  used  in  the  standard  prelude  is
 slightly more efficient, but otherwise equivalent.]
 
 [ASIDE: Note that pattern bindings are treated quite  differently  from
@@ -1784,9 +1784,9 @@ satisfy p.  A suitable definition, using a pattern  binding  to  obtain
 the two lists resulting  from  the  recursive  call  to  "span"  is  as
 follows:
 
-    span p []               = ([],[])
-    span p xs@(x::xs')
-                | p x       = let (ys,zs) = span p xs' in (x::ys,zs)
+    span.p.[]               = ([],[])
+    span.p.xs@(x::xs')
+                | p.x       = let (ys,zs) = span.p.xs' in (x::ys,zs)
                 | otherwise = ([],xs)
 
 
@@ -1801,7 +1801,7 @@ will not cause any errors when it is loaded into Gofer, but will  cause
 an error if we attempt to evaluate the variable xs:
 
     ? xs
-    {v120 [1, 2, 3]}
+    {v120.[1, 2, 3]}
     (11 reductions, 46 cells)
     ?
 
@@ -1813,8 +1813,8 @@ binding conforms with the pattern on the left.
 Compare this  with  the  behaviour  of  pattern  matching  in  function
 definitions such as:
 
-    ? example [1] where example (0::xs) = "Hello"
-    {v126 [1]}
+    ? example.[1] where example.(0::xs) = "Hello"
+    {v126.[1]}
     (4 reductions, 22 cells)
     ?
 
@@ -1844,17 +1844,17 @@ prelude  and  causes  a  run-time  error  each  time  it  is  evaluated
 (technically speaking, it represents the bottom element of the relevant
 semantic domain, and is the only value having all possible types):
 
-   (\ (x,y) -> 0) undefined = {undefined}
-   (\~(x,y) -> 0) undefined = 0
+   (\ (x,y) -> 0).undefined = {undefined}
+   (\~(x,y) -> 0).undefined = 0
 
-   (\ [x] -> 0) [] = {v113 []}
-   (\~[x] -> 0) [] = 0
+   (\ [x] -> 0).[] = {v113.[]}
+   (\~[x] -> 0).[] = 0
 
-   (\~[x, (a,b)] -> x) [(0,1),undefined] = {undefined}
-   (\~[x,~(a,b)] -> x) [(0,1),undefined] = (0,1)
+   (\~[x, (a,b)] -> x).[(0,1),undefined] = {undefined}
+   (\~[x,~(a,b)] -> x).[(0,1),undefined] = (0,1)
 
-   (\ (x::xs) -> x::x::xs) undefined = {undefined}
-   (\~(x::xs) -> x::x::xs) undefined = {undefined}::{undefined}::{undefined}
+   (\ (x::xs) -> x::x::xs).undefined = {undefined}
+   (\~(x::xs) -> x::x::xs).undefined = {undefined}::{undefined}::{undefined}
 
 Irrefutable patterns are not used very frequently,  although  they  are
 particularly convenient in some situations (see  section  12  for  some
@@ -1871,7 +1871,7 @@ turns out to be equivalent to the definition:
 and will not behave as you might have intended:
 
     ? map'.ord."abc"
-    [97, 98, 99, {v124 []}, {v124 []}, {v^C{Interrupted!}
+    [97, 98, 99, {v124.[]}, {v124.[]}, {v^C{Interrupted!}
     (35 reductions, 159 cells)
     ?
 
@@ -1900,10 +1900,10 @@ declarations of this kind in a program:
      consider the following function, intended to act as  the  identity
      on integer values:
 
-         idInt x  =  x
+         idInt.x  =  x
 
      Without an explicit type declaration, Gofer treats  "idInt"  as  a
-     polymorphic function of type a -> a and the expression "idInt 'A'"
+     polymorphic function of type a -> a and the expression "idInt.'A'"
      does not cause a type error.  This problem can be  solved by using
      an explicit type declaration  to restrict the type of "idInt" to a
      particular instance of the polymorphic type a -> a:
@@ -1915,7 +1915,7 @@ declarations of this kind in a program:
          idInt : Int -> a
 
      is not a valid type for the function "idInt"  (the  value  of  the
-     expression "idInt 42" is an  integer  and  cannot  be  treated  as
+     expression "idInt.42" is an  integer  and  cannot  be  treated  as
      having an arbitrary type, depending  on  the  value  of  the  type
      variable "a"), and hence will not be accepted by Gofer.
 
@@ -1951,7 +1951,7 @@ the four forms of sequence  expression  that  can  be  used  in  Gofer,
 together with their translation using the standard functions  enumFrom,
 enumFromTo, enumFromThen and enumFromThenTo:
 
-    [ n ... ]         enumFrom n
+    [ n ... ]         enumFrom.n
 
                      Produces the (potentially infinite) list of values
                      starting with the value of  n  and  increasing  in
@@ -1959,7 +1959,7 @@ enumFromTo, enumFromThen and enumFromThenTo:
 
                      e.g. [1...] = [1, 2, 3, 4, 5, 6, 7, 8, 9, etc...
 
-    [ n ... m ]       enumFromTo n m
+    [ n ... m ]       enumFromTo.n.m
 
                      Produces the list of  elements  from  n  upto  and
                      including m in single steps.  If m is less than  n
@@ -1969,7 +1969,7 @@ enumFromTo, enumFromThen and enumFromThenTo:
                           [1...1]  = [1]
                           [9...0]  = []
 
-    [ n, m ... ]      enumFromThen n m
+    [ n, m ... ]      enumFromThen.n.m
 
                      Produces the (potentially infinite) list of values
                      whose first two elements are given by the values n
@@ -1985,7 +1985,7 @@ enumFromTo, enumFromThen and enumFromThenTo:
                           [0,0...] = [0, 0, 0, 0, 0, 0, 0, etc...
                           [5,4...] = [5, 4, 3, 2, 1, 0, -1, etc...
 
-    [ n, n' ... m ]   enumFromThenTo n n' m
+    [ n, n' ... m ]   enumFromThenTo.n.n'.m
 
                      Produces the list of elements from  [n,n'...]  upto
                      the limit value m.   If  m  is  less  than  n  and
@@ -2055,10 +2055,10 @@ There are three kinds of qualifier that can be used in Gofer:
      Formally, we can define the meaning of a list comprehension with a
      single generator by the equation:
 
-          [ e | pat <- exp ]  =  loop exp
-                                 where loop []       = []
-                                       loop (pat::xs) = e :: loop xs
-                                       loop (_::xs)   = loop xs
+          [ e | pat <- exp ]  =  loop.exp
+                                 where loop.[]       = []
+                                       loop.(pat::xs) = e :: loop.xs
+                                       loop.(_::xs)   = loop.xs
 
      If pat is an irrefutable pattern (for example,  a  variable)  then
      this is equivalent to:
@@ -2164,7 +2164,7 @@ practice:
          ? 
 
      The following example illustrates a similar kind of behaviour with
-     local definitions; in the first case the expression  "fact  x"  is
+     local definitions; in the first case the  expression  "fact.x"  is
      evaluated twice for each possible value of "x", whilst the  second
      expression uses a local definition to ensure that  the  evaluation
      is not repeated:
@@ -2220,7 +2220,7 @@ you enter an expression involving a lambda expression without supplying
 the full number of parameters for that function:
 
     ? (\x y -> x+y) 42
-    v117 42
+    v117.42
     (2 reductions, 14 cells)
     ?
 
@@ -2279,7 +2279,7 @@ the value  of  the  discriminant  results  in  an  error  such  as  the
 following:
 
     ? case [1,2] of [] -> "empty list"
-    {v117 [1, 2]}
+    {v117.[1, 2]}
     (6 reductions, 31 cells)
     ?
 
@@ -2365,8 +2365,8 @@ expression that is inferred by Gofer:
     ? :t  \x -> [x]
     \x -> [x] : a -> [a]
 
-    ? :t  map ; sum length
-    map ; sum length : [[a]] -> Int
+    ? :t  map.length ; sum
+    map.length ; sum : [[a]] -> Int
 
     ? 
 
@@ -2377,7 +2377,7 @@ types in these expressions:
     \x -> [x] : Char -> String
 
     ? :t  map ; sum (length : String -> Int)
-    map ; sum length : [String] -> Int
+    map.length ; sum : [String] -> Int
 
     ?
 
@@ -4164,7 +4164,7 @@ this kind of ambiguity:
      Char is an instance of Reader, we can write:
 
          ? (parse : String -> Char) ; unparse
-         v112 {dict} ; v113 {dict}
+         v112.{dict} ; v113.{dict}
          (5 reductions, 42 cells)
          ?
 
@@ -4176,7 +4176,7 @@ this kind of ambiguity:
          charParse  = parse
 
          ? charParse ; unparse
-         charParse ; v113 {dict}
+         charParse ; v113.{dict}
          (4 reductions, 37 cells)
          ?
 
