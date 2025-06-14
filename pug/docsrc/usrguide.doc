@@ -625,8 +625,8 @@ can be used as an abbreviation for the type:
 
                t1 -> (t2 -> ( ... -> tn))
 
-In a similar way, an expression of the form f x1 x2 ... xn is simply an
-abbreviation for the expression (((f x1) x2) ... xn).
+In a similar way, an expression of the form f.x1.x2...xn is simply an
+abbreviation for the expression (((f.x1).x2)...xn).
 
 These two conventions allow us to deal with functions taking more  than
 one argument rather elegantly.  For example, the type of  the  addition
@@ -827,7 +827,7 @@ Here are some examples using these functions:
     [1, 3, 10, 2, 6, 5, 7]
     (19 reductions, 77 cells)
 
-    ? concat [[1], [2,3], [], [4,5,6]]
+    ? concat.[[1], [2,3], [], [4,5,6]]
     [1, 2, 3, 4, 5, 6]
     (29 reductions, 93 cells)
 
@@ -923,7 +923,7 @@ strings:
     Hello, world
     (8 reductions, 37 cells)
 
-    ? concat ["super","cali","fragi","listic"]
+    ? concat.["super","cali","fragi","listic"]
     supercalifragilistic
     (29 reductions, 101 cells)
 
@@ -1245,7 +1245,7 @@ For example:
     ? let x = 1 + 4 in x*x + 3*x + 1
     41
     (8 reductions, 15 cells)
-    ? let p x = x*x + 3*x + 1  in  p (1 + 4)
+    ? let p.x = x*x + 3*x + 1  in  p.(1 + 4)
     41
     (7 reductions, 15 cells)
     ?
@@ -1957,7 +1957,7 @@ enumFromTo, enumFromThen and enumFromThenTo:
                      starting with the value of  n  and  increasing  in
                      single steps.
 
-                     e.g. [1...] = [1, 2, 3, 4, 5, 6, 7, 8, 9, etc...
+                     e.g. [1...] = [1, 2, 3, 4, 5, 6, 7, 8, 9, etc...]
 
     [ n ... m ]       enumFromTo.n.m
 
@@ -1981,9 +1981,9 @@ enumFromTo, enumFromThen and enumFromThenTo:
                      then [n,m...] is an infinite  list  in  which  each
                      element is equal to n.
 
-                     e.g. [1,3...] = [1, 3, 5, 7, 9, 11, 13, etc...
-                          [0,0...] = [0, 0, 0, 0, 0, 0, 0, etc...
-                          [5,4...] = [5, 4, 3, 2, 1, 0, -1, etc...
+                     e.g. [1,3...] = [1, 3, 5, 7, 9, 11, 13, etc...]
+                          [0,0...] = [0, 0, 0, 0, 0, 0, 0, etc...]
+                          [5,4...] = [5, 4, 3, 2, 1, 0, -1, etc...]
 
     [ n, n' ... m ]   enumFromThenTo.n.n'.m
 
@@ -1994,7 +1994,7 @@ enumFromTo, enumFromThen and enumFromThenTo:
                      empty.
 
                      e.g. [1,3...12] = [1, 3, 5, 7, 9, 11]
-                          [0,0...10] = [0, 0, 0, 0, 0, 0, 0, etc...
+                          [0,0...10] = [0, 0, 0, 0, 0, 0, 0, etc...]
                           [5,4...1]  = [5, 4, 3, 2, 1]
 
 In  the  standard  prelude,   the   functions   enumFrom,   enumFromTo,
@@ -2110,7 +2110,7 @@ symbol in a list comprehension.  Formally, if qs1 and qs2 are two  such
 lists of qualifiers,  then  we  can  define  the  meaning  of  multiple
 qualifiers using:
 
-         [ e | qs1, qs2 ]  =  concat [ [ e | qs2 ] | qs1 ]
+         [ e | qs1, qs2 ]  =  concat.[ [ e | qs2 ] | qs1 ]
 
 The  following  examples  illustrate  how  this  definition  works   in
 practice:
@@ -2173,7 +2173,7 @@ practice:
          [2, 3, 3, 4, 7, 8]
          (246 reductions, 398 cells)
 
-         ? [ factx + y | x<-[1...3], factx = fact x, y<-[1...2] ]
+         ? [ factx + y | x<-[1...3], factx = fact.x, y<-[1...2] ]
          [2, 3, 3, 4, 7, 8]
          (173 reductions, 294 cells)
          ?
@@ -2204,7 +2204,7 @@ square of that  number as its result.   Another  example is the  lambda
 expression (\x y->x+y) which takes two integer  arguments  and  outputs
 their sum; this expression is in fact equivalent to the (+) operator:
 
-    ? (\x y->x+y) 2 3
+    ? (\x y->x+y).2.3
     5
     (3 reductions, 7 cells)
     ?
@@ -2219,7 +2219,7 @@ other variables that are already in use.  This name will be printed  if
 you enter an expression involving a lambda expression without supplying
 the full number of parameters for that function:
 
-    ? (\x y -> x+y) 42
+    ? (\x y -> x+y).42
     v117.42
     (2 reductions, 14 cells)
     ?
@@ -2261,15 +2261,15 @@ with a `=' symbol).  The complete case expression is  then  treated  as
 being equivalent to the expression "newName e".  A  simple  example  of
 this is the "scanl" function whose definition in the standard prelude:
 
-    scanl f q xs = q :: (case xs of
+    scanl.f.q.xs = q :: (case xs of
                         []   -> []
-                        x::xs -> scanl f (f q x) xs)
+                        x::xs -> scanl.f.((f.q.x).xs))
 
 is equivalent to:
 
-    scanl f q xs = q :: scanl' xs
-                   where scanl' []     = []
-                         scanl' (x::xs) = scanl f (f q x) xs
+    scanl.f.q.xs = q :: scanl'.xs
+                   where scanl'.[]     = []
+                         scanl'.(x::xs) = scanl.f.(f.q.x).xs
 
 This latter form is precisely the definition used in [1] (but using the
 name "scan" where Gofer uses "scanl").
@@ -2299,7 +2299,7 @@ standard function "map" whose definition is usually written as:
 can also be defined by the equation:
 
     map = \f xs -> case xs of
-                     []     -> []
+                     []      -> []
                      (y::ys) -> f.y :: map.f.ys
 
 This kind  of  translation  is  used  in  the  implementation  of  many
@@ -2319,8 +2319,8 @@ syntax for them.  Using e to denote an atomic expression and the symbol
 "*" to represent an arbitrary infix operator, there are functions (e *)
 and (* e), known as `sections of the operator (*)' defined by:
 
-                  (e *) x  = e * x
-                  (* e) x  = x * e
+                  (e *).x  = e * x
+                  (* e).x  = x * e
 
 or, using lambda expressions as introduced in section 10.3:
 
@@ -2331,23 +2331,23 @@ For example: (1+)   is the successor function which returns the value
                     of its argument plus 1,
              (1.0/) is the reciprocal function,
              (/2)   is the halving function,
-             (:[])  is the function which maps any value to the
+             (::[]) is the function which maps any value to the
                     singleton list containing that element.
 
 In Gofer, the expressions "(e *)" and "(* e)" are actually  treated  as
-abbreviations for "(*) e" and "flip (*) e" respectively,  where  "flip"
+abbreviations for "(*).e" and "flip.(*).e" respectively,  where  "flip"
 is the function defined by:
 
      flip        : (a -> b -> c) -> b -> a -> c
-     flip  f x y  =  f y x
+     flip.f.x.y  =  f.y.x
 
 There is an important special case which occurs with an  expression  of
-the form (- e); this is interpreted  as  "negate  e"  and  not  as  the
+the form (- e); this is  interpreted  as  "negate.e"  and  not  as  the
 section which subtracts the value of "e" from its argument.  The latter
-function can be written as the section (+ (- e))  or  as  "subtract  e"
+function can be written as the section  (+ (- e))  or  as  "subtract.e"
 where "subtract" is the function defined in the standard prelude using:
 
-    subtract = flip (-)
+    subtract = flip.(-)
 
 
 .ST 10.6 Explicitly typed expressions
@@ -2376,7 +2376,7 @@ types in these expressions:
     ? :t  (\x -> [x]) : Char -> String
     \x -> [x] : Char -> String
 
-    ? :t  map ; sum (length : String -> Int)
+    ? :t  map.(length : String -> Int) ; sum 
     map.length ; sum : [String] -> Int
 
     ?
@@ -2405,61 +2405,69 @@ In addition to the  wide  range  of  built-in  datatypes  described  in
 section 7, Gofer also allows the  definition  of  new  datatypes  using
 declarations of the form:
 
-     data DatatypeName a1 ... an = constr1 | ... | constrm
+     ctype DatatypeName.a1.a2...an where
+        cfunc1
+        cfunc2
+        .
+        .
+        .
+        cfuncm
 
-where DatatypeName is the name of a new type constructor of arity n>=0,
-a1, ..., an are distinct type variables representing the  arguments  of
-DatatypeName and constr1, ..., constrm (m>=1) describe the way in which
-elements of the new datatype are constructed.  Each constr can take one
-of two forms:
+where DatatypeName is the name of  a  new  type  constructor  of  arity 
+greater than or equal to zero,  where  a1, ..., an  are  distinct  type 
+variables  representing  the  arguments  of   DatatypeName.   Each   of
+cfunc1, cfunc2, ..., cfuncm (m >= 1)  is  the  type  declaration  of  a 
+construction function, where each cfunc is of the form:
 
-  o  Name type1 ... typer where Name is a previously unused constructor
-     function  name  (i.e.  an  identifier  beginning  with  a  capital
-     letter).  This declaration introduces Name as  a  new  constructor
-     function of type: type1 -> ...-> typer -> DatatypeName a1 ... an.
+            Name : type1 -> ...-> typer -> DatatypeName
 
-  o  type1 CONOP type2 where CONOP is a previously  unused  constructor
-     function  operator (i.e.  an  operator  symbol  beginning  with  a
-     colon).  This declaration introduces (CONOP) as a new  constructor
-     function of type: type1 -> type2 -> DatatypeName a1 ... an.
+here, Name is a previously unused constructor function  name  (i.e.  an 
+identifier beginning with a capital letter)  and each typei in the type 
+expressions must be one of a1, a2, ..., an.
 
-[N.B. only the  type variables  a1, ..., an  may  appear  in  the  type
-expressions in each constr in the definition of DatatypeName.]
+One could also use a CONOP or a constructor function operator (i.e.  an 
+operator symbol beginning with a colon) instead of the indetifier  Name 
+on the lhs, where CONOP is a previously unused.  The syntax is the same 
+as above, where we replace Name with (CONOP):
 
+            (CONOP) : type1 -> ...-> typer -> DatatypeName
 
 As a simple example, the following definition introduces a new type Day
 with elements Sun, Mon, Tue, Wed, Thu, Fri and Sat:
 
-    data Day = Sun | Mon | Tue | Wed | Thu | Fri | Sat
+    ctype Day where 
+        Sun, Mon, Tue, Wed, Thu, Fri, Sat : Day
 
 Simple functions manipulating elements of type Day can be defined using
 pattern matching:
 
-    what_shall_I_do Sun = "relax"
-    what_shall_I_do Sat = "go shopping"
-    what_shall_I_do _   = "looks like I'll have to go to work"
+    what_shall_I_do.Sun = "relax"
+    what_shall_I_do.Sat = "go shopping"
+    what_shall_I_do._   = "looks like I'll have to go to work"
 
 Another example uses a pair of constructors to provide a representation
 for temperatures which may be given using either of the  centigrade  or
 fahrenheit scales:
 
-    data Temp = Centigrade Float | Fahrenheit Float
+    ctype Temp where 
+        Centigrade: Float -> Temp
+        Fahrenheit: Float -> Temp
 
     freezing                  : Temp -> Bool
-    freezing (Centigrade temp) = temp <= 0.0
-    freezing (Fahrenheit temp) = temp <= 32.0
+    freezing.(Centigrade.temp) = temp <= 0.0
+    freezing.(Fahrenheit.temp) = temp <= 32.0
 
 The following example uses a type variable on the left hand side of the
 datatype  definition  to  implement  a   Set   type   constructor   for
 representing sets using a list of values:
 
-    data Set a = Set [a]
+    ctype Set.a where 
+        Set : [a] -> Set.a
 
-For example, Set [1,2,3] is an element of type  Set  Int,  representing
-the set of integers {1, 2, 3} whilst Set ['a'] represents  a  singleton
-set of type Set Char.  As this example shows, it is possible to use the
-same  name  simultaneously  as  both  a  type  constructor  and  as   a
-constructor function.
+For example, Set.[1,2,3] is an element of  type  Set.Int,  representing
+the set of integers {1, 2, 3} whilst Set.['a'] represents  a  singleton
+set of type Set.Char; hence  it  is  possible  to  use  the  same  name 
+simultaneously as both a type constructor and a constructor function.
 
 Datatype definitions may also be  recursive,  using  the  name  of  the
 datatype  being  defined  on  the  right  hand  side  of  the  datatype
@@ -2468,9 +2476,11 @@ permitted).  The following example is taken from the Haskell report [5]
 and  defines  a  type  representing  binary  trees  with  values  of  a
 particular type at their leaves:
 
-    data Tree a = Lf a | Tree a :^: Tree a
+    ctype Tree.a where 
+        Lf    : a -> Tree.a
+        (:^:) : Tree.a -> Tree.a -> Tree.a
 
-For example, (Lf 12 :^: (Lf 23 :^: Lf 13)) :^: Lf 10 has type Tree  Int
+For example, (Lf.12 :^: (Lf.23 :^: Lf.13)) :^: Lf.10  has type Tree.Int
 and represents the binary tree:
 
                               ,--- 12
@@ -2488,21 +2498,21 @@ branches of the tree from left to right.  The first definition  uses  a
 simple definition, whilst the second uses an  `accumulating  parameter'
 giving a more efficient algorithm:
 
-    leaves, leaves'  : Tree a -> [a]
+    leaves, leaves'  : Tree.a -> [a]
 
-    leaves (Lf l)  = [l]
-    leaves (l:^:r) = leaves l ++ leaves r
+    leaves.(Lf.l)  = [l]
+    leaves.(l:^:r) = leaves.l ++ leaves.r
 
-    leaves' t = leavesAcc t []
-                 where leavesAcc (Lf l)  = (l:)
-                       leavesAcc (l:^:r) = leavesAcc r ; leavesAcc l
+    leaves'.t = leavesAcc.t.[]
+                 where leavesAcc.(Lf.l)  = (l::)
+                       leavesAcc.(l:^:r) = leavesAcc.r ; leavesAcc.l
 
 Using the binary tree above as an example:
 
-    ? leaves ((Lf 12 :^: (Lf 23 :^: Lf 13)) :^: Lf 10)
+    ? leaves.((Lf.12 :^: (Lf.23 :^: Lf.13)) :^: Lf.10)
     [12, 23, 13, 10]
     (24 reductions, 73 cells)
-    ? leaves' ((Lf 12 :^: (Lf 23 :^: Lf 13)) :^: Lf 10)
+    ? leaves'.((Lf.12 :^: (Lf.23 :^: Lf.13)) :^: Lf.10)
     [12, 23, 13, 10]
     (20 reductions, 58 cells)
     ?
@@ -2514,7 +2524,7 @@ Type synonyms are used to provide  convenient  abbreviations  for  type
 expressions.  A type synonym is introduced  by  a  declaration  of  the
 form:
 
-     type Name a1 ... an = expansion
+     type Name.a1...an = expansion
 
 where Name is the name of a new type constructor  of  arity  n>=0,  a1,
 ..., an are distinct type variables representing the arguments of  Name
@@ -2523,7 +2533,7 @@ permitted in the expansion type are those on the left hand side of  the
 synonym definition.  Using this declaration any type expression of  the
 form:
 
-                  Name type1 ... typen 
+                      Name type1...typen 
 
 is treated as an abbreviation of  the  type  expression  obtained  from
 expansion by replacing each of the type variables a1, ..., an with  the
