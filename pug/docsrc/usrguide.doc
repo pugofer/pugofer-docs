@@ -2602,48 +2602,51 @@ the response to a given request until that request has been completed.
 The current range of requests supported by Gofer is  described  by  the
 following datatype definition, taken from the standard prelude:
 
-    data Request  =  -- file system requests:
-                    ReadFile      String         
-                  | WriteFile     String String
-                  | AppendFile    String String
-                     -- channel system requests:
-                  | ReadChan      String 
-                  | AppendChan    String String
-                     -- environment requests:
-                  | Echo          Bool
+    ctype Request where  
+        -- file system requests:
+        ReadFile    : String -> Request        
+        WriteFile   : String -> String -> Request
+        AppendFile  : String -> String -> Request
+        -- channel system requests:
+        ReadChan    : String -> Request
+        AppendChan  : String -> String -> Request
+        -- environment requests:
+        Echo        : Bool -> Request
  
 Each response is an element  of  the  type  defined  by  the  following
 datatype definition, using an auxiliary datatype IOError to describe  a
 variety of error conditions that may occur:
 
-    data Response = Success
-                  | Str String 
-                  | Failure IOError
+    ctype Response where 
+        Success : Response 
+        Str : String -> Response
+        Failure : IOError -> Response
  
-    data IOError  = WriteError   String
-                  | ReadError    String
-                  | SearchError  String
-                  | FormatError  String
-                  | OtherError   String
+    ctype IOError where 
+        WriteError  : String -> IOError
+        ReadError   : String -> IOError
+        SearchError : String -> IOError
+        FormatError : String -> IOError
+        OtherError  : String -> IOError
 
 The following list describes the kind of  I/O  behaviour  specified  by
 each form of Request and indicates the possible  Response  values  that
 may be obtained in each case:
 
-  o  ReadFile  string:  Read  contents  of  file  named  by   "string".
+  o  ReadFile.string:  Read  contents  of  file  named   by   "string".
      Possible responses to this request are:
 
-       o  Str contents  if the request is successful,  where "contents"
+       o  Str.contents  if the request is successful,  where "contents"
           is a string (evaluated lazily) containing the contents of the
           file specified by the ReadFile request.
 
-       o  Failure (SearchError name) occurs if file  "name"  cannot  be
+       o  Failure.(SearchError.name) occurs if file  "name"  cannot  be
           accessed.
 
-       o  Failure (ReadError name) occurs if some  other  error  occurs
+       o  Failure.(ReadError.name) occurs if some  other  error  occurs
           whilst opening the file "name".
 
-  o  WriteFile name string:  Write  the  given  "string"  to  the  file
+  o  WriteFile.name.string:  Write  the  given  "string"  to  the  file
      "name".  If the file does not already exist, it is created  before
      attempting to write the value to file.  If the file already exists
      then it will be truncated to zero length before the write  begins.
@@ -2653,52 +2656,52 @@ may be obtained in each case:
 
        o  Success if the write to file was completed successfully.
 
-       o  Failure (WriteError msg) if  an  error  was  detected  whilst
+       o  Failure.(WriteError.msg) if  an  error  was  detected  whilst
           trying to perform the output.  If the problem occurred whilst
           attempting to open the specified file,  then  "msg"  contains
           the   filename,   otherwise   it   contains    a    printable
           representation of the evaluation error which occurred.
 
-  o  AppendFile name string: Similar to the  WriteFile  request  except
+  o  AppendFile.name string: Similar to the  WriteFile  request  except
      that the value of the given "string" is  appended  onto  the  file
      "name" if that file already exists.  The  responses  that  may  be
      obtained from this request are the same as those for WriteFile.
 
-  o  ReadChan name:  Read  from  the  input  stream  "name".  Note that
+  o  ReadChan.name:  Read  from  the  input  stream  "name".  Note that
      it is an error to attempt to read from the same channel more  than
      once in the same program.  Possible responses are:
 
-       o  Str contents if the request is successful,  where  "contents"
+       o  Str.contents if the request is successful,  where  "contents"
           is  a  string  (evaluated  lazily)  containing  the  list  of
           characters entered on the input stream.
 
-       o  Failure (SearchError name) if the  named  channel  cannot  be
+       o  Failure.(SearchError.name) if the  named  channel  cannot  be
           found.  The only input channel known to Gofer is the standard
           input channel "stdin".  For convenience, the standard prelude
           defines the variable stdin bound to this string.
 
-       o  Failure (ReadError name) if a ReadChan request for the  named
+       o  Failure.(ReadError.name) if a ReadChan request for the  named
           channel has already been given by a previous request.
 
-  o  AppendChan name string:  Output "string" on  channel  "name".   No
+  o  AppendChan.name string:  Output "string" on  channel  "name".   No
      response is obtained until the string has been fully evaluated and
      written to the named channel.  Possible responses are:
 
        o  Success if the append to channel was completed successfully.
 
-       o  Failure (SearchError name) if the  named  channel  cannot  be
+       o  Failure.(SearchError.name) if the  named  channel  cannot  be
           found.  The only output channels known to Gofer are "stdout",
           "stderr" and "stdecho" (which is actually just  another  name
           for  "stdout"  in  Gofer).   For  convenience,  the  standard
           prelude defines variables stdout, stderr and stdecho bound to
           the corresponding string values.
 
-       o  Failure (WriteError msg)  if  an  error  is  detected  whilst
+       o  Failure.(WriteError.msg)  if  an  error  is  detected  whilst
           trying to perform the output.  The string  "msg"  contains  a
           printable  representation  of  the  evaluation  error   which
           occurred.
 
-  o  Echo status: Set the echo status on  the  standard  input  channel
+  o  Echo.status: Set the echo status on  the  standard  input  channel
      stdin to the given boolean value.  If the  echo  status  is  True,
      then user input will be echoed onto the screen as it is  typed and
      the usual line editing facilities  (such a  backspace  or  delete)
@@ -2714,7 +2717,7 @@ may be obtained in each case:
 
        o  Success if the request was completed successfully.
 
-       o  Failure  (OtherError  msg)  if  the  request  could  not   be
+       o  Failure.(OtherError.msg)  if  the   request  could   not   be
           completed either because a readChannel request for stdin  has
           already been processed, or because a  previous  Echo  request
           has already been given.  The  corresponding  values of  "msg"
@@ -2725,7 +2728,7 @@ A simple example of a program using these facilities to output a short
 message on the standard output stream is:
 
     helloWorld      : Dialogue
-    helloWorld resps = [AppendChan stdout "hello, world"]
+    helloWorld.resps = [AppendChan.stdout."hello, world"]
  
 Any expression entered into Gofer of type "Dialogue" will be treated as
 a Gofer program using I/O and will be executed accordingly:
@@ -2740,11 +2743,11 @@ be  inferred  for  helloWorld   would   be  a -> [Request],  and  hence
 helloWorld would not be executed as a Dialogue program.  This point can
 be illustrated using lambda expressions:
 
-    ? \resps -> [AppendChan stdout "hello, world"]
+    ? \resps -> [AppendChan.stdout."hello, world"]
     v128
     (1 reduction, 7 cells)
 
-    ? (\resps -> [AppendChan stdout "hello, world"]) : Dialogue
+    ? (\resps -> [AppendChan.stdout."hello, world"]) : Dialogue
     hello, world
  
     (1 reduction, 28 cells)
@@ -2755,7 +2758,7 @@ determine its type  as  Dialogue  (or  equivalently  as  [Response]  ->
 [Request]), in which case no explicit types are required to ensure that
 the expression is treated as a Gofer program using I/O:
 
-    ? \~[Success] -> [AppendChan stdout "hello, world"]
+    ? \~[Success] -> [AppendChan.stdout."hello, world"]
     hello, world
     (1 reduction, 29 cells)
     ?
@@ -2766,7 +2769,7 @@ pattern matching as described in section 9 would force Gofer to try  to
 match the pattern [Success] against the list of responses,  before  the
 corresponding request had been produced:
 
-    ? \ [Success] -> [AppendChan stdout "hello, world"]
+    ? \ [Success] -> [AppendChan.stdout."hello, world"]
 
     Aborting Dialogue:
           {error "Attempt to read response before request complete"}
@@ -2776,24 +2779,24 @@ corresponding request had been produced:
 The next example takes a single string as a parameter and displays  the
 contents of the corresponding file:
 
-    showFile               : String -> Dialogue 
-    showFile name ~(read:_) = [ReadFile name, AppendChan stdout result] 
-     where result = case read of Str contents -> contents 
-                                 Failure _    -> "Can't open " ++ name 
+  showFile                 : String -> Dialogue 
+  showFile.name.~(read::_) = [ReadFile.name, AppendChan.stdout.result] 
+      where result = case read of Str.contents -> contents 
+                                  Failure._    -> "Can't open " ++ name 
 
 With a few modifications, we can  implement  a  similar  program  which
 prompts for, and reads, a filename from the  standard  input  and  then
 reads and displays the contents of that file as before.   This  program
 is based on a similar example in the Haskell report [5]:
 
-    main ~(Success : ~(Str userInput : ~(r3 : _)))  
-      = [ AppendChan stdout "Please type a filename: ", 
-          ReadChan stdin, 
-          ReadFile name, 
-          AppendChan stdout (case r3 of Str contents -> contents
-                                        Failure _    -> "Can't open "
+    main.~(Success :: ~(Str.userInput :: ~(r3 :: _)))  
+      = [ AppendChan.stdout."Please type a filename: ", 
+          ReadChan.stdin, 
+          ReadFile.name, 
+          AppendChan.stdout.(case r3 of Str.contents -> contents
+                                        Failure._    -> "Can't open "
                                                         ++ name)
-        ] where (name : _) = lines userInput
+        ] where (name :: _) = lines.userInput
 
 
 .ST 12.2 Continuation style I/O
@@ -2810,31 +2813,31 @@ request is successful, the other if the request fails.
 As an example, the ReadFile request  is  represented  by  the  function
 "readFile" whose definition is equivalent to:
 
-    readFile name fail succ ~(r::rs) = ReadFile name :: rest rs
-     where rest = case r of Str s           -> succ s
-                            Failure ioerror -> fail ioerror
+    readFile.name.fail.succ.~(r::rs) = ReadFile.name :: rest.rs
+        where rest = case r of Str.s           -> succ.s
+                               Failure.ioerror -> fail.ioerror
 
 The first thing to happen  when  a  dialogue  expression  of  the  form
-"readFile name fail  succ"  is  evaluated  is  that  the  corresponding
-request "ReadFile name" is added to the list of I/O  requests.   A  new
+"readFile.name.fail.succ"  is  evaluated  is  that  the   corresponding
+request "ReadFile.name" is added to the list of I/O  requests.   A  new
 dialogue value "rest" is chosen,  depending  on  the  response  to  the
 ReadFile request, and the program continues by  passing  the  remaining
 part of the response list to "rest".  The functions "succ"  and  "fail"
 (called the success and failure  continuations  respectively)  describe
 the way in which the new dialogue "rest" is obtained.
 
-The following example (edited a little to fit within the margins of this
-document) shows how the readFile function described above can be used to
-print the contents of a file called "test" on the display:
+The following example (edited a little to fit  within  the  margins  of 
+this document) shows how the readFile function described above  can  be 
+used to print the contents of a file called "test" on the display:
 
-    ? readFile "test" (\ioerror resps -> [])
-                      (\s resps->[AppendChan stdout s])
+    ? readFile."test".(\ioerror resps -> []).
+                      (\s resps->[AppendChan.stdout.s])
     This is a test message
 
     (4 reductions, 52 cells)
     ?
 
-The success continuation "(\s resps->[AppendChan stdout s])" used  here
+The success continuation "(\s resps->[AppendChan.stdout.s])" used  here
 receives the contents of the file "test" in the the parameter  "s"  and
 uses an AppendChan request to output that string on  the  display.   As
 this example shows, the stream based approach of the  previous  section
@@ -2844,8 +2847,8 @@ the error condition "ioerror" which caused  the  request  to  fail  and
 gives a dialogue which terminates immediately without any action.   For
 example, assuming that the file "Test" cannot be found:
 
-    ? readFile "Test" (\ioerror resps -> [])
-                      (\s resps->[AppendChan stdout s])
+    ? readFile."Test".(\ioerror resps -> []).
+                      (\s resps->[AppendChan.stdout.s])
 
     (4 reductions, 24 cells)
     ?
@@ -2853,10 +2856,10 @@ example, assuming that the file "Test" cannot be found:
 In practice, it is  usually  a  good  idea  to  produce  some  kind  of
 diagnostic message when an error occurs:
 
-    ? readFile "Test"
-         (\ioerror resps -> [AppendChan stdout (show'.ioerror)])
-         (\s resps       -> [AppendChan stdout s])
-    SearchError "Test"
+    ? readFile."Test".
+         (\ioerror resps -> [AppendChan.stdout.(show'.ioerror)]).
+         (\s resps       -> [AppendChan.stdout.s])
+    SearchError."Test"
     (11 reductions, 59 cells)
     ?
 
@@ -2882,12 +2885,12 @@ corresponding to the six different kinds of I/O  request  described  in
 the previous section.  Full definitions for each of these functions are
 given in appendix B:
 
-    readFile   : String -> FailCont -> StrCont -> Dialogue
-    writeFile  : String -> String -> FailCont -> SuccCont -> Dialogue
-    appendFile : String -> String -> FailCont -> SuccCont -> Dialogue
+    readFile   : String -> FailCont -> StrCont  -> Dialogue
+    writeFile  : String -> String   -> FailCont -> SuccCont -> Dialogue
+    appendFile : String -> String   -> FailCont -> SuccCont -> Dialogue
     readChan   : String -> FailCont -> StrCont  -> Dialogue
-    appendChan : String -> String -> FailCont -> SuccCont -> Dialogue
-    echo       : Bool -> FailCont -> SuccCont -> Dialogue
+    appendChan : String -> String   -> FailCont -> SuccCont -> Dialogue
+    echo       : Bool   -> FailCont -> SuccCont -> Dialogue
 
 As an illustration of the use of these functions, we show how  each  of
 the example programs from the previous section can be  rewritten  using
@@ -2895,7 +2898,7 @@ the  continuation  based  style  of  I/O,  starting  with  the  program
 "helloWorld":
 
     helloWorld : Dialogue
-    helloWorld  = appendChan stdout "hello, world" abort done
+    helloWorld  = appendChan.stdout."hello, world".abort.done
 
 In this case, the explicit type declaration is  not  actually  required
 since the type of the expression is completely determined by  the  type
@@ -2907,28 +2910,28 @@ without any action.   Both of these values are defined in the  standard
 prelude:
 
    done         : Dialogue
-   done resps    = []
+   done.resps    = []
 
    abort        : FailCont
-   abort ioerror = done
+   abort.ioerror = done
  
 Using the same approach, the "showFile" and "main"  programs  from  the
 previous section are written as:
 
     showFile : String -> Dialogue
-    showFile name
-     = readFile name (\ioerror -> appendChan stdout
-                                     ("Can't open " ++ name) abort done)
-                     (\contents-> appendChan stdout contents abort done)
+    showFile.name
+    = readFile.name.(\ioerror -> appendChan.stdout.
+                                    ("Can't open " ++ name).abort.done)
+                    (\contents-> appendChan.stdout.contents.abort.done)
  
     main : Dialogue
-    main  = appendChan stdout "Please type a filename: " abort
-            (readChan stdin abort
-            (\userInput -> let (name : _) = lines userInput in
-             readFile name
-              (\ioerror  -> appendChan stdout ("Can't open " ++ name)
-                                abort done)
-              (\contents -> appendChan stdout contents abort done)))
+    main  = appendChan.stdout."Please type a filename: " abort
+            (readChan.stdin.abort
+            (\userInput -> let (name :: _) = lines.userInput in
+             readFile.name
+              (\ioerror  -> appendChan.stdout.("Can't open " ++ name)
+                                abort.done)
+              (\contents -> appendChan.stdout.contents.abort.done)))
 
 
 .ST 12.3 Interactive programs
@@ -2942,7 +2945,7 @@ at the keyboard into an output string to be displayed on the screen.
 There are two functions defined in the standard prelude  which  can  be
 used to `execute' functions of this kind as interactive programs:
 
-  o  "interact f" executes f:String->String as an interactive  program
+  o  "interact.f" executes f:String->String as an interactive  program
      with echo on.  This  means  that  characters  are  read  from  the
      keyboard a line at a time.  The usual editing characters  such  as
      backspace can be used to correct mistakes which are noticed before
@@ -2950,19 +2953,19 @@ used to `execute' functions of this kind as interactive programs:
      stream can be terminated by typing an end of file character at the
      beginning of a line:
 
-         ? interact (map.toUpper)
-         This text was entered using the interact function
+         ? interact.(map.toUpper)
+         This text was entered using the interact.function
          THIS TEXT WAS ENTERED USING THE INTERACT FUNCTION
          ^Z
          (874 reductions, 1037 cells)
          ?
 
-  o  "run f" behaves like "interact f" except that echo is turned  off.
+  o  "run.f" behaves like "interact.f" except that echo is turned  off.
      In this case, the only way of terminating the input stream without
      reaching the end of the string produced  by  "f"  is  to  use  the
      interrupt key:
 
-         ? run (map.toUpper)     
+         ? run.(map.toUpper)     
          ALTHOUGH THIS IS ENTERED IN LOWER CASE, IT STILL
          APPEARS IN UPPER CASE !
          {Interrupted!}
@@ -2977,12 +2980,12 @@ Haskell system using the definition below.]
 The definitions of "interact" and "run"  provide  further  examples  of
 Gofer programs using simple I/O facilities:
 
-    interact        : (String -> String) -> Dialogue
-    interact f       = readChan stdin abort
-                            (\s -> appendChan stdout (f s) abort done)
+    interact.       : (String -> String) -> Dialogue
+    interact.f       = readChan.stdin.abort
+                            (\s -> appendChan.stdout.(f.s).abort.done)
  
     run             : (String -> String) -> Dialogue
-    run f            = echo False abort (interact f)
+    run.f            = echo.False.abort.(interact.f)
  
 [EXERCISE for the interested reader:  construct alternative definitions
 for these functions using the stream based approach from section 12.1.]
@@ -3142,41 +3145,42 @@ The following (rather contrived) program, is based on an example in the
 Haskell report [5], and provides an extended example of the use of  the
 layout rule.  A file containing the following definitions:
 
-    data Stack a = Empty
-                 | MkStack a (Stack a)
+    ctype Stack.a where 
+        Empty   : Stack.a
+        MkStack : a -> Stack.a -> Stack.a
 
-    push    : a -> Stack a -> Stack a
-    push x s = MkStack x s
+    push     : a -> Stack.a -> Stack.a
+    push.x.s = MkStack.x.s
 
-    size  : Stack a -> Int
+    size   : Stack.a -> Int
     size.s = length.(stkToList.s) where
                stkToList.Empty         = []
                stkToList.(MkStack.x.s) = x::xs where xs = stkToList.s
 
-    pop : Stack a -> (a, Stack a)
-    pop (MkStack x s) = (x, case s of r -> i r where i x = x)
+    pop : Stack.a -> (a, Stack.a)
+    pop.(MkStack.x.s) = (x, case s of r -> i r where i x = x)
 
-    top : Stack a -> a
-    top (MkStack x s) = x
+    top : Stack.a -> a
+    top.(MkStack.x.s) = x
 
 will be treated by Gofer as if it has been written:
 
-    {data Stack a = Empty
-                  | MkStack a (Stack a)
+    {ctype Stack.a = Empty
+                  | MkStack.a (Stack.a)
 
-    ;push    : a -> Stack a -> Stack a
-    ;push x s = MkStack x s
+    ;push    : a -> Stack.a -> Stack.a
+    ;push x s = MkStack.x.s
 
-    ;size  : Stack a -> Int
+    ;size  : Stack.a -> Int
     ;size s = length (stkToList s) where
                {stkToList Empty = []
-               ;stkToList (MkStack x s) = x::xs where {xs = stkToList s
+               ;stkToList (MkStack.x.s) = x::xs where {xs = stkToList s
 
-    }};pop : Stack a -> (a, Stack a)
-    ;pop (MkStack x s) = (x, case s of {r -> i r where {i x = x}})
+    }};pop : Stack.a -> (a, Stack.a)
+    ;pop (MkStack.x.s) = (x, case s of {r -> i r where {i x = x}})
 
-    ;top : Stack a -> a
-    ;top (MkStack x s) = x
+    ;top : Stack.a -> a
+    ;top (MkStack.x.s) = x
     }
 
 Note that some of the more sophisticated forms of expression cannot  be
@@ -3486,7 +3490,8 @@ check that they represent the same value.  As an example, suppose  that
 we introduce a type constructor Set for representing  sets  of  values,
 using a list to store the values held in the set:
 
-    data Set a = Set [a]
+    ctype Set.a where
+        Set : [a] -> Set
 
 As usual, we say that two sets are equal if they have the same members,
 ignoring any repetitions or differences in the ordering of the elements
@@ -3623,12 +3628,12 @@ class to define a function "cat" (inspired by the unix (tm) command  of
 the same name) which uses the I/O facilities  of  Gofer  to  print  the
 contents of one or more files on the terminal:
 
-    class    Cat a        where cat  : a -> Dialogue
-    instance Cat [Char]   where cat n = showFile n done
-    instance Cat [[Char]] where cat   = foldr showFile done
+    class    Cat.a        where cat  : a -> Dialogue
+    instance Cat.[Char]   where cat.n = showFile.n.done
+    instance Cat.[[Char]] where cat   = foldr.showFile.done
 
-    showFile name cont = readFile name abort
-                             (\s->appendChan stdout s abort cont)
+    showFile.name.cont = readFile.name.abort
+                             (\s->appendChan.stdout.s.abort.cont)
  
 Given these declarations, an expression of the form:
 
@@ -4468,7 +4473,9 @@ different) classes that occur in object-oriented languages.
 Obvious implementations involve the use  of  ordered  lists  or  binary
 search trees defined by instances of the form:
 
-    data STree a = Empty | Node a (STree a) (STree a)
+    ctype STree.a where
+        Empty : STree.a
+        Node  : a -> STree.a -> STree.a -> STree.a
  
     instance Collects a [a] where ....
     instance Collects a (STree a) where ....
