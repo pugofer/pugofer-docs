@@ -3057,8 +3057,8 @@ ISWIM family of languages,  most  Gofer  programs  use  indentation  to
 indicate the structure of a program.  For example, in a definition such
 as:
 
-                    f x y = g (x + w)
-                            where g u = u + v
+                    f.x.y = g.(x + w)
+                        where g.u = u + v
                                         where v = u * u
                                   w   = 2 + y
 
@@ -3066,9 +3066,9 @@ it is clear from the layout that the definition of w is intended to  be
 local to f rather than to g.  Another example  where  layout  plays  an
 important role is in distinguishing the two definitions:
 
-         example x y z = a + b       example x y z = a + b
-               where a = f x y             where a   = f x
-                     b = g z                     y b = g z
+         example.x.y.z = a + b       example.x.y.z = a + b
+               where a = f.x.y             where a   = f.x
+                     b = g.z                     y.b = g.z
 
 There are three situations in Gofer where indentation is typically used
 to determine the structure of a program:
@@ -3091,15 +3091,15 @@ according to the indentation of each line.
 In this way, the first example above will in fact be treated as if the
 user had entered:
 
-                    f x y = g (x + w)
-                            where {g u = u + v
+                    f.x.y = g.(x + w)
+                        where {g.u = u + v
                                          where {v = u * u
-                                  }; w   = 2 + y
+                              }; w = 2 + y
                     }
 
 or, equivalently, just:
 
-  f x y = g (x + w) where {g u = u + v where {v = u * u}; w = 2 + y}
+  f.x.y = g.(x + w) where {g.u = u + v where {v = u * u}; w = 2 + y}
 
 where the additional punctuation using the `{', `}' and `;'  characters
 makes the intended grouping clear, regardless of indentation.
@@ -3165,22 +3165,23 @@ layout rule.  A file containing the following definitions:
 
 will be treated by Gofer as if it has been written:
 
-    {ctype Stack.a = Empty
-                  | MkStack.a (Stack.a)
+    {ctype Stack.a where
+        {Empty : -> Stack.a
+        ;MkStack : a -> Stack.a -> Stack.a
 
-    ;push    : a -> Stack.a -> Stack.a
-    ;push x s = MkStack.x.s
+    };push    : a -> Stack.a -> Stack.a
+    ;push.x.s = MkStack.x.s
 
     ;size  : Stack.a -> Int
-    ;size s = length (stkToList s) where
-               {stkToList Empty = []
-               ;stkToList (MkStack.x.s) = x::xs where {xs = stkToList s
+    ;size.s = length.(stkToList.s) where
+               {stkToList.Empty = []
+               ;stkToList.(MkStack.x.s) = x::xs where {xs = stkToList.s
 
     }};pop : Stack.a -> (a, Stack.a)
-    ;pop (MkStack.x.s) = (x, case s of {r -> i r where {i x = x}})
+    ;pop.(MkStack.x.s) = (x, case s of {r -> i r where {i x = x}})
 
     ;top : Stack.a -> a
-    ;top (MkStack.x.s) = x
+    ;top.(MkStack.x.s) = x
     }
 
 Note that some of the more sophisticated forms of expression cannot  be
@@ -3191,7 +3192,7 @@ system) without explicit use of the layout characters `{', `}' and `;':
     10
     (81 reductions, 108 cells)
 
-    ? f True where f x = case x of True->n where {n=not x}; False->True
+    ? f.True where f.x = case x of True->n where {n=not.x}; False->True
     False
     (4 reductions, 11 cells)
 
