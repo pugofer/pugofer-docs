@@ -3059,8 +3059,8 @@ as:
 
                     f.x.y = g.(x + w)
                         where g.u = u + v
-                                        where v = u * u
-                                  w   = 2 + y
+                                where v = u * u
+                              w   = 2 + y
 
 it is clear from the layout that the definition of w is intended to  be
 local to f rather than to g.  Another example  where  layout  plays  an
@@ -3093,7 +3093,7 @@ user had entered:
 
                     f.x.y = g.(x + w)
                         where {g.u = u + v
-                                         where {v = u * u
+                                    where {v = u * u
                               }; w = 2 + y
                     }
 
@@ -3201,10 +3201,10 @@ system) without explicit use of the layout characters `{', `}' and `;':
 One situation in which the layout  rule  can  cause  problems  is  with
 top-level definitions.  For example, the two lines:
 
-   f x  = 1 + x
-    g y = 1 - y
+   f.x  = 1 + x
+    g.y = 1 - y
 
-will be treated as a single line "f x = 1 + x g y = 1 - y", which  will
+will be treated as a single line "f.x = 1 + x g.y = 1 - y", which  will
 cause a syntax  error.   This  kind  of  problem  becomes  rather  more
 difficult to spot if the two definitions are not on  subsequent  lines,
 particularly if they are separated by several lines of  comments.   For
@@ -3252,7 +3252,7 @@ indicating briefly how they can be used and how they are implemented.
 A type class can be thought of as a family of types (or more  generally
 as a family of tuples of types) whose elements are called instances  of
 the class.  If C is the name of  an  n-parameter  type  class  then  an
-expression of the form C t1 t2 ... tn where t1, t2, ...,  tn  are  type
+expression of the form C.t1.t2...tn where t1, t2, ...,  tn  are  type
 expressions is called a predicate and represents the assertion that the
 specified tuple of types is an instance of the class C.
 
@@ -3262,13 +3262,13 @@ arbitrary types for each of the type variables in its type.  In  Gofer,
 a type expression may be qualified by  one  or  more  predicates  which
 restrict the range of types at which a value can be used:
 
-e.g. a function of type C a => a -> a -> a can be treated as a function
+e.g. a function of type C.a => a -> a -> a can be treated as a function
      of type t -> t -> t for any instance t of the class C.
 
-The predicate C a in the type expression in  the  previous  example  is
+The predicate C.a in the type expression in  the  previous  example  is
 called the context of the type.  Contexts may  contain  more  than  one
 predicate in which case the predicates involved must  be  separated  by
-commas and the context enclosed in parentheses as in (C a, D  b).   The
+commas and the context enclosed in parentheses as in  (C.a, D.b).   The
 empty context is written () and any type expression t is equivalent  to
 the qualified type () => t.  For uniformity, a context  with  only  one
 element may also be enclosed by parentheses.
@@ -3285,7 +3285,7 @@ The type class Eq is a simple and useful example, whose  instances  are
 precisely those types whose elements can be tested for  equality.   The
 declaration of this class given in the standard prelude is as follows:
 
-    class Eq a where
+    class Eq.a where
         (==), (/=) : a -> a -> Bool
         x /= y      = not.(x == y)
 
@@ -3302,7 +3302,7 @@ example we have:
      Eq.  Using the notation introduced in the previous  section,  both
      of these operators have type:
 
-                      Eq a => a -> a -> Bool
+                      Eq.a => a -> a -> Bool
 
      These functions are called the `members' (or  `member  functions')
      of the class.  [This terminology, taken from  Haskell,  is  rather
@@ -3336,13 +3336,13 @@ of any function defined either directly or indirectly in terms  of  the
 member functions of that class.  For example, the  types  inferred  for
 the following two functions:
 
-    x  `elem`   xs   =   any (x==) xs
-    xs `subset` ys   =   all (`elem` ys) xs
+    x  `elem`   xs   =   any.(x==).xs
+    xs `subset` ys   =   all.(`elem` ys).xs
 
 are:
 
-    elem   : Eq a => a -> [a] -> Bool
-    subset : Eq a => [a] -> [a] -> Bool
+    elem   : Eq.a => a -> [a] -> Bool
+    subset : Eq.a => [a] -> [a] -> Bool
 
 [ASIDE: On the  other  hand,  if  none  of  the  functions  used  in  a
 particular expression or definition are overloaded then there will  not
@@ -3351,15 +3351,15 @@ the concept of implicit overloading used  in  some  languages  where  a
 value of a particular type might automatically be coerced to a value of
 some supertype.  An example of this would be the automatic  translation
 of a badly typed expression "1.0 == 1" to a  well-typed  expression  of
-the form "1.0 == float 1" for some  (potentially  overloaded)  coercion
+the form "1.0 == float.1" for some  (potentially  overloaded)  coercion
 function "float" mapping numeric values to elements of type Float.]
 
 Note also that the types appearing in the context of a  qualified  type
 reflect the types at which overloaded functions are used.  Thus:
 
-    f x ys  =  [x] == ys
+    f.x.ys  =  [x] == ys
 
-has type  Eq [a] => a -> [a] -> Bool, and not Eq a => a -> [a] -> Bool,
+has type  Eq.[a] => a -> [a] -> Bool, and not Eq.a => a -> [a] -> Bool,
 which is the type that would be assigned to "f" in a Haskell system.
 
 
@@ -3370,19 +3370,19 @@ those used to define  the  corresponding  type  class.   The  following
 examples, taken from the standard prelude, give the definitions  for  a
 number of simple instances of the class Eq:
 
-    instance Eq Int  where  (==) = primEqInt
+    instance Eq.Int  where  (==) = primEqInt
 
-    instance Eq Bool where
+    instance Eq.Bool where
         True  == True   =  True
         False == False  =  True
         _     == _      =  False
 
-    instance Eq Char  where  c == d  =  ord c == ord d
+    instance Eq.Char  where  c == d  =  ord.c == ord.d
 
-    instance (Eq a, Eq b) => Eq (a,b) where
+    instance (Eq.a, Eq.b) => Eq.(a,b) where
         (x,y) == (u,v)  =  x==u && y==v
 
-    instance Eq a => Eq [a] where
+    instance Eq.a => Eq.[a] where
         []     == []     =  True
         []     == (y::ys) =  False
         (x::xs) == []     =  False
@@ -3403,7 +3403,7 @@ The interpretation of these declarations is as follows:
      function.  Note that the two occurrences of the symbol (==) in the
      equation:
 
-                       c == d  =  ord c == ord d
+                       c == d  =  ord.c == ord.d
 
      have  different  meanings;  the  first  denotes  equality  between
      characters (elements of type  Char),  whilst  the  second  denotes
@@ -3417,27 +3417,27 @@ The interpretation of these declarations is as follows:
      instance of Eq.  This requirement is described by the  first  line
      in the instance declaration using the expression:
 
-                       (Eq a, Eq b) => Eq (a,b)
+                       (Eq.a, Eq.b) => Eq.(a,b)
 
   o  The fifth declaration makes [a] an instance of Eq, whenever  a  is
      itself an instance  of  Eq  in  a  similar  way  to  the  previous
-     example.  The context Eq a is used in the  last  equation  in  the
+     example.  The context Eq.a is used in the  last  equation  in  the
      declaration:
 
                      (x::xs) == (y::ys)  =  x==y && xs==ys
 
      which contains three occurrences of the (==) operator;  the  first
      and third are used to compare lists of type [a], whilst the second
-     is used to compare elements of type a, using the instance Eq a.
+     is used to compare elements of type a, using the instance Eq.a .
 
 Combining these five declarations, we obtain definitions for (==) on an
 infinite  family  of  types  including  Int,  Char,  Bool,  (Int,Bool),
 (Char,Int), [Char], (Bool,[Int]), [(Bool,Int)], etc...:
 
-    ? 2 == 3                            -- using Eq Int
+    ? 2 == 3                            -- using Eq.Int
     False
     (2 reductions, 10 cells)
-    ? (["Hello"],3) == (["Hello"],3)    -- using Eq ([[Char]],Int)
+    ? (["Hello"],3) == (["Hello"],3)    -- using Eq.([[Char]],Int)
     True
     (31 reductions, 65 cells)
     ?
@@ -3450,13 +3450,13 @@ operation on triples of values:
     ? (1,2,3) == (1,2,3)
     ERROR: Cannot derive instance in expression
     *** Expression        : (==) d125 (1,2,3) (1,2,3)
-    *** Required instance : Eq (Int,Int,Int)
+    *** Required instance : Eq.(Int,Int,Int)
     ?
 
 This can  be  solved  by  including  an  instance  declaration  of  the
 following form into a file of definitions loaded into Gofer:
 
-    instance (Eq a, Eq b, Eq c) => Eq (a,b,c) where
+    instance (Eq.a, Eq.b, Eq.c) => Eq.(a,b,c) where
         (x,y,z) == (u,v,w)  =  x==u && y==v && z==w
 
 Giving:
@@ -3475,7 +3475,7 @@ The context part of the declaration gives a list  of  predicates  which
 must be satisfied for the predicate on the right hand side of the  `=>'
 sign to be valid.  Constant predicates (i.e. predicates  not  involving
 any type variables) required by an instance declaration  (such  as  the
-predicate Eq Int  required  by  the  third  declaration)  need  not  be
+predicate Eq.Int  required  by  the  third  declaration)  need  not  be
 included in the context.  If the resulting context is empty (as in  the
 first three declarations above) then it may be omitted,  together  with
 the corresponding `=>' symbol.
@@ -3499,16 +3499,16 @@ ignoring any repetitions or differences in the ordering of the elements
 in the lists  representing  the  sets.   This  is  achieved  using  the
 following instance declaration:
 
-    instance Eq a => Eq (Set a) where
-        Set xs == Set ys  =  xs `subset` ys  &&  ys `subset` xs
-                             where xs `subset` ys = all (`elem` ys) xs
+    instance Eq.a => Eq.(Set.a) where
+        Set.xs == Set.ys  =  xs `subset` ys  &&  ys `subset` xs
+                             where xs `subset` ys = all.(`elem` ys).xs
 
 A couple of examples illustrate the use of this definition:
 
-    ? Set [1,2,3] == Set [3,4,1]
+    ? Set.[1,2,3] == Set.[3,4,1]
     False
     (49 reductions, 89 cells)
-    ? Set [1,2,3] == Set [1,2,2,2,1,3]
+    ? Set.[1,2,3] == Set.[1,2,2,2,1,3]
     True
     (157 reductions, 240 cells)
     ? 
@@ -3519,9 +3519,9 @@ A couple of examples illustrate the use of this definition:
 It is possible to give an instance declaration without  specifying  any
 definitions for the member functions of the class.  For example:
 
-    instance Eq ()
+    instance Eq.()
 
-In this case, the definition of  (==) for the instance  Eq ()  is  left
+In this case, the definition of  (==) for the instance  Eq.()  is  left
 completely undefined, and hence so is the definition of (/=), which  is
 defined in terms of (==):
 
@@ -3541,13 +3541,13 @@ obtained using the rules in the given instance  declarations,  then  an
 error message will be produced when  the  expression  is  type-checked.
 For example, in general there is no sensible way to  determine  when  a
 pair of functions are equal, and the standard prelude does not  include
-a definition for an instance of the form Eq (a -> b) for  any  types  a
+a definition for an instance of the form Eq.(a -> b) for  any  types  a
 and b:
 
     ? (1==) == (\x->1==x)
     ERROR: Cannot derive instance in expression
     *** Expression        : (==) d148 ((==) {dict} 1) (\x->(==) {dict} 1 x)
-    *** Required instance : Eq (Int -> Bool)
+    *** Required instance : Eq.(Int -> Bool)
 
     ?
 
@@ -3556,22 +3556,22 @@ error message when an expression is evaluated, rather than when  it  is
 type-checked, you can  use  an  instance  declaration  to  specify  the
 required behaviour.  For example:
 
-    instance Eq (a -> b) where 
-        (==) = error "Equality not defined between functions"
+    instance Eq.(a -> b) where 
+        (==) = error."Equality not defined between functions"
 
 Evaluating the previous expression once this instance  declaration  has
 been included now produces the following result:
 
     ? (1==) == (\x->1==x)
-    {error "Equality not defined between functions"}
+    {error."Equality not defined between functions"}
     (42 reductions, 173 cells)
     ? 
 
 A limited form of equality can be defined for functions of type  (a->b)
 if a has only finitely many elements, such as the boolean type Bool:
 
-    instance Eq a => Eq (Bool -> a) where
-        f == g   =   f False == g False   &&   f True == g True
+    instance Eq.a => Eq.(Bool -> a) where
+        f == g   =   f.False == g.False   &&   f.True == g.True
 
 [ASIDE: This instance declaration would not be accepted  in  a  Haskell
 program which insists that the predicate  on  the  right  of  the  `=>'
@@ -3599,11 +3599,11 @@ Other instance declarations for types of the form a -> b can be used at
 the same time, so  long  as  no  pair  of  declarations  overlap.   For
 example, adding the following instance declaration
 
-    instance Eq a => Eq (() -> a)  where  f == g  =  f () == g ()
+    instance Eq.a => Eq.(() -> a)  where  f == g  =  f.() == g.()
 
 enables us to evaluate expressions such as:
 
-    ? (\()->"Hello") == const "Hello"
+    ? (\()->"Hello") == const."Hello"
     True
     (30 reductions, 55 cells)
     ? 
@@ -3613,9 +3613,9 @@ If however, we try to use instance declarations for types of  the  form
 message similar to the following:
 
     ERROR "file" (line 37): Overlapping instances for class "Eq"
-    *** This instance   : Eq (a -> b)
-    *** Overlaps with   : Eq (Bool -> a)
-    *** Common instance : Eq (Bool -> a)
+    *** This instance   : Eq.(a -> b)
+    *** Overlaps with   : Eq.(Bool -> a)
+    *** Common instance : Eq.(Bool -> a)
 
     ? 
 
@@ -3633,18 +3633,18 @@ contents of one or more files on the terminal:
     instance Cat.[Char]   where cat.n = showFile.n.done
     instance Cat.[[Char]] where cat   = foldr.showFile.done
 
-    showFile.name.cont = readFile.name.abort
+    showFile.name.cont = readFile.name.abort.
                              (\s->appendChan.stdout.s.abort.cont)
  
 Given these declarations, an expression of the form:
 
-                            cat "file"
+                            cat."file"
 
 can be used to display the contents of the named file, whilst a list of
 files can be printed one after the other using  an  expression  of  the
 form:
 
-               cat ["file1", "file2", ..., "filen"].
+               cat.["file1", "file2", ..., "filen"].
 
 
 .ST 14.3 Dictionaries
@@ -3706,9 +3706,9 @@ Eq behave as if they were defined by the expressions:
 
 To understand how these definitions work, we need to take a look  at  a
 specific dictionary.  Following the original instance declaration  used
-for Eq Int, the corresponding dictionary is:
+for Eq.Int, the corresponding dictionary is:
 
-                    d : Eq Int
+                    d : Eq.Int
                     +------------+------------+
                     |            |            |
                     | primEqInt  |  defNeq d  |
@@ -3721,8 +3721,8 @@ can include references to the same dictionary.
 
 [ASIDE: It turns out that predicates  play  a  very  similar  role  for
 dictionaries as types play for normal values.  This motivates  our  use
-of the notation d : Eq Int to indicate that d is a dictionary for  the
-instance Eq Int.  One difference between these, particularly  important
+of the notation d : Eq.Int to indicate that d is a dictionary for  the
+instance Eq.Int.  One difference between these, particularly  important
 for theoretical work, is that dictionary values are uniquely determined
 by predicates; if d1::p and d2::p for some predicate p, then d1 = d2.]
 
@@ -3767,8 +3767,8 @@ predicate in the context.  As an example, the diagram below  shows  the
 dictionaries that will be created  from  the  instance  definitions  in
 section 14.2.2  for  the  instance  Eq  (Int,  [Int]).   The  functions
 "eqPair" and "eqList" which are used in these dictionaries are obtained
-from the definitions of (==) given in the instance declarations for  Eq
-(a,b) and Eq [a] respectively:
+from the definitions of (==) given in  the  instance  declarations  for  
+Eq.(a,b) and Eq.[a] respectively:
 
     eqPair d (x,y) (u,v)   = (==) (#3 d) x u && (==) (#4 d) y v
 
@@ -3777,28 +3777,28 @@ from the definitions of (==) given in the instance declarations for  Eq
     eqList d (x::xs) []     = False
     eqList d (x::xs) (y::ys) = (==) (#3 d) x y && (==) d xs ys
 
-The dictionary structure for Eq (Int, [Int]) is as follows.  Note  that
+The dictionary structure for Eq.(Int, [Int]) is as follows.  Note  that
 the Gofer system ensures that there is at most  one  dictionary  for  a
-particular instance of a class, and that the dictionary d1 : Eq Int in
+particular instance of a class, and that the dictionary d1 : Eq.Int in
 this system is automatically shared between d2 and d3:
 
-   d3 : Eq (Int, [Int])
+   d3 : Eq.(Int, [Int])
    +------------+------------+------------+------------+
    |            |            |            |            |
-   | eqPair d3  | defNeq d3  | d1:Eq Int |d2:Eq [Int]  |
+   | eqPair d3  | defNeq d3  | d1:Eq.Int |d2:Eq.[Int]  |
    |            |            |            |            |
    +------------+------------+-----+------+-----+------+
                                    |            |
                     +--------------+            |
                     |                           |
-                    |        d2 : Eq [Int]      V 
+                    |        d2 : Eq.[Int]      V 
                     |        +------------+------------+------------+
                     |        |            |            |            |
-                    |        | eqList d2  | defNeq d2  | d1:Eq Int |
+                    |        | eqList d2  | defNeq d2  | d1:Eq.Int |
                     |        |            |            |            |
                     |        +------------+------------+-----+------+
                     |                                        |
-       d1 : Eq Int  V                                        |
+       d1 : Eq.Int  V                                        |
        +------------+------------+                           |
        |            |            |                           |
        | primEqInt  | defNeq d1  |<--------------------------+
@@ -3858,7 +3858,7 @@ class Ord whose instances are types  with  both  strict  (<),  (>)  and
 non-strict  (<=),  (>=)  versions  of  an  ordering  defined  on  their
 elements:
 
-    class Eq a => Ord a where
+    class Eq.a => Ord.a where
         (<), (<=), (>), (>=) : a -> a -> Bool
         max, min             : a -> a -> a
 
@@ -3875,7 +3875,7 @@ Notice that this definition provides default definitions for all of the
 member functions except (<=), so  that  in  general  only  this  single
 function needs to be defined to construct an instance of class Ord.
 
-There are two reasons for defining Eq as a superclass of Ord:
+There are two reasons for defining Eq.as a superclass of Ord:
 
   o  The default definition for (<) relies on the  use  of  (/=)  taken
      from class Eq.  In order to guarantee that this is always valid we
@@ -3898,11 +3898,11 @@ There are two reasons for defining Eq as a superclass of Ord:
      datatype described in section  14.2.3,  in  terms  of  the  subset
      ordering defined in class Ord:
 
-         instance Ord (Set a) => Eq (Set a) where
+         instance Ord.(Set.a) => Eq.(Set.a) where
              x == y   =   x <= y  &&  y <= x
 
-         instance Eq a => Ord (Set a) where
-             Set xs <= Set ys  =  all (`elem` ys) xs
+         instance Eq.a => Ord.(Set.a) where
+             Set.xs <= Set.ys  =  all.(`elem` ys).xs
 
      This definition is in fact no less efficient or effective than the
      original version.
@@ -3914,7 +3914,7 @@ the following diagram:
 
  +--------+--------+--------+--------+--------+--------+--------+-----
  |        |        |        |        |        |        |        |
- |  (<)   |  (<=)  |  (>)   |  (>=)  |  max   |  min   |  Eq a  | .....
+ |  (<)   |  (<=)  |  (>)   |  (>=)  |  max   |  min   |  Eq.a  | .....
  |        |        |        |        |        |        |        |
  +--------+--------+--------+--------+--------+--------+--------+-----
 
@@ -3982,24 +3982,24 @@ Consider the function defined by the following equation:
     eg1 x   =   [x] == [x]  ||  x == x
 
 This definition does not restrict the type of x in any way except that,
-if x : a, then there must be instances Eq [a] and Eq a which are  used
+if x : a, then there must be instances Eq.[a] and Eq.a which are  used
 for the two occurrences of the (==) operator in the equation.  We might
 therefore expect the type of eg1 to be:
 
-    (Eq [a], Eq a) => a -> Bool
+    (Eq.[a], Eq.a) => a -> Bool
 
 with translation:
 
     eg1 d1 d2 x  =  (==) d1 [x] [x]  ||  (==) d2 x x
 
 However, as can be seen  from  the  case  where  a=Int  illustrated  in
-section 14.3, given d1:Eq [a] we can always find a dictionary for Eq a
-by taking the third element of d1 i.e. (#3 d1):Eq a.  Since it is more
+section 14.3, given d1:Eq.[a] we can always find a dictionary for Eq.a
+by taking the third element of d1 i.e. (#3 d1):Eq.a.  Since it is more
 efficient to select an element from a  dictionary  than  to  complicate
 both type and translation with extra parameters, the type  assigned  to
 "eg1" by default is:
 
-    Eq [a] => a -> Bool
+    Eq.[a] => a -> Bool
 
 with translation:
 
@@ -4015,14 +4015,14 @@ The original type and translation for eg1 given above can  be  produced
 by including an explicit type signature  in  the  file  containing  the
 definition of eg1:
 
-    eg1   :  (Eq [a], Eq a) => a -> Bool
+    eg1   :  (Eq.[a], Eq.a) => a -> Bool
     eg1 x  =  [x] == [x]  ||  x == x
 
 But even with this definition, Gofer will still always try to  minimise
 the number of dictionaries used in any particular expression:
 
     ? :t eg1
-    \d153 -> eg1 d153 (#3 d153) : Eq [a] => a -> Bool
+    \d153 -> eg1 d153 (#3 d153) : Eq.[a] => a -> Bool
     ?
 
 As another example, consider the expression "(\x y->  x==x  ||  y==y)".
@@ -4032,19 +4032,19 @@ using Gofer:
     ? :t (\x y-> x==x || y==y)
     \d121 d122 x y -> (==) d122 x x ||
                       (==) d121 y y
-                  : (Eq b, Eq a) => a -> b -> Bool
+                  : (Eq.b, Eq.a) => a -> b -> Bool
     ?
 
 Note that the translation has two dictionary parameters d121  and  d122
-corresponding to the two predicates Eq a and Eq b respectively.   Since
+corresponding to the two predicates Eq.a and Eq.b respectively.   Since
 both of these dictionaries can be obtained from a  dictionary  for  the
-predicate Eq (a,b), we can use an explicit type signature to produce  a
+predicate Eq.(a,b), we can use an explicit type signature to produce  a
 translation which needs only one dictionary parameter:
 
-    ? :t (\x y-> x==x || y==y) : Eq (a,b) => a -> b -> Bool
+    ? :t (\x y-> x==x || y==y) : Eq.(a,b) => a -> b -> Bool
     \d121 x y -> (==) (#3 d121) x x ||
                  (==) (#4 d121) y y
-             : Eq (a,b) => a -> b -> Bool
+             : Eq.(a,b) => a -> b -> Bool
     ?
 
 
@@ -4058,8 +4058,8 @@ Consider  the  use  of  the  (==)  operator  in  the  following   three
 situations:
 
   o  In the expression "2 == 3", it is clear that the appropriate value
-     for the equality operator in this case is primIntEq as defined  by
-     the instance declaration for Eq Int.  The expression can therefore
+     for the equality operator in this case is primIntEq.as defined  by
+     the instance declaration for Eq.Int.  The expression can therefore
      be translated to "primEqInt 2 3".
 
   o  In the function definition "f x  =  x==x",  we  cannot  completely
@@ -4067,19 +4067,19 @@ situations:
      type assigned to the variable "x",  which  may  itself  vary  with
      different uses of the function "f".  It is however possible to add
      an extra parameter to the definition,  giving "f d x = (==) d x x"
-     and taking the type of "f" to be Eq a => a -> Bool.
+     and taking the type of "f" to be Eq.a => a -> Bool.
 
      In this way, the problem of finding the appropriate definition for
      the (==) operator is deferred until the function is actually used.
 
   o  In the expression "[]==[]", the appropriate value for (==) must be
-     obtained from the dictionary for some instance of the form Eq [a],
+     obtained from the dictionary for some instance of the form Eq.[a],
      but there is not  sufficient  information  in  the  expression  to
      determine what the value of the type variable a should be.
 
-     Looking back to the instance declaration for Eq [a], we find  that
+     Looking back to the instance declaration for Eq.[a], we find  that
      the definition of (==) depends on the value of the dictionary  for
-     the instance Eq a.  In this particular case, it is clear that  the
+     the instance Eq.a.  In this particular case, it is clear that  the
      expression will always evaluate to True, regardless of  the  value
      of this dictionary.  Unfortunately, the only way that this can  be
      detected is by evaluating the expression to see if the calculation
@@ -4093,13 +4093,13 @@ situations:
 
          ? [] == []
          ERROR: Unresolved overloading
-         *** type        : Eq [a] => Bool
+         *** type        : Eq.[a] => Bool
          *** translation : \d129 -> (==) d129 [] []
          ?
 
      Note  that  the  expression  has  been  converted  into  a  lambda
      expression using the dictionary variable  d129  to  represent  the
-     dictionary for the unknown instance Eq [a].
+     dictionary for the unknown instance Eq.[a].
 
      One simple way to resolve the overloading in an expression of this
      kind is to use an explicit type signature.   For  example,  if  we
@@ -4235,7 +4235,7 @@ see if it does actually need the unspecified  dictionaries  could  have
 been  implemented  quite easily in  Gofer  using  an  otherwise  unused
 datatype Unresolved and generating instance declarations such as:
 
-    instance Eq Unresolved where
+    instance Eq.Unresolved where
         (==) = error "unresolved overloading for (==)"
         (/=) = error "unresolved overloading for (/=)"
 
@@ -4262,12 +4262,12 @@ systems of dictionaries.
 One example of this is the ability  to  implement  a  large  family  of
 related functions using a group of classes instead of having to  use  a
 single class.  The following example illustrates the technique with  an
-alternative definition for the class Eq in  which  the  (==)  and  (/=)
+alternative definition for the class Eq.in  which  the  (==)  and  (/=)
 operators are placed in different classes:
 
-    class Neq a => Eq a  where  (==) : a -> a -> Bool
+    class Neq a => Eq.a  where  (==) : a -> a -> Bool
 
-    class Eq a => Neq a  where  (/=) : a -> a -> Bool
+    class Eq.a => Neq a  where  (/=) : a -> a -> Bool
                                 x/=y  = not.(x == y)
 
 
@@ -4277,16 +4277,16 @@ standard prelude is used instead.]
 
 If we then give instance declarations:
 
-    instance Eq Int  where (==) = primEqInt
+    instance Eq.Int  where (==) = primEqInt
     instance Neq Int
 
 and try to evaluate the expression "2==3" then the following system  of
 dictionaries will be generated:
 
-        d1 : Eq Int                   d2 : Neq Int
+        d1 : Eq.Int                   d2 : Neq Int
         +-----------+-----------+      +-----------+-----------+
         |           |           |      |           |           |
-    +-->| primEqInt |d2:Neq Int+----->| defNeq d2 |d1:Eq Int +---+
+    +-->| primEqInt |d2:Neq Int+----->| defNeq d2 |d1:Eq.Int +---+
     |   |           |           |      |           |           |   |
     |   +-----------+-----------+      +-----------+-----------+   |
     |                                                              |
@@ -4308,9 +4308,9 @@ override the  default  definition  for  (/=).   In  other  words,  this
 approach would give the same effect as defining  (/=)  as  a  top-level
 function rather than a member function in the class Eq:
 
-    class Eq a  where  (==) : a -> a -> Bool
+    class Eq.a  where  (==) : a -> a -> Bool
 
-    (/=)   :  Eq a => a -> a -> Bool
+    (/=)   :  Eq.a => a -> a -> Bool
     x /= y  =  not.(x == y)
 
 There are other situations in which recursive dictionaries of the  kind
@@ -4423,7 +4423,7 @@ the expression "iso 2 == iso 3":
 
     ? iso 2 == iso 3
     ERROR: Unresolved overloading
-    *** type        : (Eq a, Iso Int a) => Bool
+    *** type        : (Eq.a, Iso Int a) => Bool
     *** translation : \d130 d132 -> (==) d130 (iso d132 2) (iso d132 3)
     ?
 
@@ -4460,7 +4460,7 @@ declarations:
 A second example of a multiple  parameter  type  class  is  defined  as
 follows:
 
-    class Ord a => Collects a b where
+    class Ord.a => Collects a b where
         emptyCollection : b
         addToCollection : a -> b -> b
         listCollection  : b -> [a]
@@ -4520,7 +4520,7 @@ implementations).  Similarly, although the Gofer system could  be  used
 to  implement the  full  hierarchy  of  Haskell  numeric  classes,  the
 standard prelude uses a single numeric type class Num defined by:
 
-    class Eq a => Num a where           -- simplified numeric class
+    class Eq.a => Num a where           -- simplified numeric class
         (+), (-), (*), (/) : a -> a -> a
         negate             : a -> a
         fromInteger        : Int -> a
@@ -4852,7 +4852,7 @@ to a particular value binding:
          f x  =   (==) {dict} x 0  ||  (==) {dict} x 2
 
      where, in both cases, the symbol {dict} denotes the dictionary for
-     Eq Int.  As a further optimisation, once the dictionary  is  fully
+     Eq.Int.  As a further optimisation, once the dictionary  is  fully
      determined, this can be simplified to:
 
          f x  =   primEqInt x 0 || primEqInt x 2
@@ -5232,7 +5232,7 @@ Haskell features not included in Gofer:
   o  Datatype definitions in Haskell may involve class constraints such
      as:
 
-              data  Ord a => Set a = Set [a]
+              data  Ord.a => Set.a = Set.[a]
 
      It is  not  clear  how  such  constraints  should  be  interpreted
      (particularly in the light of the  extended  form  of  constraints
