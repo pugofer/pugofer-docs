@@ -1835,7 +1835,7 @@ appearing in it is required.  The basic idea (together with the  method
 used to implement irrefutable patterns in Gofer) is illustrated by  the
 identity:
 
-    f ~pat = rhs     is equivalent to     f v = rhs where pat=v
+    f ~pat = rhs     is equivalent to     f.v = rhs where pat=v
 
 The following examples, based  very  closely  on  those  given  in  the
 Haskell report [5], illustrate the use of  irrefutable  patterns.   The
@@ -3449,7 +3449,7 @@ operation on triples of values:
 
     ? (1,2,3) == (1,2,3)
     ERROR: Cannot derive instance in expression
-    *** Expression        : (==) d125 (1,2,3) (1,2,3)
+    *** Expression        : (==).d125.(1,2,3).(1,2,3)
     *** Required instance : Eq.(Int,Int,Int)
     ?
 
@@ -3546,7 +3546,7 @@ and b:
 
     ? (1==) == (\x->1==x)
     ERROR: Cannot derive instance in expression
-    *** Expression        : (==) d148 ((==) {dict} 1) (\x->(==) {dict} 1 x)
+    *** Expression        : (==).d148.((==).{dict}.1) (\x->(==).{dict}.1.x)
     *** Required instance : Eq.(Int -> Bool)
 
     ?
@@ -3677,12 +3677,12 @@ In order to produce useful error messages and indicate the way in which
 dictionary expressions are being used, Gofer uses a number  of  special
 notations for printing expressions involving dictionaries:
 
-   (#1 d)   selects the first element of the dictionary d
+   (#1.d)   selects the first element of the dictionary d
 
-   (#2 d)   selects the second element of the dictionary d
+   (#2.d)   selects the second element of the dictionary d
 
-   (#n d)   selects the nth element of the dictionary d
-            (note that (#0 d) is equivalent to the dictionary d).
+   (#n.d)   selects the nth element of the dictionary d
+            (note that (#0.d) is equivalent to the dictionary d).
 
    {dict}   denotes a specific dictionary (the contents are not
             displayed).
@@ -3701,8 +3701,8 @@ the same name in two different contexts!).
 Using these notations, the member functions (==) and (/=) of the  class
 Eq behave as if they were defined by the expressions:
 
-    (==) d1  =  (#1 d1)
-    (/=) d1  =  (#2 d1)
+    (==).d1  =  (#1.d1)
+    (/=).d1  =  (#2.d1)
 
 To understand how these definitions work, we need to take a look  at  a
 specific dictionary.  Following the original instance declaration  used
@@ -3711,7 +3711,7 @@ for Eq.Int, the corresponding dictionary is:
                     d : Eq.Int
                     +------------+------------+
                     |            |            |
-                    | primEqInt  |  defNeq d  |
+                    | primEqInt  |  defNeq.d  |
                     |            |            |
                     +------------+------------+
 
@@ -3721,19 +3721,19 @@ can include references to the same dictionary.
 
 [ASIDE: It turns out that predicates  play  a  very  similar  role  for
 dictionaries as types play for normal values.  This motivates  our  use
-of the notation d : Eq.Int to indicate that d is a dictionary for  the
+of the notation d : Eq.Int to indicate that d is a dictionary  for  the
 instance Eq.Int.  One difference between these, particularly  important
 for theoretical work, is that dictionary values are uniquely determined
-by predicates; if d1::p and d2::p for some predicate p, then d1 = d2.]
+by predicates; if d1 : p and d2 : p for some p, then d1 = d2.]
 
 The value held in the first element of the dictionary is the  primitive
 equality function on  integers,  "primEqInt".   The  following  diagram
 shows how the dictionary is used to evaluate the expression "2  ==  3".
-Note that this expression will first be translated to  "(==) d 2 3"  by
+Note that this expression will first be translated to  "(==).d.2.3"  by
 the type checker.  The evaluation then proceeds as follows:
 
-    (==) d 2 3  ==>  (#1 d) 2 3
-                ==>  primEqInt 2 3
+    (==).d.2.3  ==>  (#1.d).2.3
+                ==>  primEqInt.2.3
                 ==>  False
 
 The second element of the  dictionary  is  a  little  more  interesting
@@ -3741,18 +3741,18 @@ because it uses the default definition for (/=) given in  the  original
 class definition  which,  after  translation,  is  represented  by  the
 function "defNeq" defined by:
 
-    defNeq d1 x y = not.((==) d1 x y)
+    defNeq.d1.x.y = not.((==).d1.x.y)
 
 Notice the way in which the  extra  dictionary  parameter  is  used  to
 obtain the appropriate overloading.  For  example,  evaluation  of  the
-expression  "2 /= 3", which  becomes  "(/=) d 2 3"  after  translation,
+expression  "2 /= 3", which  becomes  "(/=).d.2.3"  after  translation,
 proceeds as follows:
 
-    (/=) d 2 3  ==>  (#2 d) 2 3
-                ==>  defNeq d 2 3
-                ==>  not.((==) d 2 3)
-                ==>  not.((#1 d) 2 3)
-                ==>  not.(primEqInt 2 3)
+    (/=).d.2.3  ==>  (#2.d).2.3
+                ==>  defNeq.d.2.3
+                ==>  not.((==).d.2.3)
+                ==>  not.((#1.d).2.3)
+                ==>  not.(primEqInt.2.3)
                 ==>  not.False
                 ==>  True
 
@@ -3765,17 +3765,17 @@ non-empty context, then the basic two element dictionary  used  in  the
 examples above is extended with an  extra  dictionary  value  for  each
 predicate in the context.  As an example, the diagram below  shows  the
 dictionaries that will be created  from  the  instance  definitions  in
-section 14.2.2  for  the  instance  Eq  (Int,  [Int]).   The  functions
+section 14.2.2  for  the  instance  Eq.(Int,  [Int]).   The   functions
 "eqPair" and "eqList" which are used in these dictionaries are obtained
 from the definitions of (==) given in  the  instance  declarations  for  
 Eq.(a,b) and Eq.[a] respectively:
 
-    eqPair d (x,y) (u,v)   = (==) (#3 d) x u && (==) (#4 d) y v
+    eqPair.(x,y).(u,v)   = (==).(#3.d).x.u && (==).(#4.d).y.v
 
-    eqList d [] []         = True
-    eqList d []     (y::ys) = False
-    eqList d (x::xs) []     = False
-    eqList d (x::xs) (y::ys) = (==) (#3 d) x y && (==) d xs ys
+    eqList.d.[].[]           = True
+    eqList.d.[].(y::ys)      = False
+    eqList.d.(x::xs).[]      = False
+    eqList.d.(x::xs).(y::ys) = (==).(#3.d).x.y && (==).d.xs.ys
 
 The dictionary structure for Eq.(Int, [Int]) is as follows.  Note  that
 the Gofer system ensures that there is at most  one  dictionary  for  a
@@ -3785,7 +3785,7 @@ this system is automatically shared between d2 and d3:
    d3 : Eq.(Int, [Int])
    +------------+------------+------------+------------+
    |            |            |            |            |
-   | eqPair d3  | defNeq d3  | d1:Eq.Int |d2:Eq.[Int]  |
+   | eqPair.d3  | defNeq.d3  | d1:Eq.Int  | d2:Eq.[Int]|
    |            |            |            |            |
    +------------+------------+-----+------+-----+------+
                                    |            |
@@ -3794,39 +3794,39 @@ this system is automatically shared between d2 and d3:
                     |        d2 : Eq.[Int]      V 
                     |        +------------+------------+------------+
                     |        |            |            |            |
-                    |        | eqList d2  | defNeq d2  | d1:Eq.Int |
+                    |        | eqList.d2  | defNeq.d2  | d1:Eq.Int  |
                     |        |            |            |            |
                     |        +------------+------------+-----+------+
                     |                                        |
        d1 : Eq.Int  V                                        |
        +------------+------------+                           |
        |            |            |                           |
-       | primEqInt  | defNeq d1  |<--------------------------+
+       | primEqInt  | defNeq.d1  |<--------------------------+
        |            |            |
        +------------+------------+
 
 Once again, it may be useful to see how these definitions are  used  to
 evaluate  the  expression   "(2,[1])   ==   (2,[1,3])"   which,   after
-translation, becomes "(==) d3 (2,[1]) (2,[1,3])":
+translation, becomes "(==).d3.(2,[1]).(2,[1,3])":
 
-    (==) d3 (2,[1]) (2,[1,3])
-             ==>   (#1 d3) (2,[1]) (2,[1,3])
-             ==>   eqPair d3 (2,[1]) (2,[1,3])
-             ==>   (==) (#3 d3) 2 2  &&  (==) (#4 d3) [1] [1,3]
-             ==>   (==) d1 2 2       &&  (==) (#4 d3) [1] [1,3]
-             ==>   (#1 d1) 2 2       &&  (==) (#4 d3) [1] [1,3]
-             ==>   primEqInt 2 2     &&  (==) (#4 d3) [1] [1,3]
-             ==>   True              &&  (==) (#4 d3) [1] [1,3]
-             ==>   (==) (#4 d3) [1] [1,3]
-             ==>   (==) d2 [1] [1,3]
-             ==>   (#1 d2) [1] [1,3]
-             ==>   eqList d2 [1] [1,3]
-             ==>   (==) (#3 d2) 1 1  &&  (==) d2 [] [3]
-             ==>   (==) d1 1 1       &&  (==) d2 [] [3]
-             ==>   (#1 d1) 1 1       &&  (==) d2 [] [3]
-             ==>   primEqInt 1 1     &&  (==) d2 [] [3]
-             ==>   True              &&  (==) d2 [] [3]
-             ==>   (==) d2 [] [3]
+    (==).d3.(2,[1]) (2,[1,3])
+             ==>   (#1.d3).(2,[1]).(2,[1,3])
+             ==>   eqPair.d3.(2,[1]).(2,[1,3])
+             ==>   (==).(#3.d3).2.2  &&  (==).(#4.d3).[1].[1,3]
+             ==>   (==).d1.2.2       &&  (==).(#4.d3).[1].[1,3]
+             ==>   (#1.d1).2.2       &&  (==).(#4.d3).[1].[1,3]
+             ==>   primEqInt.2.2     &&  (==).(#4.d3).[1].[1,3]
+             ==>   True              &&  (==).(#4.d3).[1].[1,3]
+             ==>   (==).(#4.d3).[1].[1,3]
+             ==>   (==).d2.[1].[1,3]
+             ==>   (#1.d2).[1].[1,3]
+             ==>   eqList.d2.[1].[1,3]
+             ==>   (==).(#3.d2).1.1  &&  (==).d2.[].[3]
+             ==>   (==).d1.1.1       &&  (==).d2.[].[3]
+             ==>   (#1.d1).1.1       &&  (==).d2.[].[3]
+             ==>   primEqInt.1.1     &&  (==).d2.[].[3]
+             ==>   True              &&  (==).d2.[].[3]
+             ==>   (==).d2.[].[3]
              ==>   False
 
 
@@ -3834,7 +3834,7 @@ translation, becomes "(==) d3 (2,[1]) (2,[1,3])":
 -------------------
 In general, a type class declaration has the form:
 
-             class  context => Class a1 ... an  where
+             class  context => Class.a1...an  where
                  type declarations for member functions
                  default definitions of member functions
 
@@ -3847,7 +3847,7 @@ satisfied in order to construct any instance of "Class".
 The predicates in the context part of a class  declaration  are  called
 the superclasses of Class.  This  terminology  is  taken  from  Haskell
 where all classes have a single parameter and each of the predicates in
-the context part of a class declaration has the  form  C  a1;  in  this
+the context part of a class declaration has  the  form  C.a1;  in  this
 situation, any instance of Class must also be an instance of each class
 C named in the context.   In  other  words,  each  such  C  contains  a
 superset of the types in Class.
@@ -3922,7 +3922,7 @@ Note the use of the seventh element of this dictionary which points  to
 the dictionary for the appropriate instance of Eq.  This is used in the
 translation of the default definition for (<) which is equivalent to:
 
-      defLessThan d x y  =  (<=) d x y  &&  (/=) (#7 d) x y
+      defLessThan.d.x.y  =  (<=).d.x.y  &&  (/=).(#7.d).x.y
 
 
 .ST 14.3.2 Combining classes
@@ -3937,17 +3937,17 @@ In general, a dictionary is made up of three separate parts:
 
 Each of these may be empty.  We have already  seen  examples  in  which
 there are no superclass dictionaries (e.g.  instances  of  Eq)  and  in
-which there are no  instance  specific  dictionaries  (e.g.   Eq  Int).
+which there are  no  instance  specific  dictionaries  (e.g.   Eq.Int).
 Classes with no member functions (corresponding to dictionaries with no
 member functions) are sometimes useful as a convenient abbreviation for
 a list of predicates.  For example:
 
-    class  C a  where  cee : a -> a
-    class  D a  where  dee : a -> a
+    class  C.a  where  cee : a -> a
+    class  D.a  where  dee : a -> a
 
-    class  (C a, D a) => CandD a
+    class  (C.a, D.a) => CandD.a
 
-makes CandD a an abbreviation for the context (C a, D a).  Thinking  of
+makes CandD a an abbreviation for the context (C.a, D.a).  Thinking  of
 single parameter type classes as sets of types, the  type  class  CandD
 corresponds to the intersection of classes C and D.
 
@@ -3958,9 +3958,9 @@ predicate of the form CandD a instead of the two predicates C a and D a
 unless  explicit signatures are used:
 
     ? :t cee ; dee
-    \d129 d130 -> cee d129 ; dee d130 : (C a, D a) => a -> a
-    ? :t cee ; dee : CandD a => a -> a
-    \d129 -> cee (#1 d129) ; dee (#2 d129) : CandD a => a -> a
+    \d129 d130 -> cee.d129 ; dee.d130 : (C.a, D.a) => a -> a
+    ? :t cee ; dee : CandD.a => a -> a
+    \d129 -> cee.(#1.d129) ; dee.(#2.d129) : CandD.a => a -> a
     ?
 
 In Haskell,  all  instances  of  a  class  such  as  CandD  must   have
@@ -3969,7 +3969,7 @@ for instances for C and D.  This problem can be avoided  by  using  the
 more general form of instance declaration permitted in Gofer; a  single
 instance declaration:
 
-    instance CandD a
+    instance CandD.a
 
 is all that is required to ensure that any instance  of  CandD  can  be
 obtained, so long as corresponding instances for C and D can be found.
@@ -3979,7 +3979,7 @@ obtained, so long as corresponding instances for C and D can be found.
 --------------------------
 Consider the function defined by the following equation:
 
-    eg1 x   =   [x] == [x]  ||  x == x
+    eg1.x   =   [x] == [x]  ||  x == x
 
 This definition does not restrict the type of x in any way except that,
 if x : a, then there must be instances Eq.[a] and Eq.a which are  used
@@ -3990,20 +3990,20 @@ therefore expect the type of eg1 to be:
 
 with translation:
 
-    eg1 d1 d2 x  =  (==) d1 [x] [x]  ||  (==) d2 x x
+    eg1.d1.d2.x  =  (==).d1.[x].[x]  ||  (==).d2.x.x
 
 However, as can be seen  from  the  case  where  a=Int  illustrated  in
-section 14.3, given d1:Eq.[a] we can always find a dictionary for Eq.a
-by taking the third element of d1 i.e. (#3 d1):Eq.a.  Since it is more
-efficient to select an element from a  dictionary  than  to  complicate
-both type and translation with extra parameters, the type  assigned  to
-"eg1" by default is:
+section 14.3, given d1 : Eq.[a] we can always  find  a  dictionary  for 
+Eq.a by taking the third element of d1 i.e., (#3.d1) : Eq.a.  Since  it 
+is more efficient to select  an  element  from  a  dictionary  than  to 
+complicate both type and translation with extra  parameters,  the  type 
+assigned to "eg1" by default is:
 
     Eq.[a] => a -> Bool
 
 with translation:
 
-    eg1 d1 x  =  (==) d1 [x] [x]  || (==) (#3 d1) x x
+    eg1.d1.x  =  (==).d1.[x].[x]  || (==).(#3.d1).x.x
 
 In general, given a set of predicates corresponding  to  the  instances
 required by an expression,  Gofer  will  always  attempt  to  find  the
@@ -4022,7 +4022,7 @@ But even with this definition, Gofer will still always try to  minimise
 the number of dictionaries used in any particular expression:
 
     ? :t eg1
-    \d153 -> eg1 d153 (#3 d153) : Eq.[a] => a -> Bool
+    \d153 -> eg1.d153.(#3.d153) : Eq.[a] => a -> Bool
     ?
 
 As another example, consider the expression "(\x y->  x==x  ||  y==y)".
@@ -4030,8 +4030,8 @@ The type and translation assigned to this term can  be  found  directly
 using Gofer:
  
     ? :t (\x y-> x==x || y==y)
-    \d121 d122 x y -> (==) d122 x x ||
-                      (==) d121 y y
+    \d121 d122.x.y -> (==).d122.x.x ||
+                      (==).d121.y.y
                   : (Eq.b, Eq.a) => a -> b -> Bool
     ?
 
@@ -4042,8 +4042,8 @@ predicate Eq.(a,b), we can use an explicit type signature to produce  a
 translation which needs only one dictionary parameter:
 
     ? :t (\x y-> x==x || y==y) : Eq.(a,b) => a -> b -> Bool
-    \d121 x y -> (==) (#3 d121) x x ||
-                 (==) (#4 d121) y y
+    \d121.x.y -> (==).(#3.d121).x.x ||
+                 (==).(#4.d121).y.y
              : Eq.(a,b) => a -> b -> Bool
     ?
 
@@ -4060,13 +4060,13 @@ situations:
   o  In the expression "2 == 3", it is clear that the appropriate value
      for the equality operator in this case is primIntEq.as defined  by
      the instance declaration for Eq.Int.  The expression can therefore
-     be translated to "primEqInt 2 3".
+     be translated to "primEqInt.2.3".
 
-  o  In the function definition "f x  =  x==x",  we  cannot  completely
+  o  In the function definition "f.x  =  x==x",  we  cannot  completely
      determine the appropriate value for (==) because it depends on the
      type assigned to the variable "x",  which  may  itself  vary  with
      different uses of the function "f".  It is however possible to add
-     an extra parameter to the definition,  giving "f d x = (==) d x x"
+     an extra parameter to the definition,  giving "f.d.x = (==).d.x x"
      and taking the type of "f" to be Eq.a => a -> Bool.
 
      In this way, the problem of finding the appropriate definition for
@@ -4094,7 +4094,7 @@ situations:
          ? [] == []
          ERROR: Unresolved overloading
          *** type        : Eq.[a] => Bool
-         *** translation : \d129 -> (==) d129 [] []
+         *** translation : \d129 -> (==).d129.[].[]
          ?
 
      Note  that  the  expression  has  been  converted  into  a  lambda
@@ -4119,7 +4119,7 @@ expression.
 Further examples of unresolved overloading occur  with  other  classes.
 As an example consider the class Reader defined by:
 
-    class Reader a where 
+    class Reader.a where 
         parse   : String -> a   
         unparse : a -> String
 
@@ -4133,8 +4133,8 @@ representation.
 
     ? unparse ; parse
     ERROR: Unresolved overloading
-    *** type        : (Reader a, Reader b) => a -> b
-    *** translation : \d129 d130 -> unparse d129 ; parse d130
+    *** type        : (Reader.a, Reader.b) => a -> b
+    *** translation : \d129 d130 -> unparse.d129 ; parse.d130
     ?
 
 One of the first things that might surprise the reader here is that the
@@ -4146,17 +4146,17 @@ the string representation of a boolean value!
 This can be fixed by using an explicit type declaration,  although  the
 expression still produces unresolved overloading:
 
-    ? (unparse ; parse) : Reader a => a -> a
+    ? (unparse ; parse) : Reader.a => a -> a
     ERROR: Unresolved overloading
-    *** type        : Reader a => a -> a
-    *** translation : \d130 -> unparse d130 ; parse d130
+    *** type        : Reader.a => a -> a
+    *** translation : \d130 -> unparse.d130 ; parse.d130
     ?
 
 Notice however that the type of this expression  is  not  ambiguous  so
 that the unresolved overloading in this example can be eliminated  when
 the function is actually used:
 
-    ? ((unparse ; parse) : Reader a => a -> a) 'a'
+    ? ((unparse ; parse) : Reader.a => a -> a).'a'
     'a'
     (4 reductions, 11 cells)
     ?
@@ -4167,12 +4167,12 @@ Clearly this will lead to a problem with unresolved overloading:
 
     ? parse ; unparse
     ERROR: Unresolved overloading
-    *** type        : Reader a => String -> String
-    *** translation : \d130 ->  parse (#0 d130); unparse d130
+    *** type        : Reader.a => String -> String
+    *** translation : \d130 ->  parse.(#0.d130) ; unparse.d130
     ?
 
 Notice that the type obtained in  this  case  is  ambiguous;  the  type
-variable a which appears in the predicate Reader a does not  appear  in
+variable a which appears in the predicate Reader.a does not  appear  in
 the type String -> String.  There are a number  of  ways  of  resolving
 this kind of ambiguity:
 
@@ -4209,7 +4209,7 @@ this kind of ambiguity:
      used except to determine the type of the result produced by  parse
      in f:
 
-         f x  =  (parse `asTypeOf` (\""->x)) ; unparse
+         f.x  =  (parse `asTypeOf` (\""->x)) ; unparse
 
      where the standard prelude operator `asTypeOf` defined by:
 
@@ -4222,7 +4222,7 @@ this kind of ambiguity:
 
      The resulting type for f is:
 
-          f : Reader a => a -> String -> String
+          f : Reader.a => a -> String -> String
 
      Notice how the addition of the dummy parameter has  been  used  to
      eliminate the ambiguity present in the original type.
@@ -4236,8 +4236,8 @@ been  implemented  quite easily in  Gofer  using  an  otherwise  unused
 datatype Unresolved and generating instance declarations such as:
 
     instance Eq.Unresolved where
-        (==) = error "unresolved overloading for (==)"
-        (/=) = error "unresolved overloading for (/=)"
+        (==) = error."unresolved overloading for (==)"
+        (/=) = error."unresolved overloading for (/=)"
 
 for each class.  Given a particular expression, we  can  then  use  the
 type Unused in place of any ambiguous type variables in its type.   The
@@ -4265,9 +4265,9 @@ single class.  The following example illustrates the technique with  an
 alternative definition for the class Eq.in  which  the  (==)  and  (/=)
 operators are placed in different classes:
 
-    class Neq a => Eq.a  where  (==) : a -> a -> Bool
+    class Neq.a =>  Eq.a  where  (==) : a -> a -> Bool
 
-    class Eq.a => Neq a  where  (/=) : a -> a -> Bool
+    class Eq.a  => Neq.a  where  (/=) : a -> a -> Bool
                                 x/=y  = not.(x == y)
 
 
@@ -4278,29 +4278,29 @@ standard prelude is used instead.]
 If we then give instance declarations:
 
     instance Eq.Int  where (==) = primEqInt
-    instance Neq Int
+    instance Neq.Int
 
 and try to evaluate the expression "2==3" then the following system  of
 dictionaries will be generated:
 
-        d1 : Eq.Int                   d2 : Neq Int
+        d1 : Eq.Int                   d2 : Neq.Int
         +-----------+-----------+      +-----------+-----------+
         |           |           |      |           |           |
-    +-->| primEqInt |d2:Neq Int+----->| defNeq d2 |d1:Eq.Int +---+
+    +-->| primEqInt |d2:Neq.Int +----->| defNeq.d2 | d1:Eq.Int +---+
     |   |           |           |      |           |           |   |
     |   +-----------+-----------+      +-----------+-----------+   |
     |                                                              |
     +------------------------------<-------------------------------+
 
 where the function "defNeq" is derived from the  default definition  in
-the class Neq and is equivalent to:
+the class Neq.and is equivalent to:
 
-               defNeq d x y  =  not.((==) (#2 d) x y)
+               defNeq.d.x.y  =  not.((==).(#2.d).x y)
 
-Incidentally, if the instance declaration for Neq Int  above  had  been
+Incidentally, if the instance declaration for Neq.Int  above  had  been
 replaced by:
 
-    instance Neq a
+    instance Neq.a
 
 then the effect of these declarations would be similar to the  standard
 definition of the class Eq, except that it would  not  be  possible  to
@@ -4319,15 +4319,15 @@ following section.  Unfortunately, the lack of restrictions on the form
 of class and instance declarations can also lead to  problems  in  some
 (mostly pathological) cases.  As an example, consider the class:
 
-    class Bad [a] => Bad a  where  bad : a -> a
+    class Bad.[a] => Bad.a  where  bad : a -> a
 
 Without defining any instances of Bad, it is not possible to  construct
 any dictionaries for instances of Bad:
 
-    ? bad 2
+    ? bad.2
     ERROR: Cannot derive instance in expression
-    *** Expression        : bad d126 2
-    *** Required instance : Bad Int
+    *** Expression        : bad.d126.2
+    *** Required instance : Bad.Int
     ?
 
 If however we add the instance declarations:
@@ -4399,37 +4399,37 @@ described in the previous section.
 The fact that any type is isomorphic to itself can be described by the
 following instance declaration:
 
-    instance Iso a a where iso x = x
+    instance Iso.a.a where iso.x = x
 
 For example, the dictionary structure created in order to evaluate the
-expression "iso 2 = 3" is:
+expression "iso.2 = 3" is:
 
                    d : Iso Int Int
                    +--------------+--------------+
                    |              |              |
-               +-->|      id      |d:Iso Int Int +--+
+               +-->|      id      |d:Iso.Int.Int +--+
                |   |              |              |  |
                |   +--------------+--------------+  |
                |                                    |
                +------------------<-----------------+
 
-    ? iso 2 == 3
+    ? iso.2 == 3
     False
     (4 reductions, 11 cells)
     ? 
 
 Our first taste of the problems to come occurs when we try to  evaluate
-the expression "iso 2 == iso 3":
+the expression "iso.2 == iso.3":
 
-    ? iso 2 == iso 3
+    ? iso.2 == iso.3
     ERROR: Unresolved overloading
-    *** type        : (Eq.a, Iso Int a) => Bool
-    *** translation : \d130 d132 -> (==) d130 (iso d132 2) (iso d132 3)
+    *** type        : (Eq.a, Iso.Int.a) => Bool
+    *** translation : \d130 d132 -> (==).d130.(iso.d132.2) (iso.d132.3)
     ?
 
 In this case, the "iso" function is used to map the integers 2 and 3 to
 elements of some type a, isomorphic to Int, and the values produced are
-then compared using (==) at the instance Eq  a;  there  is  no  way  of
+then compared using (==) at the instance  Eq.a;  there  is  no  way  of
 discovering what the value of a should be  without  using  an  explicit
 type signature.
 
@@ -4437,22 +4437,22 @@ Further instances can be defined.  The following two  declarations  are
 needed to describe the (approximate) isomorphism between lists of pairs
 and pairs of lists:
 
-    instance Iso [(a,b)] ([a],[b]) where  
-        iso xs = (map.fst.xs, map.snd.xs)
+    instance Iso.[(a,b)].([a],[b]) where  
+        iso.xs = (map.fst.xs, map.snd.xs)
  
-    instance Iso ([a],[b]) [(a,b)] where
+    instance Iso.([a],[b]).[(a,b)] where
         iso (xs,ys) = zip xs ys
 
 Unfortunately, even apparently straightforward examples  give  problems
 with  unresolved  overloading,  forcing  the  use  of   explicit   type
 declarations:
 
-    ? iso [(1,2),(3,4)]
+    ? iso.[(1,2),(3,4)]
     ERROR: Unresolved overloading
-    *** type        : Iso [(Int,Int)] a => a
-    *** translation : \d126 -> iso d126 [(1,2),(3,4)]
+    *** type        : Iso.[(Int,Int)] a => a
+    *** translation : \d126 -> iso.d126.[(1,2),(3,4)]
 
-    ? (iso [(1,2),(3,4)]) : ([Int],[Int])
+    ? (iso.[(1,2),(3,4)]) : ([Int],[Int])
     ([1, 3],[2, 4])
     (22 reductions, 64 cells)
     ?
@@ -4490,13 +4490,13 @@ function of type:
 mapping a list of values to a collection  of  those  values  using  the
 higher order function "foldr":
 
-    listToCollection = foldr addToCollection emptyCollection
+    listToCollection = foldr.addToCollection emptyCollection
 
 actually produces a function with ambiguous type:
 
-    ? :t foldr addToCollection emptyCollection
-    \d139 d140 -> foldr (addToCollection d140) (emptyCollection d139)
-              : (Collects c b, Collects a b) => [a] -> b
+    ? :t foldr.addToCollection emptyCollection
+    \d139 d140 -> foldr.(addToCollection.d140) (emptyCollection.d139)
+              : (Collects.c.b, Collects.a.b) => [a] -> b
     ?
 
 which cannot be resolved, even with an explicit type declaration.
@@ -4621,8 +4621,8 @@ causes problems with unresolved overloading:
     ? fromInteger 2 + fromInteger 3
     ERROR: Unresolved overloading
     *** type        : Num a => a
-    *** translation : \d143 -> (+).d143 (fromInteger d143 2)
-                                        (fromInteger d143 3)
+    *** translation : \d143 -> (+).d143.(fromInteger.d143.2)
+                                        (fromInteger.d143.3)
     ?
 
 Once again, Haskell provides a solution to this problem in the form  of
@@ -4690,17 +4690,17 @@ We can also use the technique of passing a `dummy' parameter to resolve
 overloading problems in a function definition:
 
     size  : Finite a => a -> Int
-    size x = length (members `asTypeOf` [x])
+    size.x = length (members `asTypeOf` [x])
 
 which calculates the number of elements of  a  finite  type,  given  an
 arbitrary element of that type:
 
-    ? size (True,False)
+    ? size.(True,False)
     4
     (31 reductions, 60 cells)
     ?
 
-Now consider the expression "size (True,False)  +  size  (True,False)".
+Now consider the expression  "size.(True,False)  +  size.(True,False)".
 At first glance, we expect  this  to  repeat  the  calculation  in  the
 previous example two  times,  requiring  approximately  twice  as  many
 reductions and cells as before.  However,  before  this  expression  is
@@ -4711,7 +4711,7 @@ used to calculate the value of the second summand,  the  evaluation  of
 "members" is not repeated and the complete  calculation  actually  uses
 rather fewer reductions and cells:
 
-    ? size (True,False) + size (True,False)
+    ? size.(True,False) + size.(True,False)
     8
     (51 reductions, 90 cells)
     ?
@@ -4731,13 +4731,13 @@ as:
 This forces Gofer to construct the dictionary Finite (Bool,Bool)  when
 the file of definitions is loaded and prevents it from being deleted at
 the end of each calculation.  Having  loaded  a  file  containing  this
-definition, the  first two  attempts  to  evaluate  "size (True,False)"
+definition, the  first two  attempts  to  evaluate  "size.(True,False)"
 give:
 
-    ? size (True,False)
+    ? size.(True,False)
     4
     (31 reductions, 60 cells)
-    ? size (True,False)
+    ? size.(True,False)
     4
     (20 reductions, 32 cells)
     ?
@@ -4778,14 +4778,14 @@ we first add a dictionary parameter for the use of the overloaded  (==)
 operator on the right hand side, obtaining:
 
     isElement x []     = False
-    isElement x (y::ys) = (==) d x y || isElement x ys
+    isElement x (y::ys) = (==).d.x.y || isElement x ys
 
 Finally, we have to add the variable d  as  a  new  parameter  for  the
 function isElement, on both the  left  and  right  hand  sides  of  the
 definition:
 
-    isElement d x []     = False
-    isElement d x (y::ys) = (==) d x y || isElement d x ys
+    isElement d.x.[]     = False
+    isElement d.x.(y::ys) = (==).d.x.y || isElement d.x.ys
 
 The monomorphism restriction imposes conditions which prevent this last
 step from being used for certain kinds of value binding.
@@ -4798,26 +4798,26 @@ general,  the  monomorphism  restriction  affects   groups   of   value
 declarations rather than just individual  definitions.   To  illustrate
 this point, consider the function definitions:
 
-    f x y  =  x==y || g x y
-    g x y  =  not.(f x y)
+    f.x.y  =  x==y || g.x.y
+    g.x.y  =  not.(f.x.y)
 
 Adding an appropriate dictionary parameter for the (==) operator gives:
 
-    f x y  =  (==) d x y || g x y
-    g x y  =  not.(f x y)
+    f.x.y  =  (==).d.x.y || g.x.y
+    g.x.y  =  not.(f.x.y)
 
 The next stage is to  make  this  dictionary  variable  into  an  extra
 parameter to the function f wherever it appears, giving:
 
-    f d x y  =  (==) d x y || g x y
-    g x y    =  not.(f d x y)
+    f.d.x.y  =  (==).d.x.y || g.x.y
+    g.x.y    =  not.(f.d.x.y)
 
 But now the right hand side  of  the  second  definition  mentions  the
 dictionary variable d  which  must  therefore  be  added  as  an  extra
 parameter to g:
 
-    f d x y  =  (==) d x y || g d x y
-    g d x y  =  not.(f d x y)
+    f.d.x.y  =  (==).d.x.y || g.d.x.y
+    g.d.x.y  =  not.(f.d.x.y)
 
 In other words, if dictionary parameters are added  to  any  particular
 function  definition,  then  each  use  of  that  function  in  another
@@ -4845,17 +4845,17 @@ to a particular value binding:
      the appropriate values as dictionary parameters.  For example, the
      function definition:
 
-         f x  =   x == 0  ||  x == 2
+         f.x  =   x == 0  ||  x == 2
 
      can be translated as:
 
-         f x  =   (==) {dict} x 0  ||  (==) {dict} x 2
+         f.x  =   (==).{dict} x 0  ||  (==).{dict} x 2
 
      where, in both cases, the symbol {dict} denotes the dictionary for
      Eq.Int.  As a further optimisation, once the dictionary  is  fully
      determined, this can be simplified to:
 
-         f x  =   primEqInt x 0 || primEqInt x 2
+         f.x  =   primEqInt.x.0 || primEqInt.x.2
 
   o  Dictionary parameters cannot be added in a pattern  binding.   One
      potential solution to this problem would be to replace the pattern
@@ -4892,14 +4892,14 @@ to a particular value binding:
      using the function "size" and the class Finite  described  in  the
      previous section:
 
-         twiceSize x = n + n  where n = size x
+         twiceSize x = n + n  where n = size.x
 
      Since the variable n is defined using a local definition, we would
-     not expect to have to evaluate size x more than once to  determine
+     not expect to have to evaluate size.x more than once to  determine
      the  value  of  twiceSize.   However,  adding   extra   dictionary
      parameters without restriction gives:
 
-         twiceSize d x  = n d + n d  where  n d = size d x
+         twiceSize d.x  = n.d + n.d  where  n.d = size.d.x
 
      Now that n has been replaced by a function, the evaluation will be
      repeated, once for each occurrence of the expression  "n  d".   In
@@ -4908,7 +4908,7 @@ to a particular value binding:
      definition.  Thus the original definition above will be translated
      to give:
 
-         twiceSize d x  =  n + n  where n = size d x
+         twiceSize d.x  =  n + n  where n = size.d.x
 
      Note that the same rule is applied to variable definitions at  the
      top-level of a file of definitions, resulting in an error  if  any
